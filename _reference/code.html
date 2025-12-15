@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Design Tracker - Task View</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111a22",
+                        "surface-dark": "#192633",
+                        "border-dark": "#324d67",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>.custom-scrollbar::-webkit-scrollbar {
+            height: 12px;
+            width: 12px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #111a22;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #324d67;
+            border-radius: 6px;
+            border: 3px solid #111a22;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white overflow-hidden">
+<div class="relative flex h-screen w-full flex-col overflow-hidden">
+<header class="flex-none flex items-center justify-between whitespace-nowrap border-b border-solid border-border-dark bg-background-dark px-6 py-3 z-20">
+<div class="flex items-center gap-4">
+<div class="size-8 flex items-center justify-center rounded bg-primary/20 text-primary">
+<span class="material-symbols-outlined">grid_view</span>
+</div>
+<h2 class="text-white text-lg font-bold leading-tight tracking-tight">Design Tracker</h2>
+</div>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-white text-sm font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-white text-sm font-medium hover:text-primary transition-colors" href="#">Reports</a>
+<a class="text-[#92adc9] text-sm font-medium hover:text-white transition-colors" href="#">Settings</a>
+</nav>
+<div class="h-6 w-px bg-border-dark"></div>
+<button class="relative text-white hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 size-2 bg-red-500 rounded-full border border-background-dark"></span>
+</button>
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-9 border border-border-dark" data-alt="User avatar profile picture showing a person smiling" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBi8jXjNHhpaSwAWq9eMb3PRCIDCEXQeEImVr_E23PKVLvU-z0X5Lc4NcReNInJLpF9GOZ2i8CUSOwSHJYovmZMuCZlKLxCWTG4qjZS2bRn_W6VmbrY52vXTAfQSKb7c2DXCiFrZ22sBQ3OMKIBuGlQvrZ-SlROI-Mn4vM7A32ou9-JuL_ScTIVVLdYJ2qX0SumycaKFOkOa8R8h_gbfmg6MtbT2nvaDGXVe4WJDr0Z4ONgcg9kbuO39xrkHKZRH1KSRA8fSCFs-OA");'></div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<main class="flex-1 flex flex-col min-w-0">
+<div class="flex-none bg-background-dark pt-4 px-6 border-b border-border-dark">
+<div class="flex gap-8 overflow-x-auto no-scrollbar">
+<a class="group flex flex-col items-center justify-center border-b-[3px] border-primary pb-3 min-w-[80px] cursor-pointer" href="#">
+<p class="text-white group-hover:text-primary text-sm font-bold tracking-wide">Haneef</p>
+</a>
+<a class="group flex flex-col items-center justify-center border-b-[3px] border-transparent hover:border-border-dark pb-3 min-w-[80px] cursor-pointer" href="#">
+<p class="text-[#92adc9] group-hover:text-white text-sm font-bold tracking-wide">Surya</p>
+</a>
+<a class="group flex flex-col items-center justify-center border-b-[3px] border-transparent hover:border-border-dark pb-3 min-w-[80px] cursor-pointer" href="#">
+<p class="text-[#92adc9] group-hover:text-white text-sm font-bold tracking-wide">Sheshu</p>
+</a>
+<a class="group flex flex-col items-center justify-center border-b-[3px] border-transparent hover:border-border-dark pb-3 min-w-[80px] cursor-pointer" href="#">
+<div class="flex items-center gap-1 text-[#92adc9] group-hover:text-primary">
+<span class="material-symbols-outlined text-sm font-bold">add</span>
+<span class="text-sm font-bold tracking-wide">Add Member</span>
+</div>
+</a>
+</div>
+</div>
+<div class="flex-none flex justify-between items-center px-6 py-4 bg-background-dark border-b border-border-dark">
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-dark border border-border-dark hover:bg-[#233648] text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+<span class="text-sm font-medium">Filter</span>
+</button>
+<button class="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-dark border border-border-dark hover:bg-[#233648] text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+<span class="text-sm font-medium">Jump to Today</span>
+</button>
+</div>
+<div class="flex items-center gap-4">
+<p class="hidden lg:block text-[#92adc9] text-xs font-normal">Scroll horizontally to view timeline</p>
+<button class="flex items-center justify-center rounded-lg h-9 bg-primary hover:bg-blue-600 text-white gap-2 text-sm font-bold px-4 shadow-lg shadow-primary/20 transition-all">
+<span class="material-symbols-outlined text-[20px]">add</span>
+<span>New Task</span>
+</button>
+</div>
+</div>
+<div class="flex-1 relative overflow-hidden bg-background-dark">
+<div class="absolute inset-0 overflow-auto custom-scrollbar">
+<div class="min-w-max p-6">
+<table class="border-collapse w-full">
+<thead>
+<tr>
+<th class="sticky top-0 z-10 bg-background-dark text-left align-bottom pb-4 pr-4 w-[320px]">
+<div class="flex flex-col border-l-4 border-transparent pl-3 py-1">
+<span class="text-[#92adc9] text-xs uppercase font-semibold tracking-wider">Monday</span>
+<span class="text-white text-lg font-bold">Oct 21</span>
+</div>
+</th>
+<th class="sticky top-0 z-10 bg-surface-dark/50 text-left align-bottom pb-4 px-4 w-[320px] rounded-t-xl border-x border-t border-primary/20">
+<div class="flex flex-col border-l-4 border-primary pl-3 py-1">
+<span class="text-primary text-xs uppercase font-bold tracking-wider flex items-center gap-1">
+                                                Tuesday <span class="bg-primary text-white text-[10px] px-1.5 rounded-sm ml-1">Today</span>
+</span>
+<span class="text-white text-lg font-bold">Oct 22</span>
+</div>
+</th>
+<th class="sticky top-0 z-10 bg-background-dark text-left align-bottom pb-4 px-4 w-[320px]">
+<div class="flex flex-col border-l-4 border-transparent pl-3 py-1">
+<span class="text-[#92adc9] text-xs uppercase font-semibold tracking-wider">Wednesday</span>
+<span class="text-white text-lg font-bold">Oct 23</span>
+</div>
+</th>
+<th class="sticky top-0 z-10 bg-background-dark text-left align-bottom pb-4 px-4 w-[320px]">
+<div class="flex flex-col border-l-4 border-transparent pl-3 py-1">
+<span class="text-[#92adc9] text-xs uppercase font-semibold tracking-wider">Thursday</span>
+<span class="text-white text-lg font-bold">Oct 24</span>
+</div>
+</th>
+<th class="sticky top-0 z-10 bg-background-dark text-left align-bottom pb-4 px-4 w-[320px]">
+<div class="flex flex-col border-l-4 border-transparent pl-3 py-1">
+<span class="text-[#92adc9] text-xs uppercase font-semibold tracking-wider">Friday</span>
+<span class="text-white text-lg font-bold">Oct 25</span>
+</div>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr class="group/row">
+<td class="align-top p-2 border-r border-dashed border-border-dark/50">
+<div class="group relative flex flex-col gap-2 p-3 rounded-lg bg-[#233648] border-l-4 border-red-500 hover:bg-[#2a4055] transition-all cursor-pointer shadow-sm hover:shadow-md mb-3">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start">
+<h3 class="text-sm font-bold text-white leading-snug pr-2">Homepage Hero Banner Update</h3>
+<a class="text-[#92adc9] hover:text-primary transition-colors opacity-0 group-hover:opacity-100" href="#">
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</a>
+</div>
+<p class="text-xs text-[#92adc9] leading-relaxed line-clamp-2">Update main imagery with the new autumn collection photos and adjust the CTA button contrast.</p>
+<a class="text-xs text-primary hover:underline truncate mt-1 block" href="#">figma.com/file/HKj23...</a>
+</div>
+<div class="flex items-center justify-between mt-2 pt-2 border-t border-border-dark/50">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold bg-red-500/10 text-red-500 border border-red-500/20">
+<span class="size-1.5 rounded-full bg-red-500"></span>
+                                                    Pending
+                                                </span>
+<div class="size-6 rounded-full bg-cover bg-center" data-alt="Small avatar of requestor" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDMhQK4hZu5gB9WEKfHn6hYFWzC0FperjH_570RsW8rfVPRek-HXrHfrImGU0ANfvwb9wDc8OjtOCp3Xy6Pnyhh6nwsVRaLfQ6iiR7mB6ak0K-0QXI7kwGjpLaC-CdTmNUoeWNTNkri5S-SkKQ3Gv8GFNdDAZbhw3JY_0kNAe_oV54tSNztNwJCfAW3MwCsFQ1TTfSu_JL__d2PFpg7NIFFwk-5HsaGFpGfBUEKCNovShws0miNhnKHS1s-hbvpO8voIVdZu2okNkk");'></div>
+</div>
+</div>
+<div class="group relative flex flex-col gap-2 p-3 rounded-lg bg-[#233648] border-l-4 border-yellow-500 hover:bg-[#2a4055] transition-all cursor-pointer shadow-sm hover:shadow-md mb-3">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start">
+<h3 class="text-sm font-bold text-white leading-snug pr-2">Q4 Social Media Assets</h3>
+<a class="text-[#92adc9] hover:text-primary transition-colors opacity-0 group-hover:opacity-100" href="#">
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</a>
+</div>
+<p class="text-xs text-[#92adc9] leading-relaxed line-clamp-2">Create 5 Instagram story templates and 3 LinkedIn post graphics for the Q4 launch.</p>
+<a class="text-xs text-primary hover:underline truncate mt-1 block" href="#">drive.google.com/fo...</a>
+</div>
+<div class="flex items-center justify-between mt-2 pt-2 border-t border-border-dark/50">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold bg-yellow-500/10 text-yellow-500 border border-yellow-500/20">
+<span class="size-1.5 rounded-full bg-yellow-500"></span>
+                                                    Submitted
+                                                </span>
+</div>
+</div>
+</td>
+<td class="align-top p-2 bg-surface-dark/30 border-x border-primary/20">
+<div class="group relative flex flex-col gap-2 p-3 rounded-lg bg-[#233648] border-l-4 border-red-500 hover:bg-[#2a4055] transition-all cursor-pointer shadow-sm hover:shadow-md mb-3">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start">
+<h3 class="text-sm font-bold text-white leading-snug pr-2">Website Refresh - Dark Mode</h3>
+<a class="text-[#92adc9] hover:text-primary transition-colors opacity-0 group-hover:opacity-100" href="#">
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</a>
+</div>
+<p class="text-xs text-[#92adc9] leading-relaxed line-clamp-2">Implement dark mode color palette across the settings page and user profile components.</p>
+<a class="text-xs text-primary hover:underline truncate mt-1 block" href="#">jira.atlassian.net/bro...</a>
+</div>
+<div class="flex items-center justify-between mt-2 pt-2 border-t border-border-dark/50">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold bg-red-500/10 text-red-500 border border-red-500/20">
+<span class="size-1.5 rounded-full bg-red-500"></span>
+                                                    Pending
+                                                </span>
+<div class="size-6 rounded-full bg-cover bg-center" data-alt="Small avatar of requestor" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB4BxreDC4keT8sI1LlYrznpmiEagNz1LIO3iqhK5O1br_MKibIddDYWsWdXSWRQEdHCadHaYIJh11Lcym-tsoSUY0dykQF4sJzeVlsJDBwGfeg_ZCFSV-4xQ_RJsvphqtvOYWxTOVYETtKvOmgdXqLQV3D-GtV6C-E_X8uiV0ZuSw3VBjNPPe3aKaVZxmXXcay-UeLg_0M0mIE51dbs_lR5AS4zLFbCeoLE52_hms8MabnlCeeKgRl4G1EhIuttfOamWdpqut4_QU");'></div>
+</div>
+</div>
+<button class="w-full border border-dashed border-border-dark rounded-lg p-2 flex items-center justify-center gap-2 text-[#92adc9] hover:text-white hover:border-primary hover:bg-primary/5 transition-all group/add">
+<span class="material-symbols-outlined text-lg group-hover/add:scale-110 transition-transform">add</span>
+<span class="text-xs font-medium">Add task</span>
+</button>
+</td>
+<td class="align-top p-2 border-r border-dashed border-border-dark/50">
+<div class="group relative flex flex-col gap-2 p-3 rounded-lg bg-[#233648] border-l-4 border-green-500 hover:bg-[#2a4055] transition-all cursor-pointer shadow-sm hover:shadow-md mb-3 opacity-60 hover:opacity-100">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start">
+<h3 class="text-sm font-bold text-white leading-snug pr-2">Campaign Landing Page V1</h3>
+<a class="text-[#92adc9] hover:text-primary transition-colors opacity-0 group-hover:opacity-100" href="#">
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</a>
+</div>
+<p class="text-xs text-[#92adc9] leading-relaxed line-clamp-2">First draft of the 'Summer Sale' landing page with hero, features, and pricing sections.</p>
+<a class="text-xs text-primary hover:underline truncate mt-1 block" href="#">figma.com/file/X9s...</a>
+</div>
+<div class="flex items-center justify-between mt-2 pt-2 border-t border-border-dark/50">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold bg-green-500/10 text-green-500 border border-green-500/20">
+<span class="material-symbols-outlined text-[14px]">check</span>
+                                                    Approved
+                                                </span>
+</div>
+</div>
+</td>
+<td class="align-top p-2 border-r border-dashed border-border-dark/50">
+<div class="h-16"></div>
+</td>
+<td class="align-top p-2">
+<div class="group relative flex flex-col gap-2 p-3 rounded-lg bg-[#233648] border-l-4 border-yellow-500 hover:bg-[#2a4055] transition-all cursor-pointer shadow-sm hover:shadow-md mb-3">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start">
+<h3 class="text-sm font-bold text-white leading-snug pr-2">Sales One Pager PDF</h3>
+<a class="text-[#92adc9] hover:text-primary transition-colors opacity-0 group-hover:opacity-100" href="#">
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</a>
+</div>
+<p class="text-xs text-[#92adc9] leading-relaxed line-clamp-2">Design a one-page PDF summarizing the enterprise plan benefits for the sales team.</p>
+<a class="text-xs text-primary hover:underline truncate mt-1 block" href="#">box.com/s/9d8f7...</a>
+</div>
+<div class="flex items-center justify-between mt-2 pt-2 border-t border-border-dark/50">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold bg-yellow-500/10 text-yellow-500 border border-yellow-500/20">
+<span class="size-1.5 rounded-full bg-yellow-500"></span>
+                                                    Submitted
+                                                </span>
+</div>
+</div>
+<div class="group relative flex flex-col gap-2 p-3 rounded-lg bg-[#233648] border-l-4 border-red-500 hover:bg-[#2a4055] transition-all cursor-pointer shadow-sm hover:shadow-md mb-3">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-start">
+<h3 class="text-sm font-bold text-white leading-snug pr-2">Icon Set Expansion</h3>
+<a class="text-[#92adc9] hover:text-primary transition-colors opacity-0 group-hover:opacity-100" href="#">
+<span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</a>
+</div>
+<p class="text-xs text-[#92adc9] leading-relaxed line-clamp-2">Add 15 new icons for the analytics dashboard, following the existing outline style.</p>
+<a class="text-xs text-primary hover:underline truncate mt-1 block" href="#">figma.com/file/icon...</a>
+</div>
+<div class="flex items-center justify-between mt-2 pt-2 border-t border-border-dark/50">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold bg-red-500/10 text-red-500 border border-red-500/20">
+<span class="size-1.5 rounded-full bg-red-500"></span>
+                                                    Pending
+                                                </span>
+<div class="size-6 rounded-full bg-cover bg-center" data-alt="Small avatar of requestor" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBmaLHIiXySDeIQP_zCCwTbim1s9ovcKCpav6r4wQW-0blHIyy5Z7Vamty7zmbqgtSb6-DOOIhmwOIUBYYfnBx0jQAns_nk4Ie1vPTyOWs-hKAFVDxRd2779S4U6xevQIEByeU9gubG4IR1TpnE0zquqzyjfag1LcqQsMSP2-4qHiZ0Inhu949xIyz5UHjt9Kz56lqqKSZXO-lq_NCg7pL3qU43iRdru1KFGJQHPNUJEzqksEx5qPoPzS7lHbkRWKHW0Z0Rt6Set-I");'></div>
+</div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-background-dark to-transparent z-20"></div>
+</div>
+</main>
+</div>
+</div>
+
+</body></html>

@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    height: 12px;
+    width: 12px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #111a22;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #324d67;
+    border-radius: 6px;
+    border: 3px solid #111a22;
+}
+
+body {
+  @apply bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased;
+}
