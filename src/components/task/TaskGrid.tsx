@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useTaskContext } from '../../context/TaskContext';
 import { weekDates } from '../../services/mockData';
 import { TaskCard } from './TaskCard';
@@ -7,6 +7,12 @@ import { cn } from '../../utils/cn';
 
 export const TaskGrid = () => {
     const { tasks, activeDesignerId, registerScrollContainer, setAddTaskOpen, setNewTaskDefaults, filters, lastAddedTaskId, role } = useTaskContext();
+
+    // Default to today, or find today in weekDates if possible
+    const today = new Date();
+    const [selectedDateStr, setSelectedDateStr] = useState<string>(
+        weekDates.find(d => isSameDay(parseISO(d), today)) || weekDates[0]
+    );
 
     // Scroll to new task
     useEffect(() => {
@@ -41,8 +47,6 @@ export const TaskGrid = () => {
         return filteredTasks.filter(t => t.date === dateStr);
     };
 
-    const today = new Date();
-
     const handleAddTask = (dateStr: string) => {
         setNewTaskDefaults({ date: dateStr });
         setAddTaskOpen(true);
@@ -61,29 +65,31 @@ export const TaskGrid = () => {
                                 {weekDates.map((dateStr, index) => {
                                     const date = parseISO(dateStr);
                                     const isToday = isSameDay(date, today);
+                                    const isSelected = dateStr === selectedDateStr;
 
                                     return (
                                         <th
                                             key={dateStr}
                                             id={isToday ? 'column-today' : undefined}
+                                            onClick={() => setSelectedDateStr(dateStr)}
                                             className={cn(
-                                                "sticky top-0 z-10 text-left align-bottom pb-4 w-[320px]",
+                                                "sticky top-0 z-10 text-left align-bottom pb-4 w-[320px] cursor-pointer transition-colors group/header",
                                                 index === 0 ? "pr-4 pl-0" : "px-4",
-                                                isToday ? "bg-surface-dark/50 rounded-t-xl border-x border-t border-primary/20" : "bg-background-dark"
+                                                isSelected ? "bg-surface-dark/50 rounded-t-xl border-x border-t border-primary/20" : "bg-background-dark hover:bg-surface-dark/20"
                                             )}
                                         >
                                             <div className={cn(
-                                                "flex flex-col border-l-4 pl-3 py-1",
-                                                isToday ? "border-primary" : "border-transparent"
+                                                "flex flex-col border-l-4 pl-3 py-1 transition-colors",
+                                                isSelected ? "border-primary" : "border-transparent group-hover/header:border-primary/30"
                                             )}>
                                                 <span className={cn(
                                                     "text-xs uppercase font-semibold tracking-wider flex items-center gap-1",
-                                                    isToday ? "text-primary font-bold" : "text-[#92adc9]"
+                                                    isSelected ? "text-primary font-bold" : "text-text-muted"
                                                 )}>
                                                     {format(date, 'EEEE')}
-                                                    {isToday && <span className="bg-primary text-white text-[10px] px-1.5 rounded-sm ml-1">Today</span>}
+                                                    {isToday && <span className={cn("text-white text-[10px] px-1.5 rounded-sm ml-1 transition-colors", isSelected ? "bg-primary" : "bg-text-muted")}>Today</span>}
                                                 </span>
-                                                <span className="text-white text-lg font-bold">{format(date, 'MMM d')}</span>
+                                                <span className={cn("text-lg font-bold transition-colors", isSelected ? "text-text-main" : "text-text-muted")}>{format(date, 'MMM d')}</span>
                                             </div>
                                         </th>
                                     );
@@ -95,27 +101,37 @@ export const TaskGrid = () => {
                                 {weekDates.map((dateStr) => {
                                     const tasksForDate = getTasksForDate(dateStr);
                                     const date = parseISO(dateStr);
-                                    const isToday = isSameDay(date, today);
                                     const isPastDate = isPast(endOfDay(date));
                                     const canAdd = role === 'Manager' || !isPastDate;
+                                    const isSelected = dateStr === selectedDateStr;
 
                                     return (
                                         <td
                                             key={dateStr}
+                                            onClick={() => setSelectedDateStr(dateStr)}
                                             className={cn(
-                                                "align-top p-2",
-                                                isToday ? "bg-surface-dark/30 border-x border-primary/20" : "border-r border-dashed border-border-dark/50"
+                                                "align-top p-2 transition-colors",
+                                                isSelected ? "bg-surface-dark/30 border-x border-primary/20" : "border-r border-dashed border-border-dark/50 hover:bg-surface-dark/10"
                                             )}
                                         >
-                                            {tasksForDate.map(task => (
-                                                <div id={`task-${task.id}`} key={task.id}>
-                                                    <TaskCard task={task} />
+                                            {tasksForDate.length > 0 ? (
+                                                tasksForDate.map(task => (
+                                                    <div id={`task-${task.id}`} key={task.id}>
+                                                        <TaskCard task={task} />
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="flex flex-col items-center justify-center p-6 text-center opacity-40">
+                                                    <span className="text-xs font-medium text-text-muted">No tasks</span>
                                                 </div>
-                                            ))}
+                                            )}
                                             {canAdd && (
                                                 <button
-                                                    onClick={() => handleAddTask(dateStr)}
-                                                    className="w-full border border-dashed border-border-dark rounded-lg p-2 flex items-center justify-center gap-2 text-[#92adc9] hover:text-white hover:border-primary hover:bg-primary/5 transition-all group/add"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleAddTask(dateStr);
+                                                    }}
+                                                    className="w-full border border-dashed border-border-dark rounded-lg p-2 flex items-center justify-center gap-2 text-text-muted hover:text-text-main hover:border-primary hover:bg-primary/5 transition-all group/add"
                                                 >
                                                     <span className="material-symbols-outlined text-lg group-hover/add:scale-110 transition-transform">add</span>
                                                     <span className="text-xs font-medium">Add task</span>

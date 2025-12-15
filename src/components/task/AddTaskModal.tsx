@@ -46,52 +46,52 @@ export const AddTaskModal = () => {
         >
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <div>
-                    <label className="block text-xs font-bold text-[#92adc9] uppercase tracking-wider mb-1.5">Task Title</label>
+                    <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">Task Title</label>
                     <input
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="e.g. Homepage Redesign"
                         required
-                        className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-white placeholder-[#546b82] focus:outline-none focus:border-primary transition-colors"
+                        className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-text-main placeholder-gray-400 focus:outline-none focus:border-primary transition-colors"
                     />
                 </div>
                 <div>
-                    <label className="block text-xs font-bold text-[#92adc9] uppercase tracking-wider mb-1.5">External Link</label>
+                    <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">External Link</label>
                     <input
                         type="text"
                         value={link}
                         onChange={(e) => setLink(e.target.value)}
                         placeholder="e.g. figma.com/..."
                         required
-                        className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-white placeholder-[#546b82] focus:outline-none focus:border-primary transition-colors"
+                        className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-text-main placeholder-gray-400 focus:outline-none focus:border-primary transition-colors"
                     />
                 </div>
                 <div>
-                    <label className="block text-xs font-bold text-[#92adc9] uppercase tracking-wider mb-1.5">Due Date</label>
+                    <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">Due Date</label>
                     <input
                         type="date"
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
                         required
-                        className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-white placeholder-[#546b82] focus:outline-none focus:border-primary transition-colors [color-scheme:dark]"
+                        className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-text-main placeholder-gray-400 focus:outline-none focus:border-primary transition-colors [color-scheme:light]"
                     />
                 </div>
                 <div>
-                    <label className="block text-xs font-bold text-[#92adc9] uppercase tracking-wider mb-1.5">Description</label>
+                    <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">Description</label>
                     <textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Brief details..."
                         rows={3}
-                        className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-white placeholder-[#546b82] focus:outline-none focus:border-primary transition-colors resize-none"
+                        className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-text-main placeholder-gray-400 focus:outline-none focus:border-primary transition-colors resize-none"
                     />
                 </div>
                 <div className="flex justify-end gap-3 mt-2">
                     <button
                         type="button"
                         onClick={() => setAddTaskOpen(false)}
-                        className="px-4 py-2 text-sm font-bold text-[#92adc9] hover:text-white transition-colors"
+                        className="px-4 py-2 text-sm font-bold text-text-muted hover:text-text-main transition-colors"
                     >
                         Cancel
                     </button>

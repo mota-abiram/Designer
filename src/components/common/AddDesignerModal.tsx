@@ -23,21 +23,21 @@ export const AddDesignerModal = () => {
         >
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <div>
-                    <label className="block text-xs font-bold text-[#92adc9] uppercase tracking-wider mb-1.5">Designer Name</label>
+                    <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">Designer Name</label>
                     <input
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="e.g. Alex"
                         autoFocus
-                        className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-white placeholder-[#546b82] focus:outline-none focus:border-primary transition-colors"
+                        className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-text-main placeholder-gray-400 focus:outline-none focus:border-primary transition-colors"
                     />
                 </div>
                 <div className="flex justify-end gap-3 mt-2">
                     <button
                         type="button"
                         onClick={() => setAddDesignerOpen(false)}
-                        className="px-4 py-2 text-sm font-bold text-[#92adc9] hover:text-white transition-colors"
+                        className="px-4 py-2 text-sm font-bold text-text-muted hover:text-text-main transition-colors"
                     >
                         Cancel
                     </button>

@@ -28,10 +28,10 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
                             className="bg-background-dark border border-border-dark rounded-xl shadow-2xl w-full max-w-md pointer-events-auto flex flex-col max-h-[90vh]"
                         >
                             <div className="flex items-center justify-between p-4 border-b border-border-dark">
-                                <h2 className="text-lg font-bold text-white">{title}</h2>
+                                <h2 className="text-lg font-bold text-text-main">{title}</h2>
                                 <button
                                     onClick={onClose}
-                                    className="p-1 hover:bg-surface-dark rounded-full transition-colors text-[#92adc9] hover:text-white"
+                                    className="p-1 hover:bg-surface-dark rounded-full transition-colors text-text-muted hover:text-text-main"
                                 >
                                     <span className="material-symbols-outlined">close</span>
                                 </button>

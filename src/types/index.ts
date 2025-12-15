@@ -1,4 +1,4 @@
-export type Status = 'Pending' | 'Submitted' | 'Approved';
+export type Status = 'Pending' | 'Submitted';
 
 export interface Designer {
     id: string;

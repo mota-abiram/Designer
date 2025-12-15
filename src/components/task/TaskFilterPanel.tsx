@@ -4,7 +4,7 @@ import { useTaskContext } from '../../context/TaskContext';
 export const TaskFilterPanel = () => {
     const { filters, setFilters } = useTaskContext();
 
-    const handleStatusToggle = (status: 'Pending' | 'Submitted' | 'Approved') => {
+    const handleStatusToggle = (status: 'Pending' | 'Submitted') => {
         setFilters({
             ...filters,
             status: filters.status.includes(status)
@@ -31,15 +31,15 @@ export const TaskFilterPanel = () => {
         <div className="absolute top-full left-0 mt-2 w-72 bg-surface-dark border border-border-dark rounded-xl shadow-2xl p-4 z-50">
             <div className="space-y-4">
                 <div>
-                    <label className="text-xs font-bold text-[#92adc9] uppercase tracking-wider mb-2 block">Status</label>
+                    <label className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2 block">Status</label>
                     <div className="flex flex-wrap gap-2">
-                        {['Pending', 'Submitted', 'Approved'].map(status => {
+                        {['Pending', 'Submitted'].map(status => {
                             const isSelected = filters.status.includes(status as any);
                             return (
                                 <button
                                     key={status}
                                     onClick={() => handleStatusToggle(status as any)}
-                                    className={`px-2 py-1 text-xs font-bold rounded border transition-colors ${isSelected ? 'bg-primary text-white border-primary' : 'border-border-dark text-[#92adc9] hover:text-white'}`}
+                                    className={`px-2 py-1 text-xs font-bold rounded border transition-colors ${isSelected ? 'bg-primary text-white border-primary' : 'border-border-dark text-text-muted hover:text-text-main hover:bg-gray-100'}`}
                                 >
                                     {status}
                                 </button>
@@ -48,20 +48,20 @@ export const TaskFilterPanel = () => {
                     </div>
                 </div>
                 <div>
-                    <label className="text-xs font-bold text-[#92adc9] uppercase tracking-wider mb-2 block">Date Range</label>
+                    <label className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2 block">Date Range</label>
                     <div className="flex gap-2">
                         <input
                             type="date"
                             value={filters.dateRange.start || ''}
                             onChange={(e) => handleDateChange('start', e.target.value)}
-                            className="w-full bg-background-dark border border-border-dark rounded px-2 py-1 text-xs text-white [color-scheme:dark]"
+                            className="w-full bg-background-dark border border-border-dark rounded px-2 py-1 text-xs text-text-main [color-scheme:light]"
                             placeholder="Start"
                         />
                         <input
                             type="date"
                             value={filters.dateRange.end || ''}
                             onChange={(e) => handleDateChange('end', e.target.value)}
-                            className="w-full bg-background-dark border border-border-dark rounded px-2 py-1 text-xs text-white [color-scheme:dark]"
+                            className="w-full bg-background-dark border border-border-dark rounded px-2 py-1 text-xs text-text-main [color-scheme:light]"
                             placeholder="End"
                         />
                     </div>

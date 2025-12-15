@@ -9,7 +9,7 @@ const avatars = {
 };
 
 export const designers: Designer[] = [
-    { id: 'd1', name: 'Haneef', avatar: avatars.user },
+    { id: 'd1', name: 'Nagaraju', avatar: avatars.user },
     { id: 'd2', name: 'Surya' },
     { id: 'd3', name: 'Sheshu' },
 ];
@@ -65,7 +65,7 @@ export const initialTasks: Task[] = [
         title: 'Campaign Landing Page V1',
         description: "First draft of the 'Summer Sale' landing page with hero, features, and pricing sections.",
         link: 'figma.com/file/X9s...',
-        status: 'Approved',
+        status: 'Submitted',
         date: weekDates[2], // Wednesday
         designerId: 'd1',
         createdAt: new Date().toISOString()

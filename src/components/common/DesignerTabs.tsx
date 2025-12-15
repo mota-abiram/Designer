@@ -21,7 +21,7 @@ export const DesignerTabs = () => {
                         >
                             <p className={cn(
                                 "text-sm font-bold tracking-wide transition-colors",
-                                isActive ? "text-white group-hover:text-primary" : "text-[#92adc9] group-hover:text-white"
+                                isActive ? "text-text-main group-hover:text-primary" : "text-text-muted group-hover:text-text-main"
                             )}>
                                 {designer.name}
                             </p>
@@ -33,7 +33,7 @@ export const DesignerTabs = () => {
                     onClick={() => setAddDesignerOpen(true)}
                     className="group flex flex-col items-center justify-center border-b-[3px] border-transparent hover:border-border-dark pb-3 min-w-[80px] cursor-pointer"
                 >
-                    <div className="flex items-center gap-1 text-[#92adc9] group-hover:text-primary">
+                    <div className="flex items-center gap-1 text-text-muted group-hover:text-primary">
                         <span className="material-symbols-outlined text-sm font-bold">add</span>
                         <span className="text-sm font-bold tracking-wide">Add Member</span>
                     </div>
