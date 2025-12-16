@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTaskContext } from '../../context/TaskContext';
 import { TaskCard } from './TaskCard';
 import { cn } from '../../utils/cn';
 import { isPast, endOfDay, parseISO } from 'date-fns';
 import type { Task } from '../../types';
+import { ASSIGNERS } from '../../constants/assigners';
 
 interface TaskColumnProps {
     dateStr: string;
@@ -31,6 +32,9 @@ export const TaskColumn = ({
 }: TaskColumnProps) => {
     const { tasks, role, updateTask, addTask, activeDesignerId } = useTaskContext();
     const { user } = useAuth();
+    const [inlineAssignedBy, setInlineAssignedBy] = useState(ASSIGNERS[0]);
+    const [inlineTitle, setInlineTitle] = useState('');
+    const [inlineDesc, setInlineDesc] = useState('');
 
     const date = parseISO(dateStr);
     const isPastDate = isPast(endOfDay(date));
@@ -60,22 +64,40 @@ export const TaskColumn = ({
         }
     };
 
-    const handleInlineSubmit = (title: string, description: string) => {
+    const handleInlineSubmit = () => {
+        console.log('handleInlineSubmit called with:', { inlineTitle, inlineDesc, inlineAssignedBy, activeDesignerId, dateStr });
+        if (!inlineTitle.trim()) {
+            console.log('Title is empty, returning early');
+            return;
+        }
         const newTask: any = {
             id: `t${Date.now()}`,
-            title,
-            description,
+            title: inlineTitle.trim(),
+            description: inlineDesc.trim(),
             link: '',
             status: 'Pending',
             date: dateStr,
             designerId: activeDesignerId,
-            assignedBy: user?.displayName || 'Unknown',
-            assignedByAvatar: user?.photoURL || undefined,
+            assignedBy: inlineAssignedBy,
+            assignedByAvatar: user?.displayName === inlineAssignedBy ? (user?.photoURL || null) : null,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
+        console.log('Creating task:', newTask);
         addTask(newTask);
+        console.log('Task added, resetting form');
         setIsAddingTo(null);
+        // Reset form
+        setInlineAssignedBy(ASSIGNERS[0]);
+        setInlineTitle('');
+        setInlineDesc('');
+    };
+
+    const resetInlineForm = () => {
+        setIsAddingTo(null);
+        setInlineTitle('');
+        setInlineDesc('');
+        setInlineAssignedBy(ASSIGNERS[0]);
     };
 
     // Derived logic for inline inputs
@@ -84,35 +106,33 @@ export const TaskColumn = ({
             e.preventDefault();
             document.getElementById(`inline-desc-${dateStr}`)?.focus();
         } else if (e.key === 'Escape') {
-            setIsAddingTo(null);
+            resetInlineForm();
         }
     };
 
     const onDescKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            const titleEl = document.getElementById(`inline-title-${dateStr}`) as HTMLInputElement;
-            const descEl = document.getElementById(`inline-desc-${dateStr}`) as HTMLTextAreaElement;
-            if (titleEl?.value.trim()) {
-                handleInlineSubmit(titleEl.value.trim(), descEl?.value.trim() || '');
-            }
+            handleInlineSubmit();
         } else if (e.key === 'Escape') {
-            setIsAddingTo(null);
+            resetInlineForm();
         }
     };
 
     const onAddClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        const titleEl = document.getElementById(`inline-title-${dateStr}`) as HTMLInputElement;
-        const descEl = document.getElementById(`inline-desc-${dateStr}`) as HTMLTextAreaElement;
-        if (titleEl?.value.trim()) {
-            handleInlineSubmit(titleEl.value.trim(), descEl?.value.trim() || '');
+        console.log('Add button clicked! inlineTitle:', inlineTitle);
+        if (inlineTitle.trim()) {
+            console.log('Title is valid, calling handleInlineSubmit');
+            handleInlineSubmit();
+        } else {
+            console.log('Title is empty, not submitting');
         }
     };
 
     const onCancelClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        setIsAddingTo(null);
+        resetInlineForm();
     };
 
     return (
@@ -152,6 +172,8 @@ export const TaskColumn = ({
                                 placeholder="Task Title"
                                 className="w-full text-sm font-bold text-text-main placeholder-gray-400 outline-none"
                                 id={`inline-title-${dateStr}`}
+                                value={inlineTitle}
+                                onChange={(e) => setInlineTitle(e.target.value)}
                                 onKeyDown={onTitleKeyDown}
                             />
                             <textarea
@@ -159,8 +181,22 @@ export const TaskColumn = ({
                                 placeholder="Description (optional)"
                                 className="w-full text-xs text-text-main placeholder-gray-400 outline-none resize-none bg-gray-50 rounded p-1.5"
                                 id={`inline-desc-${dateStr}`}
+                                value={inlineDesc}
+                                onChange={(e) => setInlineDesc(e.target.value)}
                                 onKeyDown={onDescKeyDown}
                             ></textarea>
+                            <div className="flex items-center gap-2">
+                                <label className="text-[10px] font-medium text-text-muted uppercase tracking-wide whitespace-nowrap">Assigned By:</label>
+                                <select
+                                    value={inlineAssignedBy}
+                                    onChange={(e) => setInlineAssignedBy(e.target.value)}
+                                    className="flex-1 text-xs text-text-main bg-gray-50 border border-gray-200 rounded px-2 py-1 outline-none focus:border-primary cursor-pointer"
+                                >
+                                    {ASSIGNERS.map(name => (
+                                        <option key={name} value={name}>{name}</option>
+                                    ))}
+                                </select>
+                            </div>
                             <div className="flex justify-end gap-2 pt-1">
                                 <button
                                     onClick={onCancelClick}
