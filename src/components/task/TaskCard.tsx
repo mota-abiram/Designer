@@ -36,32 +36,24 @@ export const TaskCard = ({ task }: { task: Task }) => {
                 <div className="flex justify-between items-start gap-2">
                     <h3 className={cn("font-bold text-text-main leading-snug break-words", isCompact ? "text-xs" : "text-sm pr-2")}>{task.title}</h3>
                     {/* In compact mode, show status icon/dot nicely aligned top right if space permits, OR just rely on border color */}
-                    {!isCompact && (
-                        <a
-                            href={task.link}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="text-text-muted hover:text-primary transition-colors opacity-0 group-hover:opacity-100 flex-none"
-                        >
-                            <span className="material-symbols-outlined text-[18px]">open_in_new</span>
-                        </a>
-                    )}
                 </div>
-
                 {!isCompact && (
-                    <>
-                        <p className="text-xs text-text-muted leading-relaxed line-clamp-2">{task.description}</p>
-                        <a
-                            href={`https://${task.link}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="text-xs text-primary hover:underline truncate mt-1 block"
-                        >
-                            {task.link}
-                        </a>
-                    </>
+                    <p className="text-xs text-text-muted leading-relaxed line-clamp-3">
+                        {task.description.split(/(https?:\/\/[^\s]+)/g).map((part, i) => (
+                            part.match(/(https?:\/\/[^\s]+)/g) ? (
+                                <a
+                                    key={i}
+                                    href={part}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="text-blue-500 hover:underline relative z-10"
+                                >
+                                    {part}
+                                </a>
+                            ) : part
+                        ))}
+                    </p>
                 )}
             </div>
 

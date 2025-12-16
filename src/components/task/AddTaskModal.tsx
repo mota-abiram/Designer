@@ -10,7 +10,6 @@ export const AddTaskModal = () => {
     const { user } = useAuth();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [link, setLink] = useState('');
     const [date, setDate] = useState('');
 
     useEffect(() => {
@@ -18,7 +17,6 @@ export const AddTaskModal = () => {
             // Reset and apply defaults
             setTitle('');
             setDescription('');
-            setLink('');
             setDate(newTaskDefaults?.date || format(new Date(), 'yyyy-MM-dd'));
         }
     }, [isAddTaskOpen, newTaskDefaults]);
@@ -29,7 +27,7 @@ export const AddTaskModal = () => {
             id: `t${Date.now()}`,
             title,
             description,
-            link,
+            link: '', // Explicit empty string as we removed the field
             status: 'Pending',
             date,
             designerId: activeDesignerId,
@@ -55,17 +53,6 @@ export const AddTaskModal = () => {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="e.g. Homepage Redesign"
-                        required
-                        className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-text-main placeholder-gray-400 focus:outline-none focus:border-primary transition-colors"
-                    />
-                </div>
-                <div>
-                    <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">External Link</label>
-                    <input
-                        type="text"
-                        value={link}
-                        onChange={(e) => setLink(e.target.value)}
-                        placeholder="e.g. figma.com/..."
                         required
                         className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-text-main placeholder-gray-400 focus:outline-none focus:border-primary transition-colors"
                     />
@@ -100,7 +87,7 @@ export const AddTaskModal = () => {
                     </button>
                     <button
                         type="submit"
-                        disabled={!title || !link || !date}
+                        disabled={!title || !date}
                         className="px-4 py-2 text-sm font-bold bg-primary text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                         Create Task

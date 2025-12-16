@@ -19,7 +19,7 @@ export const TaskDrawer = () => {
     const handleClose = () => setSelectedTask(null);
 
     const [isEditing, setIsEditing] = useState(false);
-    const [editForm, setEditForm] = useState({ title: '', description: '', link: '', designerId: '' });
+    const [editForm, setEditForm] = useState({ title: '', description: '', designerId: '' });
     const { updateTask, deleteTask } = useTaskContext();
 
     // Reset local state when selectedTask changes
@@ -28,7 +28,6 @@ export const TaskDrawer = () => {
             setEditForm({
                 title: selectedTask.title,
                 description: selectedTask.description,
-                link: selectedTask.link,
                 designerId: selectedTask.designerId
             });
             setIsEditing(false);
@@ -153,15 +152,6 @@ export const TaskDrawer = () => {
                                                     className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-text-main focus:outline-none focus:border-primary resize-none"
                                                 />
                                             </div>
-                                            <div>
-                                                <label className="text-xs uppercase font-bold text-text-muted tracking-wider mb-1 block">Link</label>
-                                                <input
-                                                    type="text"
-                                                    value={editForm.link}
-                                                    onChange={(e) => setEditForm(prev => ({ ...prev, link: e.target.value }))}
-                                                    className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-text-main focus:outline-none focus:border-primary"
-                                                />
-                                            </div>
                                             <div className="flex justify-end gap-2 pt-2">
                                                 <button
                                                     onClick={() => setIsEditing(false)}
@@ -180,7 +170,21 @@ export const TaskDrawer = () => {
                                     ) : (
                                         <>
                                             <h3 className="text-2xl font-bold text-text-main leading-tight">{selectedTask.title}</h3>
-                                            <p className="text-text-muted leading-relaxed whitespace-pre-wrap">{selectedTask.description}</p>
+                                            <div className="text-text-muted leading-relaxed whitespace-pre-wrap">
+                                                {selectedTask.description.split(/(https?:\/\/[^\s]+)/g).map((part, i) => (
+                                                    part.match(/(https?:\/\/[^\s]+)/g) ? (
+                                                        <a
+                                                            key={i}
+                                                            href={part}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            className="text-blue-500 hover:underline"
+                                                        >
+                                                            {part}
+                                                        </a>
+                                                    ) : part
+                                                ))}
+                                            </div>
                                         </>
                                     )}
                                 </div>
@@ -217,25 +221,6 @@ export const TaskDrawer = () => {
                                     {/* Removed lock message as transition is now free */}
                                 </div>
 
-                                {/* Links */}
-                                {!isEditing && (
-                                    <div className="space-y-3">
-                                        <label className="text-xs uppercase font-bold text-text-muted tracking-wider">Resources</label>
-                                        <a
-                                            href={selectedTask.link.startsWith('http') ? selectedTask.link : `https://${selectedTask.link}`}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            className="flex items-center gap-3 p-3 rounded-lg bg-surface-dark border border-border-dark hover:border-primary/50 group transition-colors"
-                                        >
-                                            <span className="material-symbols-outlined text-primary">link</span>
-                                            <div className="flex flex-col">
-                                                <span className="text-text-main text-sm font-medium group-hover:text-primary transition-colors">Project Link</span>
-                                                <span className="text-xs text-text-muted truncate max-w-[200px]">{selectedTask.link}</span>
-                                            </div>
-                                            <span className="material-symbols-outlined text-text-muted ml-auto group-hover:text-text-main">open_in_new</span>
-                                        </a>
-                                    </div>
-                                )}
 
                                 {/* Meta */}
                                 <div className="grid grid-cols-2 gap-4 pt-6 border-t border-border-dark">
