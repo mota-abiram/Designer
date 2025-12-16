@@ -19,7 +19,7 @@ export const TaskDrawer = () => {
     const handleClose = () => setSelectedTask(null);
 
     const [isEditing, setIsEditing] = useState(false);
-    const [editForm, setEditForm] = useState({ title: '', description: '', link: '' });
+    const [editForm, setEditForm] = useState({ title: '', description: '', link: '', designerId: '' });
     const { updateTask, deleteTask } = useTaskContext();
 
     // Reset local state when selectedTask changes
@@ -28,7 +28,8 @@ export const TaskDrawer = () => {
             setEditForm({
                 title: selectedTask.title,
                 description: selectedTask.description,
-                link: selectedTask.link
+                link: selectedTask.link,
+                designerId: selectedTask.designerId
             });
             setIsEditing(false);
         }
@@ -67,7 +68,7 @@ export const TaskDrawer = () => {
         return false;
     };
 
-    const assignedDesigner = designers.find(d => d.id === selectedTask?.designerId);
+
 
     // Format helpers
     const formatDate = (isoString?: string) => {
@@ -192,22 +193,22 @@ export const TaskDrawer = () => {
                                             const status = s as Status;
                                             const isActive = selectedTask.status === status;
 
-                                            // Allow free movement between statuses
                                             return (
                                                 <button
                                                     key={status}
                                                     onClick={() => updateTaskStatus(selectedTask.id, status)}
                                                     disabled={isEditing}
                                                     className={cn(
-                                                        "px-3 py-1.5 rounded text-sm font-bold border transition-all",
+                                                        "flex-1 px-4 py-2 rounded-lg text-sm font-bold border transition-all duration-200 flex items-center justify-center gap-2",
                                                         isActive
-                                                            ? status === 'Pending' ? "bg-red-500/20 border-red-500 text-red-500"
-                                                                : "bg-green-500/20 border-green-500 text-green-500"
-                                                            : "bg-surface-dark border-border-dark text-text-muted",
-                                                        isEditing && "opacity-30 cursor-not-allowed",
-                                                        !isActive && !isEditing && "hover:bg-gray-100 hover:border-text-main/20"
+                                                            ? status === 'Pending'
+                                                                ? "bg-red-500 text-white border-red-500 shadow-lg shadow-red-500/20"
+                                                                : "bg-green-500 text-white border-green-500 shadow-lg shadow-green-500/20"
+                                                            : "bg-transparent border-border-dark text-text-muted hover:border-text-muted/50 hover:bg-surface-dark",
+                                                        isEditing && "opacity-50 cursor-not-allowed"
                                                     )}
                                                 >
+                                                    {isActive && <span className="material-symbols-outlined text-[16px]">check</span>}
                                                     {status}
                                                 </button>
                                             );
@@ -240,18 +241,45 @@ export const TaskDrawer = () => {
                                 <div className="grid grid-cols-2 gap-4 pt-6 border-t border-border-dark">
                                     <div>
                                         <label className="text-xs text-text-muted">Assigned to</label>
-                                        <div className="mt-1 flex items-center gap-2">
-                                            {assignedDesigner?.avatar ? (
-                                                <div
-                                                    className="size-6 rounded-full bg-cover bg-center"
-                                                    style={{ backgroundImage: `url("${assignedDesigner.avatar}")` }}
-                                                ></div>
-                                            ) : (
-                                                <div className="size-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs font-bold">
-                                                    {assignedDesigner?.name?.[0] || 'D'}
+                                        <div className="mt-1">
+                                            <div className="relative">
+                                                <select
+                                                    value={selectedTask.designerId}
+                                                    onChange={(e) => {
+                                                        const newDesignerId = e.target.value;
+                                                        // Update immediately
+                                                        updateTask({
+                                                            ...selectedTask,
+                                                            designerId: newDesignerId
+                                                        });
+                                                        // Also update local edit form in case we enter edit mode later
+                                                        setEditForm(prev => ({ ...prev, designerId: newDesignerId }));
+                                                    }}
+                                                    className="w-full pl-9 pr-8 py-2 bg-surface-dark/50 hover:bg-surface-dark border border-transparent hover:border-border-dark rounded-lg text-text-main text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer"
+                                                >
+                                                    {designers.map(d => (
+                                                        <option key={d.id} value={d.id}>
+                                                            {d.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                {/* Assigned Designer Avatar Overlay or Icon */}
+                                                <div className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none">
+                                                    {(() => {
+                                                        const d = designers.find(des => des.id === selectedTask.designerId);
+                                                        return d?.avatar ? (
+                                                            <div className="size-5 rounded-full bg-cover bg-center" style={{ backgroundImage: `url("${d.avatar}")` }}></div>
+                                                        ) : (
+                                                            <div className="size-5 rounded-full bg-primary/20 flex items-center justify-center text-primary text-[10px] font-bold">
+                                                                {d?.name?.[0] || 'D'}
+                                                            </div>
+                                                        );
+                                                    })()}
                                                 </div>
-                                            )}
-                                            <span className="text-text-main text-sm">{assignedDesigner?.name || 'Unknown'}</span>
+                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
+                                                    <span className="material-symbols-outlined text-sm">expand_more</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div>

@@ -1,17 +1,38 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { type ReactNode } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { TaskProvider } from './context/TaskContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { DesignerBoard } from './pages/DesignerBoard';
+import { Login } from './pages/Login';
+
+const PrivateRoute = ({ children }: { children: ReactNode }) => {
+  const { user } = useAuth();
+  const location = useLocation();
+
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return children;
+};
 
 function App() {
   return (
-    <TaskProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<DesignerBoard />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </BrowserRouter>
-    </TaskProvider>
+    <AuthProvider>
+      <TaskProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={
+              <PrivateRoute>
+                <DesignerBoard />
+              </PrivateRoute>
+            } />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </TaskProvider>
+    </AuthProvider>
   );
 }
 

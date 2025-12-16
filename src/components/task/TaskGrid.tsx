@@ -6,7 +6,7 @@ import { format, parseISO, isSameDay, isWithinInterval, isPast, endOfDay } from 
 import { cn } from '../../utils/cn';
 
 export const TaskGrid = () => {
-    const { tasks, activeDesignerId, registerScrollContainer, setAddTaskOpen, setNewTaskDefaults, filters, lastAddedTaskId, role } = useTaskContext();
+    const { tasks, activeDesignerId, registerScrollContainer, setAddTaskOpen, setNewTaskDefaults, filters, lastAddedTaskId, role, updateTask } = useTaskContext();
 
     // Default to today, or find today in weekDates if possible
     const today = new Date();
@@ -105,10 +105,40 @@ export const TaskGrid = () => {
                                     const canAdd = role === 'Manager' || !isPastDate;
                                     const isSelected = dateStr === selectedDateStr;
 
+                                    const handleDragStart = (e: React.DragEvent, taskId: string) => {
+                                        e.dataTransfer.setData('taskId', taskId);
+                                        e.dataTransfer.effectAllowed = 'move';
+                                    };
+
+                                    const handleDragOver = (e: React.DragEvent) => {
+                                        e.preventDefault();
+                                        e.dataTransfer.dropEffect = 'move';
+                                    };
+
+                                    const handleDrop = async (e: React.DragEvent, targetDate: string) => {
+                                        e.preventDefault();
+                                        const taskId = e.dataTransfer.getData('taskId');
+                                        const task = tasks.find(t => t.id === taskId);
+
+                                        if (task && task.date !== targetDate) {
+                                            // Optional: Check permissions before move if needed
+                                            // const isPastDate = isPast(endOfDay(parseISO(task.date)));
+                                            // if (role !== 'Manager' && isPastDate) return; 
+
+                                            // Update date
+                                            updateTask({
+                                                ...task,
+                                                date: targetDate
+                                            });
+                                        }
+                                    };
+
                                     return (
                                         <td
                                             key={dateStr}
                                             onClick={() => setSelectedDateStr(dateStr)}
+                                            onDragOver={handleDragOver}
+                                            onDrop={(e) => handleDrop(e, dateStr)}
                                             className={cn(
                                                 "align-top p-2 transition-colors",
                                                 isSelected ? "bg-surface-dark/30 border-x border-primary/20" : "border-r border-dashed border-border-dark/50 hover:bg-surface-dark/10"
@@ -116,12 +146,18 @@ export const TaskGrid = () => {
                                         >
                                             {tasksForDate.length > 0 ? (
                                                 tasksForDate.map(task => (
-                                                    <div id={`task-${task.id}`} key={task.id}>
+                                                    <div
+                                                        id={`task-${task.id}`}
+                                                        key={task.id}
+                                                        draggable={true}
+                                                        onDragStart={(e) => handleDragStart(e, task.id)}
+                                                        className="cursor-grab active:cursor-grabbing"
+                                                    >
                                                         <TaskCard task={task} />
                                                     </div>
                                                 ))
                                             ) : (
-                                                <div className="flex flex-col items-center justify-center p-6 text-center opacity-40">
+                                                <div className="flex flex-col items-center justify-center p-6 text-center opacity-40 pointer-events-none">
                                                     <span className="text-xs font-medium text-text-muted">No tasks</span>
                                                 </div>
                                             )}

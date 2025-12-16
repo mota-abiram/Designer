@@ -48,9 +48,7 @@ const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
 export const TaskProvider = ({ children }: { children: ReactNode }) => {
     const [tasks, setTasks] = useState<Task[]>([]);
-
-    // ... (rest of state definitions)
-    const [designers, setDesigners] = useState<Designer[]>(initialDesigners);
+    const [designers] = useState<Designer[]>(initialDesigners);
     const [activeDesignerId, setActiveDesignerId] = useState<string>('d1');
     const [role, setRole] = useState<Role>('Designer');
 
@@ -119,16 +117,6 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
     const addTask = async (task: Task) => {
         try {
-            // Remove id as Firestore generates it, or use setDoc if we want custom ID.
-            // Here we let Firestore generate ID, but our Task type requires ID.
-            // We'll create a doc ref first if we need the ID immediately, or just let addDoc handle it.
-            // Ideally UI creates ID:
-            // const { id, ...data } = task;
-            // await addDoc(collection(db, "tasks"), data); 
-            // BUT local optimistic update is tricky if we mix flow. 
-            // Best practice: let Firestore generate ID.
-
-            // However, the `task` passed in has a temp ID usually.
             const { id, ...taskData } = task;
             const docRef = await addDoc(collection(db, "tasks"), taskData);
             setLastAddedTaskId(docRef.id);
@@ -137,13 +125,18 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    const addDesigner = (name: string) => {
-        const newDesigner: Designer = {
-            id: `d${Date.now()}`,
-            name,
-        };
-        setDesigners(prev => [...prev, newDesigner]);
-        setActiveDesignerId(newDesigner.id);
+    const addDesigner = async (name: string) => {
+        console.warn("Adding designers is disabled in constant mode.", name);
+        // const newDesigner: Designer = {
+        //     id: `d${Date.now()}`,
+        //     name,
+        // };
+        // try {
+        //     await setDoc(doc(db, "designers", newDesigner.id), newDesigner);
+        //     setActiveDesignerId(newDesigner.id);
+        // } catch (e) {
+        //     console.error("Error adding designer", e);
+        // }
     };
 
     const updateTaskStatus = async (taskId: string, status: Status) => {

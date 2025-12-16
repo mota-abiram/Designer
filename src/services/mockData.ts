@@ -12,6 +12,11 @@ export const designers: Designer[] = [
     { id: 'd1', name: 'Nagaraju', avatar: avatars.user },
     { id: 'd2', name: 'Surya' },
     { id: 'd3', name: 'Sheshu' },
+    { id: 'd4', name: 'Haneef' },
+    { id: 'd5', name: 'Raviteja' },
+    { id: 'd6', name: 'Murali' },
+    { id: 'd7', name: 'Sai Teja' },
+    { id: 'd8', name: 'Dhruv' },
 ];
 
 // Generate dates for the current week starting Monday
