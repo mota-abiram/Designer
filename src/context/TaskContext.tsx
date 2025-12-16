@@ -1,9 +1,9 @@
 import { createContext, useContext, useState, useRef, useEffect, type ReactNode } from 'react';
 import type { Task, Designer, Role, Status, FilterState } from '../types';
-import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, writeBatch } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, writeBatch, where } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { useAuth } from './AuthContext';
-import { designers as initialDesigners } from '../services/mockData';
+import { designers as initialDesigners, weekDates } from '../services/mockData';
 import { format, isPast, isSameDay, parseISO } from 'date-fns';
 
 interface TaskContextType {
@@ -43,6 +43,10 @@ interface TaskContextType {
     scrollToToday: () => void;
     scrollByAmount: (amount: number) => void;
     lastAddedTaskId: string | null;
+
+    // View Mode
+    viewMode: 'comfortable' | 'compact';
+    setViewMode: (mode: 'comfortable' | 'compact') => void;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -52,6 +56,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     const [designers] = useState<Designer[]>(initialDesigners);
     const [activeDesignerId, setActiveDesignerId] = useState<string>('d1');
     const [role, setRole] = useState<Role>('Designer');
+    const [viewMode, setViewMode] = useState<'comfortable' | 'compact'>('comfortable');
 
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -77,7 +82,18 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             return;
         }
 
-        const q = query(collection(db, "tasks"));
+        // Determine date range for subscription
+        const startDate = filters.dateRange.start || weekDates[0];
+        const endDate = filters.dateRange.end || weekDates[weekDates.length - 1];
+
+        // Ensure we sort by date for the range filter to work optimally (though strictly filtering is enough)
+        // Note: Filtering by date string ('YYYY-MM-DD') works lexicographically.
+        const q = query(
+            collection(db, "tasks"),
+            where("date", ">=", startDate),
+            where("date", "<=", endDate)
+        );
+
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const fetchedTasks: Task[] = snapshot.docs.map(doc => ({
                 id: doc.id,
@@ -90,10 +106,13 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
         // Cleanup subscription
         return () => unsubscribe();
-    }, [user]);
+    }, [user, filters.dateRange]);
 
     // Auto-migrate overdue pending tasks to today (Cloud-side preferred, but done client-side here)
     useEffect(() => {
+        // Don't migrate if we are viewing history/filtered range
+        if (filters.dateRange.start || filters.dateRange.end) return;
+
         if (tasks.length === 0) return;
 
         const migrateTasks = async () => {
@@ -243,7 +262,9 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         registerScrollContainer,
         scrollToToday,
         scrollByAmount,
-        lastAddedTaskId
+        lastAddedTaskId,
+        viewMode,
+        setViewMode
     };
 
     return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>;

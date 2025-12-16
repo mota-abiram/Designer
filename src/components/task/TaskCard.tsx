@@ -3,7 +3,7 @@ import { cn } from '../../utils/cn';
 import { useTaskContext } from '../../context/TaskContext';
 
 export const TaskCard = ({ task }: { task: Task }) => {
-    const { setSelectedTask } = useTaskContext();
+    const { setSelectedTask, viewMode } = useTaskContext();
 
     const statusColors = {
         Pending: {
@@ -21,52 +21,79 @@ export const TaskCard = ({ task }: { task: Task }) => {
     };
 
     const currentStyle = statusColors[task.status];
+    const isCompact = viewMode === 'compact';
 
     return (
         <div
             onClick={() => setSelectedTask(task)}
             className={cn(
-                "group relative flex flex-col gap-2 p-3 rounded-lg bg-white border border-gray-200 border-l-4 hover:bg-gray-50 transition-all cursor-pointer shadow-sm hover:shadow-md mb-3",
+                "group relative flex flex-col rounded-lg bg-white border border-gray-200 border-l-4 hover:bg-gray-50 transition-all cursor-pointer shadow-sm hover:shadow-md mb-2",
                 currentStyle.border,
-                // Remove Approved check
+                isCompact ? "p-2 gap-1" : "p-3 gap-2 mb-3"
             )}
         >
             <div className="flex flex-col gap-1">
-                <div className="flex justify-between items-start">
-                    <h3 className="text-sm font-bold text-text-main leading-snug pr-2">{task.title}</h3>
-                    <a
-                        href={task.link}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                        className="text-text-muted hover:text-primary transition-colors opacity-0 group-hover:opacity-100"
-                    >
-                        <span className="material-symbols-outlined text-[18px]">open_in_new</span>
-                    </a>
+                <div className="flex justify-between items-start gap-2">
+                    <h3 className={cn("font-bold text-text-main leading-snug break-words", isCompact ? "text-xs" : "text-sm pr-2")}>{task.title}</h3>
+                    {/* In compact mode, show status icon/dot nicely aligned top right if space permits, OR just rely on border color */}
+                    {!isCompact && (
+                        <a
+                            href={task.link}
+                            target="_blank"
+                            rel="noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-text-muted hover:text-primary transition-colors opacity-0 group-hover:opacity-100 flex-none"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">open_in_new</span>
+                        </a>
+                    )}
                 </div>
-                <p className="text-xs text-text-muted leading-relaxed line-clamp-2">{task.description}</p>
-                <a
-                    href={`https://${task.link}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="text-xs text-primary hover:underline truncate mt-1 block"
-                >
-                    {task.link}
-                </a>
+
+                {!isCompact && (
+                    <>
+                        <p className="text-xs text-text-muted leading-relaxed line-clamp-2">{task.description}</p>
+                        <a
+                            href={`https://${task.link}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-xs text-primary hover:underline truncate mt-1 block"
+                        >
+                            {task.link}
+                        </a>
+                    </>
+                )}
             </div>
-            <div className="flex items-center justify-between mt-2 pt-2 border-t border-border-dark/50">
-                <span className={cn("inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold border", currentStyle.badge)}>
-                    {currentStyle.dot && <span className={cn("size-1.5 rounded-full", currentStyle.dot)}></span>}
-                    {currentStyle.icon && <span className="material-symbols-outlined text-[14px]">{currentStyle.icon}</span>}
-                    {task.status}
-                </span>
-                {task.requestorAvatar && (
-                    <div
-                        className="size-6 rounded-full bg-cover bg-center"
-                        style={{ backgroundImage: `url("${task.requestorAvatar}")` }}
-                        title="Requestor"
-                    ></div>
+
+            <div className={cn("flex items-center justify-between", !isCompact && "mt-2 pt-2 border-t border-border-dark/50")}>
+                {isCompact ? (
+                    <div className="flex items-center gap-2 w-full justify-between mt-1">
+                        <span className={cn("inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold border", currentStyle.badge)}>
+                            {task.status}
+                        </span>
+                        {task.requestorAvatar && (
+                            <div
+                                className="size-4 rounded-full bg-cover bg-center"
+                                style={{ backgroundImage: `url("${task.requestorAvatar}")` }}
+                                title="Requestor"
+                            ></div>
+                        )}
+                    </div>
+                ) : (
+                    <>
+                        <span className={cn("inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold border", currentStyle.badge)}>
+                            {currentStyle.dot && <span className={cn("size-1.5 rounded-full", currentStyle.dot)}></span>}
+                            {currentStyle.icon && <span className="material-symbols-outlined text-[14px]">{currentStyle.icon}</span>}
+                            {task.status}
+                        </span>
+                        {task.requestorAvatar && (
+                            <div
+                                className="size-6 rounded-full bg-cover bg-center"
+                                style={{ backgroundImage: `url("${task.requestorAvatar}")` }}
+                                title="Requestor"
+                            ></div>
+                        )}
+                    </>
                 )}
             </div>
         </div >

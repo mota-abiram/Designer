@@ -5,7 +5,7 @@ import { TaskFilterPanel } from './TaskFilterPanel';
 import { format } from 'date-fns';
 
 export const TaskToolbar = () => {
-    const { setAddTaskOpen, setNewTaskDefaults, scrollByAmount, filters } = useTaskContext();
+    const { setAddTaskOpen, setNewTaskDefaults, scrollByAmount, filters, viewMode, setViewMode } = useTaskContext();
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     const activeFilterCount = filters.status.length + (filters.dateRange.start ? 1 : 0);
@@ -37,6 +37,25 @@ export const TaskToolbar = () => {
                             <TaskFilterPanel />
                         </>
                     )}
+                </div>
+
+                <div className="h-8 w-px bg-border-dark mx-1"></div>
+
+                <div className="flex bg-surface-dark rounded-lg p-1 border border-border-dark">
+                    <button
+                        onClick={() => setViewMode('comfortable')}
+                        className={`p-1 rounded transition-colors ${viewMode === 'comfortable' ? 'bg-white shadow-sm text-primary' : 'text-text-muted hover:text-text-main'}`}
+                        title="Comfortable View"
+                    >
+                        <span className="material-symbols-outlined text-[20px]">grid_view</span>
+                    </button>
+                    <button
+                        onClick={() => setViewMode('compact')}
+                        className={`p-1 rounded transition-colors ${viewMode === 'compact' ? 'bg-white shadow-sm text-primary' : 'text-text-muted hover:text-text-main'}`}
+                        title="Compact View"
+                    >
+                        <span className="material-symbols-outlined text-[20px]">view_list</span>
+                    </button>
                 </div>
 
 
