@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useRef, useEffect, type ReactNode 
 import type { Task, Designer, Role, Status, FilterState } from '../types';
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, writeBatch } from 'firebase/firestore';
 import { db } from '../services/firebase';
+import { useAuth } from './AuthContext';
 import { designers as initialDesigners } from '../services/mockData';
 import { format, isPast, isSameDay, parseISO } from 'date-fns';
 
@@ -69,7 +70,13 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     const [lastAddedTaskId, setLastAddedTaskId] = useState<string | null>(null);
 
     // Real-time listener for tasks
+    const { user } = useAuth();
     useEffect(() => {
+        if (!user) {
+            setTasks([]);
+            return;
+        }
+
         const q = query(collection(db, "tasks"));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const fetchedTasks: Task[] = snapshot.docs.map(doc => ({
@@ -77,11 +84,13 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                 ...doc.data()
             } as Task));
             setTasks(fetchedTasks);
+        }, (error) => {
+            console.error("Error fetching tasks:", error);
         });
 
         // Cleanup subscription
         return () => unsubscribe();
-    }, []);
+    }, [user]);
 
     // Auto-migrate overdue pending tasks to today (Cloud-side preferred, but done client-side here)
     useEffect(() => {

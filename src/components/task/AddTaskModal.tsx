@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useTaskContext } from '../../context/TaskContext';
+import { useAuth } from '../../context/AuthContext';
 import { Modal } from '../common/Modal';
 import type { Task } from '../../types';
 import { format } from 'date-fns';
 
 export const AddTaskModal = () => {
     const { isAddTaskOpen, setAddTaskOpen, newTaskDefaults, addTask, activeDesignerId } = useTaskContext();
+    const { user } = useAuth();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [link, setLink] = useState('');
@@ -31,6 +33,7 @@ export const AddTaskModal = () => {
             status: 'Pending',
             date,
             designerId: activeDesignerId,
+            requestorAvatar: user?.photoURL || undefined,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
