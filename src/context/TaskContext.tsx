@@ -3,7 +3,7 @@ import type { Task, Designer, Role, Status, FilterState } from '../types';
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, writeBatch, where } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { useAuth } from './AuthContext';
-import { designers as initialDesigners, weekDates } from '../services/mockData';
+import { designers as initialDesigners, getCurrentWeekDays } from '../services/mockData';
 import { ADMIN_EMAILS } from '../services/adminList';
 import { format, isPast, isSameDay, parseISO } from 'date-fns';
 
@@ -94,8 +94,9 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         }
 
         // Determine date range for subscription
-        const startDate = filters.dateRange.start || weekDates[0];
-        const endDate = filters.dateRange.end || weekDates[weekDates.length - 1];
+        const currentWeek = getCurrentWeekDays();
+        const startDate = filters.dateRange.start || currentWeek[0];
+        const endDate = filters.dateRange.end || currentWeek[currentWeek.length - 1];
 
         // Ensure we sort by date for the range filter to work optimally (though strictly filtering is enough)
         // Note: Filtering by date string ('YYYY-MM-DD') works lexicographically.

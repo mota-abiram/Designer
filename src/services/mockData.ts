@@ -20,9 +20,9 @@ export const designers: Designer[] = [
 ];
 
 // Generate dates for the current week starting Monday
-const today = new Date();
-const startOfCurrentWeek = startOfWeek(today, { weekStartsOn: 1 });
-const getDays = () => {
+export const getCurrentWeekDays = () => {
+    const today = new Date();
+    const startOfCurrentWeek = startOfWeek(today, { weekStartsOn: 1 });
     const days = [];
     for (let i = 0; i < 5; i++) {
         days.push(format(addDays(startOfCurrentWeek, i), 'yyyy-MM-dd'));
@@ -30,7 +30,7 @@ const getDays = () => {
     return days;
 };
 
-export const weekDates = getDays();
+export const weekDates = getCurrentWeekDays();
 
 export const initialTasks: Task[] = [
     {

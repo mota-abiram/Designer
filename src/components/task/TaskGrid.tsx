@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useTaskContext } from '../../context/TaskContext';
-import { weekDates } from '../../services/mockData';
+import { getCurrentWeekDays } from '../../services/mockData';
 import { format, parseISO, isSameDay, isWithinInterval, eachDayOfInterval, isValid } from 'date-fns';
 import { cn } from '../../utils/cn';
 import { TaskColumn } from './TaskColumn';
@@ -17,7 +17,7 @@ export const TaskGrid = () => {
                 return eachDayOfInterval({ start, end }).map(d => format(d, 'yyyy-MM-dd'));
             }
         }
-        return weekDates;
+        return getCurrentWeekDays();
     }, [filters.dateRange]);
 
     // Default to today, or find today in displayed dates if possible
