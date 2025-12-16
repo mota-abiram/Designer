@@ -14,7 +14,8 @@ export interface Task {
     status: Status;
     date: string; // YYYY-MM-DD format
     designerId: string;
-    requestorAvatar?: string;
+    assignedBy?: string | null;
+    assignedByAvatar?: string | null;
     createdAt?: string;
     updatedAt?: string;
 }

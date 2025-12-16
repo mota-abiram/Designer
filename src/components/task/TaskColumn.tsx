@@ -69,7 +69,8 @@ export const TaskColumn = ({
             status: 'Pending',
             date: dateStr,
             designerId: activeDesignerId,
-            requestorAvatar: user?.photoURL || undefined,
+            assignedBy: user?.displayName || 'Unknown',
+            assignedByAvatar: user?.photoURL || undefined,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };

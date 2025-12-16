@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Modal } from '../common/Modal';
 import type { Task } from '../../types';
 import { format } from 'date-fns';
+import { ASSIGNERS } from '../../constants/assigners';
 
 export const AddTaskModal = () => {
     const { isAddTaskOpen, setAddTaskOpen, newTaskDefaults, addTask, activeDesignerId } = useTaskContext();
@@ -11,6 +12,7 @@ export const AddTaskModal = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [date, setDate] = useState('');
+    const [assignedBy, setAssignedBy] = useState(ASSIGNERS[0]);
 
     useEffect(() => {
         if (isAddTaskOpen) {
@@ -18,6 +20,7 @@ export const AddTaskModal = () => {
             setTitle('');
             setDescription('');
             setDate(newTaskDefaults?.date || format(new Date(), 'yyyy-MM-dd'));
+            setAssignedBy(ASSIGNERS[0]);
         }
     }, [isAddTaskOpen, newTaskDefaults]);
 
@@ -31,7 +34,8 @@ export const AddTaskModal = () => {
             status: 'Pending',
             date,
             designerId: activeDesignerId,
-            requestorAvatar: user?.photoURL || undefined,
+            assignedBy: assignedBy,
+            assignedByAvatar: user?.displayName === assignedBy ? user?.photoURL || undefined : undefined,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
@@ -66,6 +70,23 @@ export const AddTaskModal = () => {
                         required
                         className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-text-main placeholder-gray-400 focus:outline-none focus:border-primary transition-colors [color-scheme:light]"
                     />
+                </div>
+                <div>
+                    <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">Assigned By</label>
+                    <div className="relative">
+                        <select
+                            value={assignedBy}
+                            onChange={(e) => setAssignedBy(e.target.value)}
+                            className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 pr-8 text-text-main focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
+                        >
+                            {ASSIGNERS.map((name) => (
+                                <option key={name} value={name}>{name}</option>
+                            ))}
+                        </select>
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
+                            <span className="material-symbols-outlined text-sm">expand_more</span>
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">Description</label>

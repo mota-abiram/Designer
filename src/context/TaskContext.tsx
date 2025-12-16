@@ -4,6 +4,7 @@ import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, write
 import { db } from '../services/firebase';
 import { useAuth } from './AuthContext';
 import { designers as initialDesigners, weekDates } from '../services/mockData';
+import { ADMIN_EMAILS } from '../services/adminList';
 import { format, isPast, isSameDay, parseISO } from 'date-fns';
 
 interface TaskContextType {
@@ -76,6 +77,16 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
     // Real-time listener for tasks
     const { user } = useAuth();
+
+    // Auto-assign role based on email
+    useEffect(() => {
+        if (user?.email && ADMIN_EMAILS.includes(user.email)) {
+            setRole('Manager');
+        } else {
+            setRole('Designer');
+        }
+    }, [user]);
+
     useEffect(() => {
         if (!user) {
             setTasks([]);
@@ -169,32 +180,36 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
     const updateTaskStatus = async (taskId: string, status: Status) => {
         try {
-            const taskRef = doc(db, "tasks", taskId);
-            await updateDoc(taskRef, {
-                status,
-                updatedAt: new Date().toISOString()
-            });
+            const now = new Date().toISOString();
 
             // Optimistic update for selected task view
             if (selectedTask?.id === taskId) {
-                setSelectedTask(prev => prev ? { ...prev, status, updatedAt: new Date().toISOString() } : null);
+                setSelectedTask(prev => prev ? { ...prev, status, updatedAt: now } : null);
             }
+
+            const taskRef = doc(db, "tasks", taskId);
+            await updateDoc(taskRef, {
+                status,
+                updatedAt: now
+            });
         } catch (e) {
             console.error("Error updating status: ", e);
+            // Revert could be handled here if needed, but simple log is mostly sufficient for this app size
         }
     };
 
     const updateTask = async (updatedTask: Task) => {
         try {
-            const taskRef = doc(db, "tasks", updatedTask.id);
             const { id, ...data } = updatedTask;
             const finalData = { ...data, updatedAt: new Date().toISOString() };
 
-            await updateDoc(taskRef, finalData);
-
+            // Optimistic update
             if (selectedTask?.id === updatedTask.id) {
                 setSelectedTask({ ...updatedTask, updatedAt: finalData.updatedAt });
             }
+
+            const taskRef = doc(db, "tasks", updatedTask.id);
+            await updateDoc(taskRef, finalData);
         } catch (e) {
             console.error("Error updating task: ", e);
         }

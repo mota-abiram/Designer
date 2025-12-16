@@ -1,22 +1,45 @@
 
 import { useAuth } from '../../context/AuthContext';
+import { Link, useLocation } from 'react-router-dom';
+import { useTaskContext } from '../../context/TaskContext';
 
 export const Header = () => {
     const { logout, user } = useAuth();
+    const { role } = useTaskContext();
+    const location = useLocation();
 
     return (
         <header className="flex-none flex items-center justify-between whitespace-nowrap border-b border-solid border-border-dark bg-background-dark px-6 py-3 z-20">
             <div className="flex items-center gap-4">
-                <div className="size-8 flex items-center justify-center rounded bg-primary/20 text-primary">
-                    <span className="material-symbols-outlined">grid_view</span>
-                </div>
-                <h2 className="text-text-main text-lg font-bold leading-tight tracking-tight">Design Tracker</h2>
+                <Link to="/" className="flex items-center gap-4 hover:opacity-80 transition-opacity">
+                    <div className="size-8 flex items-center justify-center rounded bg-primary/20 text-primary">
+                        <span className="material-symbols-outlined">grid_view</span>
+                    </div>
+                    <h2 className="text-text-main text-lg font-bold leading-tight tracking-tight">Design Tracker</h2>
+                </Link>
             </div>
             <div className="flex items-center gap-6">
                 <nav className="hidden md:flex items-center gap-6">
+                    {role === 'Manager' && (
+                        <>
+                            <Link
+                                to="/"
+                                className={`text-sm font-medium transition-colors ${location.pathname === '/' ? 'text-text-main font-bold' : 'text-text-muted hover:text-text-main'}`}
+                            >
+                                Board
+                            </Link>
+                            <Link
+                                to="/dashboard"
+                                className={`text-sm font-medium transition-colors ${location.pathname === '/dashboard' ? 'text-text-main font-bold' : 'text-text-muted hover:text-text-main'}`}
+                            >
+                                Dashboard
+                            </Link>
+                            <div className="h-4 w-px bg-border-dark mx-2"></div>
+                        </>
+                    )}
                     <button
                         onClick={() => logout()}
-                        className="text-text-main text-sm font-medium hover:text-red-500 transition-colors cursor-pointer"
+                        className="text-text-muted text-sm font-medium hover:text-red-500 transition-colors cursor-pointer"
                     >
                         Logout
                     </button>

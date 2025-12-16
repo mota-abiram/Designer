@@ -2,8 +2,10 @@ import type { Task } from '../../types';
 import { cn } from '../../utils/cn';
 import { useTaskContext } from '../../context/TaskContext';
 
+import { ASSIGNERS } from '../../constants/assigners';
+
 export const TaskCard = ({ task }: { task: Task }) => {
-    const { setSelectedTask, viewMode } = useTaskContext();
+    const { setSelectedTask, viewMode, updateTask } = useTaskContext();
 
     const statusColors = {
         Pending: {
@@ -22,6 +24,18 @@ export const TaskCard = ({ task }: { task: Task }) => {
 
     const currentStyle = statusColors[task.status];
     const isCompact = viewMode === 'compact';
+
+    const handleAssignByChange = (newValue: string) => {
+        updateTask({
+            ...task,
+            assignedBy: newValue,
+            assignedByAvatar: null // Clear avatar when manually changing name
+        });
+    };
+
+
+
+    // ... (rest of render)
 
     return (
         <div
@@ -63,12 +77,25 @@ export const TaskCard = ({ task }: { task: Task }) => {
                         <span className={cn("inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold border", currentStyle.badge)}>
                             {task.status}
                         </span>
-                        {task.requestorAvatar && (
-                            <div
-                                className="size-4 rounded-full bg-cover bg-center"
-                                style={{ backgroundImage: `url("${task.requestorAvatar}")` }}
-                                title="Requestor"
-                            ></div>
+                        {task.assignedBy && (
+                            <div className="relative size-4 rounded-full bg-cover bg-center border border-border-dark"
+                                style={task.assignedByAvatar ? { backgroundImage: `url("${task.assignedByAvatar}")` } : { backgroundColor: '#e2e8f0' }}
+                                title={`Assigned by: ${task.assignedBy}`}
+                            >
+                                {!task.assignedByAvatar && <span className="flex items-center justify-center w-full h-full text-[8px] font-bold text-text-muted">{task.assignedBy[0]}</span>}
+                                <select
+                                    value={task.assignedBy || ''}
+                                    onChange={(e) => handleAssignByChange(e.target.value)}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    title={`Assigned by: ${task.assignedBy || 'Unknown'} (Click to change)`}
+                                >
+                                    <option value="" disabled>Select</option>
+                                    {ASSIGNERS.map(name => (
+                                        <option key={name} value={name}>{name}</option>
+                                    ))}
+                                </select>
+                            </div>
                         )}
                     </div>
                 ) : (
@@ -78,12 +105,25 @@ export const TaskCard = ({ task }: { task: Task }) => {
                             {currentStyle.icon && <span className="material-symbols-outlined text-[14px]">{currentStyle.icon}</span>}
                             {task.status}
                         </span>
-                        {task.requestorAvatar && (
-                            <div
-                                className="size-6 rounded-full bg-cover bg-center"
-                                style={{ backgroundImage: `url("${task.requestorAvatar}")` }}
-                                title="Requestor"
-                            ></div>
+                        {task.assignedBy && (
+                            <div className="relative size-6 rounded-full bg-cover bg-center border border-border-dark"
+                                style={task.assignedByAvatar ? { backgroundImage: `url("${task.assignedByAvatar}")` } : { backgroundColor: '#e2e8f0' }}
+                                title={`Assigned by: ${task.assignedBy}`}
+                            >
+                                {!task.assignedByAvatar && <span className="flex items-center justify-center w-full h-full text-[10px] font-bold text-text-muted">{task.assignedBy[0]}</span>}
+                                <select
+                                    value={task.assignedBy || ''}
+                                    onChange={(e) => handleAssignByChange(e.target.value)}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    title={`Assigned by: ${task.assignedBy || 'Unknown'} (Click to change)`}
+                                >
+                                    <option value="" disabled>Select</option>
+                                    {ASSIGNERS.map(name => (
+                                        <option key={name} value={name}>{name}</option>
+                                    ))}
+                                </select>
+                            </div>
                         )}
                     </>
                 )}

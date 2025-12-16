@@ -41,7 +41,8 @@ export const initialTasks: Task[] = [
         status: 'Pending',
         date: weekDates[0], // Monday
         designerId: 'd1',
-        requestorAvatar: avatars.req1,
+        assignedBy: 'Requestor 1',
+        assignedByAvatar: avatars.req1,
         createdAt: new Date().toISOString()
     },
     {
@@ -62,7 +63,8 @@ export const initialTasks: Task[] = [
         status: 'Pending',
         date: weekDates[1], // Tuesday
         designerId: 'd1',
-        requestorAvatar: avatars.req2,
+        assignedBy: 'Requestor 2',
+        assignedByAvatar: avatars.req2,
         createdAt: new Date().toISOString()
     },
     {
@@ -93,7 +95,8 @@ export const initialTasks: Task[] = [
         status: 'Pending',
         date: weekDates[3], // Thursday
         designerId: 'd1',
-        requestorAvatar: avatars.req3,
+        assignedBy: 'Requestor 3',
+        assignedByAvatar: avatars.req3,
         createdAt: new Date().toISOString()
     }
 ];

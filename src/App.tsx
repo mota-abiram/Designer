@@ -4,6 +4,7 @@ import { TaskProvider } from './context/TaskContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { DesignerBoard } from './pages/DesignerBoard';
 import { Login } from './pages/Login';
+import { Dashboard } from './pages/Dashboard';
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
@@ -26,6 +27,11 @@ function App() {
             <Route path="/" element={
               <PrivateRoute>
                 <DesignerBoard />
+              </PrivateRoute>
+            } />
+            <Route path="/dashboard" element={
+              <PrivateRoute>
+                <Dashboard />
               </PrivateRoute>
             } />
             <Route path="*" element={<Navigate to="/" replace />} />

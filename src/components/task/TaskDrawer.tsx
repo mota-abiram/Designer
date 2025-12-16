@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../../utils/cn';
 import type { Status } from '../../types';
 import { format, parseISO, isPast, endOfDay } from 'date-fns';
+import { ASSIGNERS } from '../../constants/assigners';
 
 export const TaskDrawer = () => {
     const {
@@ -260,6 +261,44 @@ export const TaskDrawer = () => {
                                                             </div>
                                                         );
                                                     })()}
+                                                </div>
+                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
+                                                    <span className="material-symbols-outlined text-sm">expand_more</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-text-muted">Assigned By</label>
+                                        <div className="mt-1">
+                                            <div className="relative">
+                                                <select
+                                                    value={selectedTask.assignedBy || ''}
+                                                    onChange={(e) => {
+                                                        const newAssignedBy = e.target.value;
+                                                        updateTask({
+                                                            ...selectedTask,
+                                                            assignedBy: newAssignedBy,
+                                                            assignedByAvatar: null // Reset avatar if changed manually
+                                                        });
+                                                    }}
+                                                    className="w-full pl-9 pr-8 py-2 bg-surface-dark/50 hover:bg-surface-dark border border-transparent hover:border-border-dark rounded-lg text-text-main text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer"
+                                                >
+                                                    <option value="" disabled>Select...</option>
+                                                    {ASSIGNERS.map(name => (
+                                                        <option key={name} value={name}>
+                                                            {name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <div className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none">
+                                                    {selectedTask.assignedByAvatar ? (
+                                                        <div className="size-5 rounded-full bg-cover bg-center" style={{ backgroundImage: `url("${selectedTask.assignedByAvatar}")` }}></div>
+                                                    ) : (
+                                                        <div className="size-5 rounded-full bg-gray-200 border border-gray-300 flex items-center justify-center text-[10px] font-bold text-text-muted">
+                                                            {selectedTask.assignedBy?.[0] || '?'}
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
                                                     <span className="material-symbols-outlined text-sm">expand_more</span>
