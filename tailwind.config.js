@@ -17,7 +17,8 @@ export default {
                 "text-muted": "#6b7280",      // New: Muted text
             },
             fontFamily: {
-                "display": ["Inter", "sans-serif"]
+                "display": ["League Spartan", "Inter", "sans-serif"],
+                "sans": ["League Spartan", "Inter", "sans-serif"]
             },
             borderRadius: {
                 "DEFAULT": "0.25rem",
