@@ -24,7 +24,7 @@ export const getCurrentWeekDays = () => {
     const today = new Date();
     const startOfCurrentWeek = startOfWeek(today, { weekStartsOn: 1 });
     const days = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
         days.push(format(addDays(startOfCurrentWeek, i), 'yyyy-MM-dd'));
     }
     return days;

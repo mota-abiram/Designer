@@ -2,10 +2,10 @@
 import { useState } from 'react';
 import { useTaskContext } from '../../context/TaskContext';
 import { TaskFilterPanel } from './TaskFilterPanel';
-import { format } from 'date-fns';
+import { format, addWeeks, startOfWeek, parseISO, addDays } from 'date-fns';
 
 export const TaskToolbar = () => {
-    const { setAddTaskOpen, setNewTaskDefaults, scrollByAmount, filters, viewMode, setViewMode } = useTaskContext();
+    const { setAddTaskOpen, setNewTaskDefaults, scrollByAmount, filters, setFilters, viewMode, setViewMode } = useTaskContext();
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     const activeFilterCount = filters.status.length + (filters.dateRange.start ? 1 : 0);
@@ -13,6 +13,23 @@ export const TaskToolbar = () => {
     const handleNewTask = () => {
         setNewTaskDefaults({ date: format(new Date(), 'yyyy-MM-dd') });
         setAddTaskOpen(true);
+    };
+
+    const handleWeekChange = (direction: 'prev' | 'next') => {
+        // Default to current week's Monday if no start date is set
+        const currentStartStr = filters.dateRange.start || format(startOfWeek(new Date(), { weekStartsOn: 1 }), 'yyyy-MM-dd');
+        const currentStart = parseISO(currentStartStr);
+
+        const newStart = direction === 'next' ? addWeeks(currentStart, 1) : addWeeks(currentStart, -1);
+        const newEnd = addDays(newStart, 5); // Mon + 5 days = Saturday
+
+        setFilters({
+            ...filters,
+            dateRange: {
+                start: format(newStart, 'yyyy-MM-dd'),
+                end: format(newEnd, 'yyyy-MM-dd')
+            }
+        });
     };
 
     return (
@@ -37,6 +54,29 @@ export const TaskToolbar = () => {
                             <TaskFilterPanel />
                         </>
                     )}
+                </div>
+
+                <div className="h-8 w-px bg-border-dark mx-1"></div>
+
+                {/* Week Navigation */}
+                <div className="flex bg-surface-dark rounded-lg p-1 border border-border-dark">
+                    <button
+                        onClick={() => handleWeekChange('prev')}
+                        className="p-1 rounded transition-colors text-text-muted hover:text-text-main hover:bg-white hover:shadow-sm"
+                        title="Previous Week"
+                    >
+                        <span className="material-symbols-outlined text-[20px]">chevron_left</span>
+                    </button>
+                    <div className="px-2 flex items-center justify-center border-l border-r border-border-dark/50 mx-1">
+                        <span className="text-xs font-bold text-text-muted uppercase tracking-wider">Week</span>
+                    </div>
+                    <button
+                        onClick={() => handleWeekChange('next')}
+                        className="p-1 rounded transition-colors text-text-muted hover:text-text-main hover:bg-white hover:shadow-sm"
+                        title="Next Week"
+                    >
+                        <span className="material-symbols-outlined text-[20px]">chevron_right</span>
+                    </button>
                 </div>
 
                 <div className="h-8 w-px bg-border-dark mx-1"></div>
