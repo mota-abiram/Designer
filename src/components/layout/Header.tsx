@@ -15,7 +15,7 @@ export const Header = () => {
                     <div className="size-8 flex items-center justify-center rounded bg-primary/20 text-primary">
                         <span className="material-symbols-outlined">grid_view</span>
                     </div>
-                    <h2 className="text-text-main text-lg font-bold leading-tight tracking-tight">Design Tracker</h2>
+                    <h2 className="text-text-main text-lg font-bold leading-tight tracking-tight">Designer Task Tracker</h2>
                 </Link>
             </div>
             <div className="flex items-center gap-6">
