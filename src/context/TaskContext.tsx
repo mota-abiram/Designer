@@ -343,6 +343,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+
     const scrollByAmount = (amount: number) => {
         if (scrollContainerRef.current) {
             scrollContainerRef.current.scrollBy({ left: amount, behavior: 'smooth' });

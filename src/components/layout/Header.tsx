@@ -1,25 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export const Header = () => {
     const { logout, user } = useAuth();
     const location = useLocation();
-    const [isDashboardOpen, setIsDashboardOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
 
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsDashboardOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    const isDashboardActive = location.pathname === '/dashboard' || location.pathname === '/scope';
+    const isDashboardActive = location.pathname === '/dashboard';
 
     return (
         <header className="flex-none flex items-center justify-between whitespace-nowrap border-b border-solid border-border-dark bg-background-dark px-6 py-3 z-20">
@@ -33,50 +19,12 @@ export const Header = () => {
             </div>
             <div className="flex items-center gap-6">
                 <nav className="hidden md:flex items-center gap-6">
-                    {/* Dashboard Dropdown */}
-                    <div className="relative" ref={dropdownRef}>
-                        <button
-                            onClick={() => setIsDashboardOpen(!isDashboardOpen)}
-                            className={`flex items-center gap-1 text-sm font-medium transition-colors ${isDashboardActive ? 'text-text-main font-bold' : 'text-text-muted hover:text-text-main'}`}
-                        >
-                            Dashboard
-                            <span className={`material-symbols-outlined text-[18px] transition-transform duration-200 ${isDashboardOpen ? 'rotate-180' : ''}`}>
-                                expand_more
-                            </span>
-                        </button>
-
-                        {isDashboardOpen && (
-                            <div className="absolute top-full left-0 mt-2 w-48 bg-surface-dark border border-border-dark rounded-xl shadow-xl py-2 z-30 animate-in fade-in zoom-in-95 duration-200">
-                                <Link
-                                    to="/dashboard"
-                                    state={{ tab: 'designers' }}
-                                    onClick={() => setIsDashboardOpen(false)}
-                                    className={`flex items-center gap-3 px-4 py-2 text-sm transition-colors ${location.pathname === '/dashboard' && (!location.state || (location.state as any).tab === 'designers') ? 'bg-primary/10 text-primary font-bold' : 'text-text-muted hover:bg-white/5 hover:text-text-main'}`}
-                                >
-                                    <span className="material-symbols-outlined text-[18px]">person</span>
-                                    Designers
-                                </Link>
-                                <Link
-                                    to="/dashboard"
-                                    state={{ tab: 'managers' }}
-                                    onClick={() => setIsDashboardOpen(false)}
-                                    className={`flex items-center gap-3 px-4 py-2 text-sm transition-colors ${location.pathname === '/dashboard' && (location.state as any)?.tab === 'managers' ? 'bg-primary/10 text-primary font-bold' : 'text-text-muted hover:bg-white/5 hover:text-text-main'}`}
-                                >
-                                    <span className="material-symbols-outlined text-[18px]">badge</span>
-                                    Account Managers
-                                </Link>
-                                <div className="h-px bg-border-dark my-1 mx-4"></div>
-                                <Link
-                                    to="/scope"
-                                    onClick={() => setIsDashboardOpen(false)}
-                                    className={`flex items-center gap-3 px-4 py-2 text-sm transition-colors ${location.pathname === '/scope' ? 'bg-primary/10 text-primary font-bold' : 'text-text-muted hover:bg-white/5 hover:text-text-main'}`}
-                                >
-                                    <span className="material-symbols-outlined text-[18px]">analytics</span>
-                                    Scope Tracking
-                                </Link>
-                            </div>
-                        )}
-                    </div>
+                    <Link
+                        to="/dashboard"
+                        className={`text-sm font-medium transition-colors ${isDashboardActive ? 'text-text-main font-bold' : 'text-text-muted hover:text-text-main'}`}
+                    >
+                        Dashboard
+                    </Link>
 
                     <Link
                         to="/"

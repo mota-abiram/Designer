@@ -110,6 +110,7 @@ export const Categories = () => {
                         </motion.section>
 
                         {/* Creative Types Section */}
+
                         <motion.section
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}

@@ -6,17 +6,18 @@ import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-f
 import { cn } from '../utils/cn';
 import type { Task, Designer } from '../types';
 import { ASSIGNERS } from '../constants/assigners';
+import { ScopeTrackingTab } from '../components/dashboard/ScopeTrackingTab';
 
 export const Dashboard = () => {
     const { tasks, designers, setFilters, filters } = useTaskContext();
     const location = useLocation();
 
     // Tab State
-    const [activeTab, setActiveTab] = useState<'designers' | 'managers'>('designers');
+    const [activeTab, setActiveTab] = useState<'designers' | 'managers' | 'scope'>('designers');
 
     // Handle tab switching from location state
     useEffect(() => {
-        const state = location.state as { tab?: 'designers' | 'managers' };
+        const state = location.state as { tab?: 'designers' | 'managers' | 'scope' };
         if (state?.tab) {
             setActiveTab(state.tab);
         }
@@ -217,11 +218,26 @@ export const Dashboard = () => {
                                     <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-t-full"></span>
                                 )}
                             </button>
+                            <button
+                                onClick={() => setActiveTab('scope')}
+                                className={cn(
+                                    "pb-4 text-sm font-medium transition-all relative",
+                                    activeTab === 'scope'
+                                        ? "text-primary font-bold"
+                                        : "text-text-muted hover:text-text-main"
+                                )}
+                            >
+                                Scope Tracking
+                                {activeTab === 'scope' && (
+                                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-t-full"></span>
+                                )}
+                            </button>
                         </div>
                     </div>
 
-                    {activeTab === 'designers' ? (
+                    {activeTab === 'designers' && (
                         <div className="bg-white rounded-xl border border-border-dark shadow-sm overflow-hidden animate-in fade-in duration-300">
+                            {/* ... existing designer content ... */}
                             <div className="px-6 py-4 border-b border-border-dark bg-gray-50 flex items-center justify-between">
                                 <h3 className="font-bold text-text-main">Designer Performance</h3>
                                 <div className="text-xs text-text-muted">
@@ -229,7 +245,6 @@ export const Dashboard = () => {
                                 </div>
                             </div>
                             <table className="w-full text-left border-collapse">
-                                {/* Designer Table Header */}
                                 <thead>
                                     <tr className="border-b border-border-dark">
                                         <th className="px-6 py-3 text-xs font-bold text-text-muted uppercase tracking-wider">Designer</th>
@@ -281,7 +296,9 @@ export const Dashboard = () => {
                                 </tbody>
                             </table>
                         </div>
-                    ) : (
+                    )}
+
+                    {activeTab === 'managers' && (
                         <div className="bg-white rounded-xl border border-border-dark shadow-sm overflow-hidden animate-in fade-in duration-300">
                             <div className="px-6 py-4 border-b border-border-dark bg-gray-50 flex items-center justify-between">
                                 <h3 className="font-bold text-text-main">Account Manager Performance</h3>
@@ -341,6 +358,10 @@ export const Dashboard = () => {
                                 </tbody>
                             </table>
                         </div>
+                    )}
+
+                    {activeTab === 'scope' && (
+                        <ScopeTrackingTab />
                     )}
                 </div>
             </div>

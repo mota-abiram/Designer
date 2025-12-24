@@ -4,6 +4,6 @@ export const ASSIGNERS = [
     "Veda",
     "Vaishnove",
     "Janvi",
-    "Arti",
+    "Aarti",
     "Prajakta"
 ];
