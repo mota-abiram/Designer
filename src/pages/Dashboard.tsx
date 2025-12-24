@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTaskContext } from '../context/TaskContext';
 import { Layout } from '../components/layout/Layout';
+import { useLocation } from 'react-router-dom';
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 import { cn } from '../utils/cn';
 import type { Task, Designer } from '../types';
@@ -8,6 +9,18 @@ import { ASSIGNERS } from '../constants/assigners';
 
 export const Dashboard = () => {
     const { tasks, designers, setFilters, filters } = useTaskContext();
+    const location = useLocation();
+
+    // Tab State
+    const [activeTab, setActiveTab] = useState<'designers' | 'managers'>('designers');
+
+    // Handle tab switching from location state
+    useEffect(() => {
+        const state = location.state as { tab?: 'designers' | 'managers' };
+        if (state?.tab) {
+            setActiveTab(state.tab);
+        }
+    }, [location.state]);
 
     // Cleanup filters on unmount to prevent persisting Dashboard filters to other views
     useEffect(() => {
@@ -100,8 +113,6 @@ export const Dashboard = () => {
     // Determine active filter button
     const isToday = filters.dateRange.start === format(new Date(), 'yyyy-MM-dd') && filters.dateRange.end === format(new Date(), 'yyyy-MM-dd');
 
-    // Tab State
-    const [activeTab, setActiveTab] = useState<'designers' | 'managers'>('designers');
 
     return (
         <Layout>

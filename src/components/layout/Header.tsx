@@ -49,12 +49,23 @@ export const Header = () => {
                             <div className="absolute top-full left-0 mt-2 w-48 bg-surface-dark border border-border-dark rounded-xl shadow-xl py-2 z-30 animate-in fade-in zoom-in-95 duration-200">
                                 <Link
                                     to="/dashboard"
+                                    state={{ tab: 'designers' }}
                                     onClick={() => setIsDashboardOpen(false)}
-                                    className={`flex items-center gap-3 px-4 py-2 text-sm transition-colors ${location.pathname === '/dashboard' ? 'bg-primary/10 text-primary font-bold' : 'text-text-muted hover:bg-white/5 hover:text-text-main'}`}
+                                    className={`flex items-center gap-3 px-4 py-2 text-sm transition-colors ${location.pathname === '/dashboard' && (!location.state || (location.state as any).tab === 'designers') ? 'bg-primary/10 text-primary font-bold' : 'text-text-muted hover:bg-white/5 hover:text-text-main'}`}
                                 >
-                                    <span className="material-symbols-outlined text-[18px]">monitoring</span>
-                                    Performance
+                                    <span className="material-symbols-outlined text-[18px]">person</span>
+                                    Designers
                                 </Link>
+                                <Link
+                                    to="/dashboard"
+                                    state={{ tab: 'managers' }}
+                                    onClick={() => setIsDashboardOpen(false)}
+                                    className={`flex items-center gap-3 px-4 py-2 text-sm transition-colors ${location.pathname === '/dashboard' && (location.state as any)?.tab === 'managers' ? 'bg-primary/10 text-primary font-bold' : 'text-text-muted hover:bg-white/5 hover:text-text-main'}`}
+                                >
+                                    <span className="material-symbols-outlined text-[18px]">badge</span>
+                                    Account Managers
+                                </Link>
+                                <div className="h-px bg-border-dark my-1 mx-4"></div>
                                 <Link
                                     to="/scope"
                                     onClick={() => setIsDashboardOpen(false)}
