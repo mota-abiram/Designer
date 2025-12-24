@@ -358,7 +358,14 @@ export const ScopeDashboard = () => {
                                                     /* VIEW MODE */
                                                     <>
                                                         <td className="px-6 py-4 border-r border-slate-100">
-                                                            <span className="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{item.brand}</span>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="font-bold text-slate-900 group-hover:text-blue-600 transition-colors">{item.brand}</span>
+                                                                {new Date().getDate() > 15 && item.efficiency < 50 && (
+                                                                    <span className="material-symbols-outlined text-red-500 text-[18px] animate-pulse" title="Behind Schedule: Below 50% after the 15th">
+                                                                        warning
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                         </td>
                                                         <td className="px-6 py-4 border-r border-slate-100">
                                                             <div className="flex items-center gap-2">
