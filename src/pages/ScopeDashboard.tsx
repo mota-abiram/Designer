@@ -5,6 +5,59 @@ import { cn } from '../utils/cn';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { BrandQuota } from '../types';
 
+const CircularProgress = ({ value, total, label, color }: { value: number, total: number, label: string, color: string }) => {
+    const percentage = total > 0 ? Math.min(Math.round((value / total) * 100), 100) : 0;
+    const radius = 42;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
+    return (
+        <div className="flex flex-col items-center justify-center p-6 bg-white rounded-2xl border border-slate-200 shadow-sm">
+            <div className="relative size-32">
+                {/* Background Circle */}
+                <svg className="size-full -rotate-90">
+                    <circle
+                        cx="64"
+                        cy="64"
+                        r={radius}
+                        fill="transparent"
+                        stroke="currentColor"
+                        strokeWidth="10"
+                        className="text-slate-100"
+                    />
+                    {/* Progress Circle */}
+                    <motion.circle
+                        cx="64"
+                        cy="64"
+                        r={radius}
+                        fill="transparent"
+                        stroke="currentColor"
+                        strokeWidth="10"
+                        strokeDasharray={circumference}
+                        initial={{ strokeDashoffset: circumference }}
+                        animate={{ strokeDashoffset }}
+                        transition={{ duration: 1.5, ease: "easeOut" }}
+                        strokeLinecap="round"
+                        style={{ color }}
+                    />
+                </svg>
+                {/* Center Content */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                    <span className="text-2xl font-bold text-slate-900">{percentage}%</span>
+                </div>
+            </div>
+            <div className="mt-4 text-center">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{label}</span>
+                <div className="flex items-center justify-center gap-1 mt-1">
+                    <span className="text-lg font-bold text-slate-900">{value}</span>
+                    <span className="text-slate-400 font-medium">/</span>
+                    <span className="text-sm font-bold text-slate-500">{total}</span>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 export const ScopeDashboard = () => {
     const { tasks, quotas, updateQuota, deleteQuota, seedSocialMediaData, role } = useTaskContext();
 
@@ -49,6 +102,22 @@ export const ScopeDashboard = () => {
             };
         }).sort((a, b) => b.total.target - a.total.target);
     }, [tasks, quotas]);
+
+    const totals = useMemo(() => {
+        return brandStats.reduce((acc, curr) => ({
+            statics: {
+                target: acc.statics.target + curr.statics.target,
+                delivered: acc.statics.delivered + curr.statics.delivered
+            },
+            reels: {
+                target: acc.reels.target + curr.reels.target,
+                delivered: acc.reels.delivered + curr.reels.delivered
+            }
+        }), {
+            statics: { target: 0, delivered: 0 },
+            reels: { target: 0, delivered: 0 }
+        });
+    }, [brandStats]);
 
     const handleStartEdit = (item: any) => {
         setEditingId(item.id);
@@ -140,7 +209,24 @@ export const ScopeDashboard = () => {
                 </div>
 
                 <div className="flex-1 overflow-auto p-8">
-                    <div className="max-w-7xl mx-auto">
+                    <div className="max-w-7xl mx-auto space-y-8">
+                        {/* Circular Progress Overview */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-2">
+                            <CircularProgress
+                                value={totals.statics.delivered}
+                                total={totals.statics.target}
+                                label="Total Statics"
+                                color="#137fec"
+                            />
+                            <CircularProgress
+                                value={totals.reels.delivered}
+                                total={totals.reels.target}
+                                label="Total Reels"
+                                color="#10b981"
+                            />
+                        </div>
+
+                        {/* Detailed Table */}
                         <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden mb-8">
                             <table className="w-full text-left border-collapse">
                                 <thead>
