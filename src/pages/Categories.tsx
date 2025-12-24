@@ -88,7 +88,7 @@ export const Categories = () => {
                                 {brands.length === 0 ? (
                                     <div className="text-center py-10 text-text-muted opacity-50 flex flex-col items-center gap-2">
                                         <span className="material-symbols-outlined text-4xl">inventory_2</span>
-                                        <p className="text-sm">No brands added yet.</p>
+                                        <p className="text-sm">No brands added yet</p>
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-1 gap-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
