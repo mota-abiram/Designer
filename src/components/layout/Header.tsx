@@ -34,6 +34,18 @@ export const Header = () => {
                             >
                                 Dashboard
                             </Link>
+                            <Link
+                                to="/scope"
+                                className={`text-sm font-medium transition-colors ${location.pathname === '/scope' ? 'text-text-main font-bold' : 'text-text-muted hover:text-text-main'}`}
+                            >
+                                Scope
+                            </Link>
+                            <Link
+                                to="/categories"
+                                className={`text-sm font-medium transition-colors ${location.pathname === '/categories' ? 'text-text-main font-bold' : 'text-text-muted hover:text-text-main'}`}
+                            >
+                                Categories
+                            </Link>
                             <div className="h-4 w-px bg-border-dark mx-2"></div>
                         </>
                     )}

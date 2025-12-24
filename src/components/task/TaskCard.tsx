@@ -33,10 +33,6 @@ export const TaskCard = ({ task }: { task: Task }) => {
         });
     };
 
-
-
-    // ... (rest of render)
-
     return (
         <div
             onClick={() => setSelectedTask(task)}
@@ -49,7 +45,6 @@ export const TaskCard = ({ task }: { task: Task }) => {
             <div className="flex flex-col gap-1">
                 <div className="flex justify-between items-start gap-2">
                     <h3 className={cn("font-bold text-text-main leading-snug break-words", isCompact ? "text-xs" : "text-sm pr-2")}>{task.title}</h3>
-                    {/* In compact mode, show status icon/dot nicely aligned top right if space permits, OR just rely on border color */}
                 </div>
                 {!isCompact && (
                     <p className="text-xs text-text-muted leading-relaxed line-clamp-3">
@@ -68,6 +63,25 @@ export const TaskCard = ({ task }: { task: Task }) => {
                             ) : part
                         ))}
                     </p>
+                )}
+                {!isCompact && (task.brand || task.creativeType || task.scope) && (
+                    <div className="flex flex-wrap gap-1 mt-1">
+                        {task.brand && (
+                            <span className="px-1.5 py-0.5 bg-primary/5 text-primary border border-primary/10 rounded text-[10px] font-bold">
+                                {task.brand}
+                            </span>
+                        )}
+                        {task.creativeType && (
+                            <span className="px-1.5 py-0.5 bg-gray-100 text-gray-600 border border-gray-200 rounded text-[10px] font-bold">
+                                {task.creativeType}
+                            </span>
+                        )}
+                        {task.scope && (
+                            <span className="px-1.5 py-0.5 bg-green-50 text-green-600 border border-green-200 rounded text-[10px] font-bold">
+                                {task.scope}
+                            </span>
+                        )}
+                    </div>
                 )}
             </div>
 
@@ -128,6 +142,6 @@ export const TaskCard = ({ task }: { task: Task }) => {
                     </>
                 )}
             </div>
-        </div >
+        </div>
     );
 };

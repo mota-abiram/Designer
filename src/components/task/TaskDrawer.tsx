@@ -14,13 +14,16 @@ export const TaskDrawer = () => {
         role,
         updateTaskStatus,
         designers,
-        activeDesignerId
+        activeDesignerId,
+        brands,
+        creativeTypes,
+        scopes
     } = useTaskContext();
 
     const handleClose = () => setSelectedTask(null);
 
     const [isEditing, setIsEditing] = useState(false);
-    const [editForm, setEditForm] = useState({ title: '', description: '', designerId: '' });
+    const [editForm, setEditForm] = useState({ title: '', description: '', designerId: '', brand: '', creativeType: '', scope: '' });
     const { updateTask, deleteTask } = useTaskContext();
 
     // Reset local state when selectedTask changes
@@ -29,7 +32,10 @@ export const TaskDrawer = () => {
             setEditForm({
                 title: selectedTask.title,
                 description: selectedTask.description,
-                designerId: selectedTask.designerId
+                designerId: selectedTask.designerId,
+                brand: selectedTask.brand || '',
+                creativeType: selectedTask.creativeType || '',
+                scope: selectedTask.scope || ''
             });
             setIsEditing(false);
         }
@@ -51,15 +57,12 @@ export const TaskDrawer = () => {
         }
     };
 
-
-
     const canEdit = (): boolean => {
         if (!selectedTask) return false;
         const isPastDate = isPast(endOfDay(parseISO(selectedTask.date)));
 
         if (role === 'Manager') return true;
 
-        // Designer: Can edit pending tasks on current/future dates if they own it
         if (role === 'Designer') {
             if (isPastDate) return false;
             if (selectedTask.designerId !== activeDesignerId) return false;
@@ -68,9 +71,6 @@ export const TaskDrawer = () => {
         return false;
     };
 
-
-
-    // Format helpers
     const formatDate = (isoString?: string) => {
         if (!isoString) return '';
         return format(parseISO(isoString), 'MMM d, h:mm a');
@@ -80,7 +80,6 @@ export const TaskDrawer = () => {
         <AnimatePresence>
             {isDrawerOpen && selectedTask && (
                 <>
-                    {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -89,7 +88,6 @@ export const TaskDrawer = () => {
                         className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
                     />
 
-                    {/* Drawer */}
                     <motion.div
                         initial={{ x: '100%' }}
                         animate={{ x: 0 }}
@@ -131,7 +129,6 @@ export const TaskDrawer = () => {
                             </div>
 
                             <div className="flex-1 p-6 space-y-8">
-                                {/* Title & Desc */}
                                 <div className="space-y-4">
                                     {isEditing ? (
                                         <div className="space-y-4">
@@ -153,6 +150,50 @@ export const TaskDrawer = () => {
                                                     className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-text-main focus:outline-none focus:border-primary resize-none"
                                                 />
                                             </div>
+
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="text-xs uppercase font-bold text-text-muted tracking-wider mb-1 block">Brand</label>
+                                                    <select
+                                                        value={editForm.brand}
+                                                        onChange={(e) => setEditForm(prev => ({ ...prev, brand: e.target.value }))}
+                                                        className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-text-main focus:outline-none focus:border-primary"
+                                                    >
+                                                        <option value="">Select Brand</option>
+                                                        {brands.map(b => (
+                                                            <option key={b.id} value={b.name}>{b.name}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs uppercase font-bold text-text-muted tracking-wider mb-1 block">Type</label>
+                                                    <select
+                                                        value={editForm.creativeType}
+                                                        onChange={(e) => setEditForm(prev => ({ ...prev, creativeType: e.target.value }))}
+                                                        className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-text-main focus:outline-none focus:border-primary"
+                                                    >
+                                                        <option value="">Select Type</option>
+                                                        {creativeTypes.map(t => (
+                                                            <option key={t.id} value={t.name}>{t.name}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label className="text-xs uppercase font-bold text-text-muted tracking-wider mb-1 block">Scope</label>
+                                                <select
+                                                    value={editForm.scope}
+                                                    onChange={(e) => setEditForm(prev => ({ ...prev, scope: e.target.value }))}
+                                                    className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-text-main focus:outline-none focus:border-primary"
+                                                >
+                                                    <option value="">Select Scope</option>
+                                                    {scopes.map(s => (
+                                                        <option key={s.id} value={s.name}>{s.name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
                                             <div className="flex justify-end gap-2 pt-2">
                                                 <button
                                                     onClick={() => setIsEditing(false)}
@@ -186,18 +227,34 @@ export const TaskDrawer = () => {
                                                     ) : part
                                                 ))}
                                             </div>
+                                            {(selectedTask.brand || selectedTask.creativeType || selectedTask.scope) && (
+                                                <div className="flex flex-wrap gap-2 pt-2">
+                                                    {selectedTask.brand && (
+                                                        <span className="px-2.5 py-1 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-bold">
+                                                            {selectedTask.brand}
+                                                        </span>
+                                                    )}
+                                                    {selectedTask.creativeType && (
+                                                        <span className="px-2.5 py-1 bg-surface-dark text-text-main border border-border-dark rounded-full text-xs font-bold">
+                                                            {selectedTask.creativeType}
+                                                        </span>
+                                                    )}
+                                                    {selectedTask.scope && (
+                                                        <span className="px-2.5 py-1 bg-green-500/10 text-green-500 border border-green-500/20 rounded-full text-xs font-bold">
+                                                            {selectedTask.scope}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            )}
                                         </>
                                     )}
                                 </div>
 
-                                {/* Status */}
                                 <div className="space-y-3">
                                     <label className="text-xs uppercase font-bold text-text-muted tracking-wider">Status</label>
                                     <div className="flex flex-wrap gap-2">
-                                        {['Pending', 'Submitted'].map((s) => {
-                                            const status = s as Status;
+                                        {(['Pending', 'Submitted'] as Status[]).map((status) => {
                                             const isActive = selectedTask.status === status;
-
                                             return (
                                                 <button
                                                     key={status}
@@ -219,11 +276,8 @@ export const TaskDrawer = () => {
                                             );
                                         })}
                                     </div>
-                                    {/* Removed lock message as transition is now free */}
                                 </div>
 
-
-                                {/* Meta */}
                                 <div className="grid grid-cols-2 gap-4 pt-6 border-t border-border-dark">
                                     <div>
                                         <label className="text-xs text-text-muted">Assigned to</label>
@@ -233,23 +287,15 @@ export const TaskDrawer = () => {
                                                     value={selectedTask.designerId}
                                                     onChange={(e) => {
                                                         const newDesignerId = e.target.value;
-                                                        // Update immediately
-                                                        updateTask({
-                                                            ...selectedTask,
-                                                            designerId: newDesignerId
-                                                        });
-                                                        // Also update local edit form in case we enter edit mode later
+                                                        updateTask({ ...selectedTask, designerId: newDesignerId });
                                                         setEditForm(prev => ({ ...prev, designerId: newDesignerId }));
                                                     }}
-                                                    className="w-full pl-9 pr-8 py-2 bg-surface-dark/50 hover:bg-surface-dark border border-transparent hover:border-border-dark rounded-lg text-text-main text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer"
+                                                    className="w-full pl-9 pr-8 py-2 bg-surface-dark/50 hover:bg-surface-dark border border-transparent hover:border-border-dark rounded-lg text-text-main text-sm focus:outline-none transition-all appearance-none cursor-pointer"
                                                 >
                                                     {designers.map(d => (
-                                                        <option key={d.id} value={d.id}>
-                                                            {d.name}
-                                                        </option>
+                                                        <option key={d.id} value={d.id}>{d.name}</option>
                                                     ))}
                                                 </select>
-                                                {/* Assigned Designer Avatar Overlay or Icon */}
                                                 <div className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none">
                                                     {(() => {
                                                         const d = designers.find(des => des.id === selectedTask.designerId);
@@ -279,16 +325,14 @@ export const TaskDrawer = () => {
                                                         updateTask({
                                                             ...selectedTask,
                                                             assignedBy: newAssignedBy,
-                                                            assignedByAvatar: null // Reset avatar if changed manually
+                                                            assignedByAvatar: null
                                                         });
                                                     }}
-                                                    className="w-full pl-9 pr-8 py-2 bg-surface-dark/50 hover:bg-surface-dark border border-transparent hover:border-border-dark rounded-lg text-text-main text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all appearance-none cursor-pointer"
+                                                    className="w-full pl-9 pr-8 py-2 bg-surface-dark/50 hover:bg-surface-dark border border-transparent hover:border-border-dark rounded-lg text-text-main text-sm focus:outline-none transition-all appearance-none cursor-pointer"
                                                 >
                                                     <option value="" disabled>Select...</option>
                                                     {ASSIGNERS.map(name => (
-                                                        <option key={name} value={name}>
-                                                            {name}
-                                                        </option>
+                                                        <option key={name} value={name}>{name}</option>
                                                     ))}
                                                 </select>
                                                 <div className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -300,6 +344,78 @@ export const TaskDrawer = () => {
                                                         </div>
                                                     )}
                                                 </div>
+                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
+                                                    <span className="material-symbols-outlined text-sm">expand_more</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-text-muted">Brand</label>
+                                        <div className="mt-1">
+                                            <div className="relative">
+                                                <select
+                                                    value={selectedTask.brand || ''}
+                                                    onChange={(e) => {
+                                                        const newBrand = e.target.value;
+                                                        updateTask({ ...selectedTask, brand: newBrand });
+                                                        setEditForm(prev => ({ ...prev, brand: newBrand }));
+                                                    }}
+                                                    className="w-full pl-3 pr-8 py-2 bg-surface-dark/50 hover:bg-surface-dark border border-transparent hover:border-border-dark rounded-lg text-text-main text-sm focus:outline-none transition-all appearance-none cursor-pointer"
+                                                >
+                                                    <option value="">None</option>
+                                                    {brands.map(b => (
+                                                        <option key={b.id} value={b.name}>{b.name}</option>
+                                                    ))}
+                                                </select>
+                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
+                                                    <span className="material-symbols-outlined text-sm">expand_more</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-text-muted">Creative Type</label>
+                                        <div className="mt-1">
+                                            <div className="relative">
+                                                <select
+                                                    value={selectedTask.creativeType || ''}
+                                                    onChange={(e) => {
+                                                        const newType = e.target.value;
+                                                        updateTask({ ...selectedTask, creativeType: newType });
+                                                        setEditForm(prev => ({ ...prev, creativeType: newType }));
+                                                    }}
+                                                    className="w-full pl-3 pr-8 py-2 bg-surface-dark/50 hover:bg-surface-dark border border-transparent hover:border-border-dark rounded-lg text-text-main text-sm focus:outline-none transition-all appearance-none cursor-pointer"
+                                                >
+                                                    <option value="">None</option>
+                                                    {creativeTypes.map(t => (
+                                                        <option key={t.id} value={t.name}>{t.name}</option>
+                                                    ))}
+                                                </select>
+                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
+                                                    <span className="material-symbols-outlined text-sm">expand_more</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-text-muted">Scope</label>
+                                        <div className="mt-1">
+                                            <div className="relative">
+                                                <select
+                                                    value={selectedTask.scope || ''}
+                                                    onChange={(e) => {
+                                                        const newScope = e.target.value;
+                                                        updateTask({ ...selectedTask, scope: newScope });
+                                                        setEditForm(prev => ({ ...prev, scope: newScope }));
+                                                    }}
+                                                    className="w-full pl-3 pr-8 py-2 bg-surface-dark/50 hover:bg-surface-dark border border-transparent hover:border-border-dark rounded-lg text-text-main text-sm focus:outline-none transition-all appearance-none cursor-pointer"
+                                                >
+                                                    <option value="">None</option>
+                                                    {scopes.map(s => (
+                                                        <option key={s.id} value={s.name}>{s.name}</option>
+                                                    ))}
+                                                </select>
                                                 <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
                                                     <span className="material-symbols-outlined text-sm">expand_more</span>
                                                 </div>
@@ -320,14 +436,11 @@ export const TaskDrawer = () => {
                                         </div>
                                     )}
                                 </div>
-
                             </div>
 
-                            {/* Debug Info */}
                             <div className="p-4 border-t border-border-dark bg-background-dark/50 text-center text-xs text-[#546b82]">
                                 Task ID: {selectedTask.id} | Mode: {role}
                             </div>
-
                         </div>
                     </motion.div>
                 </>

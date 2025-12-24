@@ -30,11 +30,14 @@ export const TaskColumn = ({
     isAddingTo,
     setIsAddingTo,
 }: TaskColumnProps) => {
-    const { tasks, role, updateTask, addTask, activeDesignerId } = useTaskContext();
+    const { tasks, role, updateTask, addTask, activeDesignerId, brands, creativeTypes, scopes } = useTaskContext();
     const { user } = useAuth();
     const [inlineAssignedBy, setInlineAssignedBy] = useState(ASSIGNERS[0]);
     const [inlineTitle, setInlineTitle] = useState('');
     const [inlineDesc, setInlineDesc] = useState('');
+    const [inlineBrand, setInlineBrand] = useState('');
+    const [inlineCreativeType, setInlineCreativeType] = useState('');
+    const [inlineScope, setInlineScope] = useState('');
 
     const date = parseISO(dateStr);
     const isPastDate = isPast(endOfDay(date));
@@ -70,7 +73,7 @@ export const TaskColumn = ({
             console.log('Title is empty, returning early');
             return;
         }
-        const newTask: any = {
+        const newTask: Task = {
             id: `t${Date.now()}`,
             title: inlineTitle.trim(),
             description: inlineDesc.trim(),
@@ -78,6 +81,9 @@ export const TaskColumn = ({
             status: 'Pending',
             date: dateStr,
             designerId: activeDesignerId,
+            brand: inlineBrand,
+            creativeType: inlineCreativeType,
+            scope: inlineScope,
             assignedBy: inlineAssignedBy,
             assignedByAvatar: user?.displayName === inlineAssignedBy ? (user?.photoURL || null) : null,
             createdAt: new Date().toISOString(),
@@ -91,6 +97,9 @@ export const TaskColumn = ({
         setInlineAssignedBy(ASSIGNERS[0]);
         setInlineTitle('');
         setInlineDesc('');
+        setInlineBrand('');
+        setInlineCreativeType('');
+        setInlineScope('');
     };
 
     const resetInlineForm = () => {
@@ -98,6 +107,9 @@ export const TaskColumn = ({
         setInlineTitle('');
         setInlineDesc('');
         setInlineAssignedBy(ASSIGNERS[0]);
+        setInlineBrand('');
+        setInlineCreativeType('');
+        setInlineScope('');
     };
 
     // Derived logic for inline inputs
@@ -194,6 +206,47 @@ export const TaskColumn = ({
                                 >
                                     {ASSIGNERS.map(name => (
                                         <option key={name} value={name}>{name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <div className="flex flex-col gap-1">
+                                    <label className="text-[10px] font-medium text-text-muted uppercase tracking-wide">Brand:</label>
+                                    <select
+                                        value={inlineBrand}
+                                        onChange={(e) => setInlineBrand(e.target.value)}
+                                        className="text-xs text-text-main bg-gray-50 border border-gray-200 rounded px-2 py-1 outline-none focus:border-primary cursor-pointer"
+                                    >
+                                        <option value="">None</option>
+                                        {brands.map(b => (
+                                            <option key={b.id} value={b.name}>{b.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="flex flex-col gap-1">
+                                    <label className="text-[10px] font-medium text-text-muted uppercase tracking-wide">Type:</label>
+                                    <select
+                                        value={inlineCreativeType}
+                                        onChange={(e) => setInlineCreativeType(e.target.value)}
+                                        className="text-xs text-text-main bg-gray-50 border border-gray-200 rounded px-2 py-1 outline-none focus:border-primary cursor-pointer"
+                                    >
+                                        <option value="">None</option>
+                                        {creativeTypes.map(t => (
+                                            <option key={t.id} value={t.name}>{t.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                                <label className="text-[10px] font-medium text-text-muted uppercase tracking-wide">Scope:</label>
+                                <select
+                                    value={inlineScope}
+                                    onChange={(e) => setInlineScope(e.target.value)}
+                                    className="text-xs text-text-main bg-gray-50 border border-gray-200 rounded px-2 py-1 outline-none focus:border-primary cursor-pointer"
+                                >
+                                    <option value="">None</option>
+                                    {scopes.map(s => (
+                                        <option key={s.id} value={s.name}>{s.name}</option>
                                     ))}
                                 </select>
                             </div>
