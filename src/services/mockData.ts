@@ -3,15 +3,15 @@ import { addDays, format, startOfWeek } from 'date-fns';
 
 
 export const designers: Designer[] = [
-    { id: 'v1', name: 'Vaishnove' },
-    { id: 'j1', name: 'Janvi' },
-    { id: 'a1', name: 'Aarti' },
-    { id: 's1', name: 'Saurabh' },
-    { id: 'h1', name: 'Haripriya' },
-    { id: 'ab1', name: 'Abhishek' },
-    { id: 've1', name: 'Veda' },
-    { id: 'p1', name: 'Prajakta' },
-    { id: 'hp1', name: 'Haripriya' }, // Duplicate in user list but keeping specified names
+    { id: 'n1', name: 'Nagaraju' },
+    { id: 'sh1', name: 'Sheshu' },
+    { id: 'su1', name: 'Surya' },
+    { id: 'd1', name: 'Dhruv' },
+    { id: 'h1', name: 'Haneef' },
+    { id: 'rt1', name: 'Ravi Teja' },
+    { id: 'm1', name: 'Murali' },
+    { id: 'st1', name: 'Sai Teja' },
+    { id: 'sk1', name: 'Sai Kiran' },
 ];
 
 // Generate dates for the current week starting Monday
