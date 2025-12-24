@@ -46,7 +46,7 @@ export const Categories = () => {
             <main className="flex-1 overflow-y-auto p-6 md:p-8">
                 <div className="max-w-5xl mx-auto space-y-12">
                     <header className="flex flex-col gap-2">
-                        <h1 className="text-3xl font-bold tracking-tight text-text-main">Categories Management</h1>
+                        <h1 className="text-3xl font-bold tracking-tight text-text-main">Client Onboarding</h1>
                         <p className="text-text-muted">Manage brands, creative types, and scopes used in tasks.</p>
                     </header>
 
