@@ -85,8 +85,19 @@ export const ScopeDashboard = () => {
         const scopeQuotas = quotas.filter(q => q.scopeId === activeScope);
 
         return scopeQuotas.map(quota => {
-            const liveTasksStatics = tasks.filter(t => t.brand === quota.brandId && t.creativeType === "Statics" && t.status === "Submitted");
-            const liveTasksReels = tasks.filter(t => t.brand === quota.brandId && t.creativeType === "Reels" && t.status === "Submitted");
+            // Mapping: Brand + Scope + CreativeType + Status='Submitted'
+            const liveTasksStatics = tasks.filter(t =>
+                t.brand === quota.brandId &&
+                t.scope === quota.scopeId &&
+                t.creativeType === "Statics" &&
+                t.status === "Submitted"
+            );
+            const liveTasksReels = tasks.filter(t =>
+                t.brand === quota.brandId &&
+                t.scope === quota.scopeId &&
+                t.creativeType === "Reels" &&
+                t.status === "Submitted"
+            );
 
             const deliveredStaticsBase = quota.delivered?.["Statics"] || 0;
             const deliveredReelsBase = quota.delivered?.["Reels"] || 0;
