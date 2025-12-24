@@ -3,7 +3,9 @@ import { useTaskContext } from '../context/TaskContext';
 import { Layout } from '../components/layout/Layout';
 import { cn } from '../utils/cn';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { BrandQuota } from '../types';
+import type { BrandQuota, Task } from '../types';
+import { Modal } from '../components/common/Modal';
+import { format, parseISO } from 'date-fns';
 
 const CircularProgress = ({ value, total, label, color }: { value: number, total: number, label: string, color: string }) => {
     const percentage = total > 0 ? Math.min(Math.round((value / total) * 100), 100) : 0;
@@ -59,7 +61,7 @@ const CircularProgress = ({ value, total, label, color }: { value: number, total
 };
 
 export const ScopeDashboard = () => {
-    const { tasks, quotas, updateQuota, deleteQuota, seedSocialMediaData, role } = useTaskContext();
+    const { tasks, quotas, updateQuota, deleteQuota, seedSocialMediaData, role, setSelectedTask } = useTaskContext();
 
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editForm, setEditForm] = useState<Partial<BrandQuota>>({});
@@ -74,20 +76,29 @@ export const ScopeDashboard = () => {
         deliveredReels: 0
     });
 
+    // For viewing linked tasks
+    const [viewingTasks, setViewingTasks] = useState<{ brand: string; type: string; tasks: Task[] } | null>(null);
+
     const activeScope = "Social Media";
 
     const brandStats = useMemo(() => {
         const scopeQuotas = quotas.filter(q => q.scopeId === activeScope);
 
         return scopeQuotas.map(quota => {
-            const deliveredStatics = quota.delivered?.["Statics"] ?? tasks.filter(t => t.brand === quota.brandId && t.creativeType === "Statics" && t.status === "Submitted").length;
-            const deliveredReels = quota.delivered?.["Reels"] ?? tasks.filter(t => t.brand === quota.brandId && t.creativeType === "Reels" && t.status === "Submitted").length;
+            const liveTasksStatics = tasks.filter(t => t.brand === quota.brandId && t.creativeType === "Statics" && t.status === "Submitted");
+            const liveTasksReels = tasks.filter(t => t.brand === quota.brandId && t.creativeType === "Reels" && t.status === "Submitted");
+
+            const deliveredStaticsBase = quota.delivered?.["Statics"] || 0;
+            const deliveredReelsBase = quota.delivered?.["Reels"] || 0;
+
+            const totalDeliveredStatics = deliveredStaticsBase + liveTasksStatics.length;
+            const totalDeliveredReels = deliveredReelsBase + liveTasksReels.length;
 
             const targetStatics = quota.targets["Statics"] || 0;
             const targetReels = quota.targets["Reels"] || 0;
 
             const totalTarget = targetStatics + targetReels;
-            const totalDelivered = deliveredStatics + deliveredReels;
+            const totalDelivered = totalDeliveredStatics + totalDeliveredReels;
 
             const efficiency = totalTarget > 0 ? Math.round((totalDelivered / totalTarget) * 100) : 0;
 
@@ -95,8 +106,18 @@ export const ScopeDashboard = () => {
                 id: quota.id,
                 brand: quota.brandId,
                 designer: quota.assignedDesigner || "Unassigned",
-                statics: { target: targetStatics, delivered: deliveredStatics },
-                reels: { target: targetReels, delivered: deliveredReels },
+                statics: {
+                    target: targetStatics,
+                    delivered: totalDeliveredStatics,
+                    base: deliveredStaticsBase,
+                    live: liveTasksStatics
+                },
+                reels: {
+                    target: targetReels,
+                    delivered: totalDeliveredReels,
+                    base: deliveredReelsBase,
+                    live: liveTasksReels
+                },
                 total: { target: totalTarget, delivered: totalDelivered },
                 efficiency
             };
@@ -125,7 +146,7 @@ export const ScopeDashboard = () => {
             brandId: item.brand,
             assignedDesigner: item.designer,
             targets: { Statics: item.statics.target, Reels: item.reels.target },
-            delivered: { Statics: item.statics.delivered, Reels: item.reels.delivered }
+            delivered: { Statics: item.statics.base, Reels: item.reels.base }
         });
     };
 
@@ -346,21 +367,41 @@ export const ScopeDashboard = () => {
                                                                 {item.reels.target || "-"}
                                                             </span>
                                                         </td>
-                                                        <td className="px-6 py-4 text-center border-r border-slate-100 bg-green-50/5">
-                                                            <span className={cn("text-sm font-bold",
-                                                                item.statics.delivered >= item.statics.target && item.statics.target > 0 ? "text-green-600" :
-                                                                    item.statics.delivered > 0 ? "text-slate-700" : "text-slate-300"
-                                                            )}>
-                                                                {item.statics.delivered || "-"}
-                                                            </span>
+                                                        <td
+                                                            onClick={() => item.statics.live.length > 0 && setViewingTasks({ brand: item.brand, type: "Statics", tasks: item.statics.live })}
+                                                            className={cn("px-6 py-4 text-center border-r border-slate-100 bg-green-50/5 transition-all", item.statics.live.length > 0 && "cursor-pointer hover:bg-green-100")}
+                                                        >
+                                                            <div className="flex flex-col items-center">
+                                                                <span className={cn("text-sm font-bold",
+                                                                    item.statics.delivered >= item.statics.target && item.statics.target > 0 ? "text-green-600" :
+                                                                        item.statics.delivered > 0 ? "text-slate-700" : "text-slate-300"
+                                                                )}>
+                                                                    {item.statics.delivered || "-"}
+                                                                </span>
+                                                                {item.statics.live.length > 0 && (
+                                                                    <span className="text-[9px] text-green-500 font-bold uppercase tracking-tight leading-none mt-0.5 animate-pulse">
+                                                                        +{item.statics.live.length} Live
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                         </td>
-                                                        <td className="px-6 py-4 text-center border-r border-slate-100 bg-green-50/5">
-                                                            <span className={cn("text-sm font-bold",
-                                                                item.reels.delivered >= item.reels.target && item.reels.target > 0 ? "text-green-600" :
-                                                                    item.reels.delivered > 0 ? "text-slate-700" : "text-slate-300"
-                                                            )}>
-                                                                {item.reels.delivered || "-"}
-                                                            </span>
+                                                        <td
+                                                            onClick={() => item.reels.live.length > 0 && setViewingTasks({ brand: item.brand, type: "Reels", tasks: item.reels.live })}
+                                                            className={cn("px-6 py-4 text-center border-r border-slate-100 bg-green-50/5 transition-all", item.reels.live.length > 0 && "cursor-pointer hover:bg-green-100")}
+                                                        >
+                                                            <div className="flex flex-col items-center">
+                                                                <span className={cn("text-sm font-bold",
+                                                                    item.reels.delivered >= item.reels.target && item.reels.target > 0 ? "text-green-600" :
+                                                                        item.reels.delivered > 0 ? "text-slate-700" : "text-slate-300"
+                                                                )}>
+                                                                    {item.reels.delivered || "-"}
+                                                                </span>
+                                                                {item.reels.live.length > 0 && (
+                                                                    <span className="text-[9px] text-green-500 font-bold uppercase tracking-tight leading-none mt-0.5 animate-pulse">
+                                                                        +{item.reels.live.length} Live
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                         </td>
                                                         <td className="px-6 py-4 text-center">
                                                             <div className="flex flex-col items-center gap-1">
@@ -476,6 +517,48 @@ export const ScopeDashboard = () => {
                         )}
                     </div>
                 </div>
+
+                {/* Linked Tasks Modal */}
+                <Modal
+                    isOpen={!!viewingTasks}
+                    onClose={() => setViewingTasks(null)}
+                    title={`${viewingTasks?.brand} - Submitted ${viewingTasks?.type}`}
+                >
+                    <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                        {viewingTasks?.tasks.map(task => (
+                            <div
+                                key={task.id}
+                                onClick={() => {
+                                    setSelectedTask(task);
+                                    setViewingTasks(null);
+                                }}
+                                className="p-3 bg-slate-50 border border-slate-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer group"
+                            >
+                                <div className="flex justify-between items-start mb-1">
+                                    <h4 className="font-bold text-slate-900 text-sm group-hover:text-blue-600">{task.title}</h4>
+                                    <span className="text-[10px] font-bold text-slate-400 bg-white border border-slate-100 px-1.5 py-0.5 rounded uppercase">
+                                        {format(parseISO(task.date), 'MMM d')}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-slate-500 line-clamp-1 italic">{task.description || "No description"}</p>
+                                <div className="flex items-center gap-2 mt-2">
+                                    <div className="size-4 rounded-full bg-blue-100 flex items-center justify-center text-[8px] font-bold text-blue-600">
+                                        {task.assignedBy?.[0] || "A"}
+                                    </div>
+                                    <span className="text-[10px] text-slate-400 font-medium">Assigned by {task.assignedBy}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="mt-6 flex justify-end">
+                        <button
+                            onClick={() => setViewingTasks(null)}
+                            className="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-900"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </Modal>
             </div>
         </Layout>
     );
