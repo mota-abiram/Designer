@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { BrandQuota, Task } from '../types';
 import { Modal } from '../components/common/Modal';
 import { format, parseISO } from 'date-fns';
+import { ASSIGNERS } from '../constants/assigners';
 
 const CircularProgress = ({ value, total, label, color }: { value: number, total: number, label: string, color: string }) => {
     const percentage = total > 0 ? Math.min(Math.round((value / total) * 100), 100) : 0;
@@ -260,7 +261,7 @@ export const ScopeDashboard = () => {
                                 <thead>
                                     <tr className="bg-slate-50 border-b border-slate-200">
                                         <th rowSpan={2} className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest border-r border-slate-200">Brand Name</th>
-                                        <th rowSpan={2} className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest border-r border-slate-200">Assigned Designer</th>
+                                        <th rowSpan={2} className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest border-r border-slate-200">Assigned Account Manager</th>
                                         <th colSpan={2} className="px-6 py-2 text-center text-[10px] font-bold text-blue-600 uppercase tracking-widest bg-blue-50/50 border-b border-blue-100 border-r border-slate-200">Targets</th>
                                         <th colSpan={2} className="px-6 py-2 text-center text-[10px] font-bold text-green-600 uppercase tracking-widest bg-green-50/50 border-b border-green-100 border-r border-slate-200">Delivered</th>
                                         <th rowSpan={2} className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Status</th>
@@ -296,13 +297,16 @@ export const ScopeDashboard = () => {
                                                             />
                                                         </td>
                                                         <td className="px-6 py-4 border-r border-slate-100">
-                                                            <input
-                                                                type="text"
+                                                            <select
                                                                 value={editForm.assignedDesigner}
                                                                 onChange={e => setEditForm(prev => ({ ...prev, assignedDesigner: e.target.value }))}
-                                                                placeholder="e.g. Veda"
                                                                 className="w-full bg-white border border-slate-200 rounded px-2 py-1 text-sm focus:outline-none focus:border-blue-500"
-                                                            />
+                                                            >
+                                                                <option value="">Unassigned</option>
+                                                                {ASSIGNERS.map(name => (
+                                                                    <option key={name} value={name}>{name}</option>
+                                                                ))}
+                                                            </select>
                                                         </td>
                                                         <td className="px-6 py-4 border-r border-slate-100 bg-blue-50/5">
                                                             <input
@@ -449,12 +453,16 @@ export const ScopeDashboard = () => {
                                                 />
                                             </td>
                                             <td className="px-6 py-4 border-r border-blue-100">
-                                                <input
-                                                    placeholder="Designer..."
+                                                <select
                                                     className="w-full bg-white border border-blue-200 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                                                     value={newBrandForm.designer}
                                                     onChange={e => setNewBrandForm(prev => ({ ...prev, designer: e.target.value }))}
-                                                />
+                                                >
+                                                    <option value="">Select Manager...</option>
+                                                    {ASSIGNERS.map(name => (
+                                                        <option key={name} value={name}>{name}</option>
+                                                    ))}
+                                                </select>
                                             </td>
                                             <td className="px-6 py-4 border-r border-blue-100 bg-blue-100/30">
                                                 <input
