@@ -1,11 +1,9 @@
 
 import { useAuth } from '../../context/AuthContext';
 import { Link, useLocation } from 'react-router-dom';
-import { useTaskContext } from '../../context/TaskContext';
 
 export const Header = () => {
     const { logout, user } = useAuth();
-    const { role } = useTaskContext();
     const location = useLocation();
 
     return (
@@ -20,35 +18,31 @@ export const Header = () => {
             </div>
             <div className="flex items-center gap-6">
                 <nav className="hidden md:flex items-center gap-6">
-                    {role === 'Manager' && (
-                        <>
-                            <Link
-                                to="/"
-                                className={`text-sm font-medium transition-colors ${location.pathname === '/' ? 'text-text-main font-bold' : 'text-text-muted hover:text-text-main'}`}
-                            >
-                                Board
-                            </Link>
-                            <Link
-                                to="/dashboard"
-                                className={`text-sm font-medium transition-colors ${location.pathname === '/dashboard' ? 'text-text-main font-bold' : 'text-text-muted hover:text-text-main'}`}
-                            >
-                                Dashboard
-                            </Link>
-                            <Link
-                                to="/scope"
-                                className={`text-sm font-medium transition-colors ${location.pathname === '/scope' ? 'text-text-main font-bold' : 'text-text-muted hover:text-text-main'}`}
-                            >
-                                Scope
-                            </Link>
-                            <Link
-                                to="/categories"
-                                className={`text-sm font-medium transition-colors ${location.pathname === '/categories' ? 'text-text-main font-bold' : 'text-text-muted hover:text-text-main'}`}
-                            >
-                                Categories
-                            </Link>
-                            <div className="h-4 w-px bg-border-dark mx-2"></div>
-                        </>
-                    )}
+                    <Link
+                        to="/"
+                        className={`text-sm font-medium transition-colors ${location.pathname === '/' ? 'text-text-main font-bold' : 'text-text-muted hover:text-text-main'}`}
+                    >
+                        Board
+                    </Link>
+                    <Link
+                        to="/dashboard"
+                        className={`text-sm font-medium transition-colors ${location.pathname === '/dashboard' ? 'text-text-main font-bold' : 'text-text-muted hover:text-text-main'}`}
+                    >
+                        Dashboard
+                    </Link>
+                    <Link
+                        to="/scope"
+                        className={`text-sm font-medium transition-colors ${location.pathname === '/scope' ? 'text-text-main font-bold' : 'text-text-muted hover:text-text-main'}`}
+                    >
+                        Scope
+                    </Link>
+                    <Link
+                        to="/categories"
+                        className={`text-sm font-medium transition-colors ${location.pathname === '/categories' ? 'text-text-main font-bold' : 'text-text-muted hover:text-text-main'}`}
+                    >
+                        Categories
+                    </Link>
+                    <div className="h-4 w-px bg-border-dark mx-2"></div>
                     <button
                         onClick={() => logout()}
                         className="text-text-muted text-sm font-medium hover:text-red-500 transition-colors cursor-pointer"

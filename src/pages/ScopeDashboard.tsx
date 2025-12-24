@@ -61,7 +61,7 @@ const CircularProgress = ({ value, total, label, color }: { value: number, total
 };
 
 export const ScopeDashboard = () => {
-    const { tasks, quotas, updateQuota, deleteQuota, seedSocialMediaData, role, setSelectedTask } = useTaskContext();
+    const { tasks, quotas, updateQuota, deleteQuota, seedSocialMediaData, setSelectedTask } = useTaskContext();
 
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editForm, setEditForm] = useState<Partial<BrandQuota>>({});
@@ -219,24 +219,20 @@ export const ScopeDashboard = () => {
                         <p className="text-sm text-slate-500">Tracking Statics & Reels distribution per Brand</p>
                     </div>
                     <div className="flex gap-3">
-                        {role === 'Manager' && (
-                            <>
-                                <button
-                                    onClick={() => setIsAddingNew(true)}
-                                    className="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-all flex items-center gap-2"
-                                >
-                                    <span className="material-symbols-outlined text-[18px]">add</span>
-                                    Add Brand
-                                </button>
-                                <button
-                                    onClick={() => seedSocialMediaData()}
-                                    className="px-4 py-2 border border-slate-200 bg-white text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-50 transition-all flex items-center gap-2"
-                                >
-                                    <span className="material-symbols-outlined text-[18px]">sync</span>
-                                    Reset Seeds
-                                </button>
-                            </>
-                        )}
+                        <button
+                            onClick={() => setIsAddingNew(true)}
+                            className="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-all flex items-center gap-2"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">add</span>
+                            Add Brand
+                        </button>
+                        <button
+                            onClick={() => seedSocialMediaData()}
+                            className="px-4 py-2 border border-slate-200 bg-white text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-50 transition-all flex items-center gap-2"
+                        >
+                            <span className="material-symbols-outlined text-[18px]">sync</span>
+                            Reset Seeds
+                        </button>
                     </div>
                 </div>
 
@@ -268,7 +264,7 @@ export const ScopeDashboard = () => {
                                         <th colSpan={2} className="px-6 py-2 text-center text-[10px] font-bold text-blue-600 uppercase tracking-widest bg-blue-50/50 border-b border-blue-100 border-r border-slate-200">Targets</th>
                                         <th colSpan={2} className="px-6 py-2 text-center text-[10px] font-bold text-green-600 uppercase tracking-widest bg-green-50/50 border-b border-green-100 border-r border-slate-200">Delivered</th>
                                         <th rowSpan={2} className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center">Status</th>
-                                        {role === 'Manager' && <th rowSpan={2} className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center border-l border-slate-200">Actions</th>}
+                                        <th rowSpan={2} className="px-6 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest text-center border-l border-slate-200">Actions</th>
                                     </tr>
                                     <tr className="bg-slate-50/50 border-b border-slate-200">
                                         <th className="px-6 py-2 text-[10px] font-bold text-slate-400 uppercase text-center border-r border-slate-200 bg-blue-50/30">Statics</th>
@@ -429,14 +425,12 @@ export const ScopeDashboard = () => {
                                                                 <span className="text-[10px] font-bold text-slate-400">{item.efficiency}%</span>
                                                             </div>
                                                         </td>
-                                                        {role === 'Manager' && (
-                                                            <td className="px-6 py-4 text-center border-l border-slate-100">
-                                                                <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                    <button onClick={() => handleStartEdit(item)} className="p-1 px-2 text-[10px] font-bold text-blue-600 hover:bg-blue-50 rounded transition-colors uppercase">Edit</button>
-                                                                    <button onClick={() => handleDelete(item.id, item.brand)} className="p-1 px-2 text-[10px] font-bold text-red-500 hover:bg-red-50 rounded transition-colors uppercase">Delete</button>
-                                                                </div>
-                                                            </td>
-                                                        )}
+                                                        <td className="px-6 py-4 text-center border-l border-slate-100">
+                                                            <div className="flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <button onClick={() => handleStartEdit(item)} className="p-1 px-2 text-[10px] font-bold text-blue-600 hover:bg-blue-50 rounded transition-colors uppercase">Edit</button>
+                                                                <button onClick={() => handleDelete(item.id, item.brand)} className="p-1 px-2 text-[10px] font-bold text-red-500 hover:bg-red-50 rounded transition-colors uppercase">Delete</button>
+                                                            </div>
+                                                        </td>
                                                     </>
                                                 )}
                                             </motion.tr>

@@ -2,19 +2,14 @@ import { useState } from 'react';
 import { useTaskContext } from '../context/TaskContext';
 import { Header } from '../components/layout/Header';
 import { motion } from 'framer-motion';
-import { Navigate } from 'react-router-dom';
 
 export const Categories = () => {
     const {
         brands, addBrand, deleteBrand,
         creativeTypes, addCreativeType, deleteCreativeType,
-        scopes, addScope, deleteScope,
-        role
+        scopes, addScope, deleteScope
     } = useTaskContext();
 
-    if (role !== 'Manager') {
-        return <Navigate to="/" replace />;
-    }
 
     const [newBrand, setNewBrand] = useState('');
     const [newType, setNewType] = useState('');

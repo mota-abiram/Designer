@@ -1,22 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTaskContext } from '../context/TaskContext';
 import { Layout } from '../components/layout/Layout';
-import { useNavigate } from 'react-router-dom';
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 import { cn } from '../utils/cn';
 import type { Task, Designer } from '../types';
 import { ASSIGNERS } from '../constants/assigners';
 
 export const Dashboard = () => {
-    const { tasks, designers, role, setFilters, filters } = useTaskContext();
-    const navigate = useNavigate();
-
-    // Access Control
-    useEffect(() => {
-        if (role !== 'Manager') {
-            navigate('/');
-        }
-    }, [role, navigate]);
+    const { tasks, designers, setFilters, filters } = useTaskContext();
 
     // Cleanup filters on unmount to prevent persisting Dashboard filters to other views
     useEffect(() => {
@@ -119,7 +110,7 @@ export const Dashboard = () => {
                 <div className="flex-none px-8 py-6 border-b border-border-dark bg-white shadow-sm z-10">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
-                            <h1 className="text-2xl font-bold text-text-main">Admin Dashboard</h1>
+                            <h1 className="text-2xl font-bold text-text-main">Performance Dashboard</h1>
                             <p className="text-sm text-text-muted mt-1">Overview of team performance and workload</p>
                         </div>
 
