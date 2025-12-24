@@ -258,8 +258,7 @@ export const Dashboard = () => {
                                                 <div className="flex items-center justify-end gap-2">
                                                     <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                                                         <div className={cn("h-full rounded-full transition-all duration-500",
-                                                            designer.efficiency >= 80 ? "bg-green-500" :
-                                                                designer.efficiency >= 50 ? "bg-yellow-500" : "bg-red-500")}
+                                                            designer.efficiency >= 50 ? "bg-green-500" : "bg-red-500")}
                                                             style={{ width: `${designer.efficiency}%` }}>
                                                         </div>
                                                     </div>
@@ -319,8 +318,7 @@ export const Dashboard = () => {
                                                 <div className="flex items-center justify-end gap-2">
                                                     <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                                                         <div className={cn("h-full rounded-full transition-all duration-500",
-                                                            manager.efficiency >= 80 ? "bg-green-500" :
-                                                                manager.efficiency >= 50 ? "bg-yellow-500" : "bg-red-500")}
+                                                            manager.efficiency >= 50 ? "bg-green-500" : "bg-red-500")}
                                                             style={{ width: `${manager.efficiency}%` }}>
                                                         </div>
                                                     </div>

@@ -420,8 +420,7 @@ export const ScopeDashboard = () => {
                                                                     <div
                                                                         className={cn(
                                                                             "h-full transition-all duration-1000",
-                                                                            item.efficiency >= 100 ? "bg-green-500" :
-                                                                                item.efficiency >= 50 ? "bg-blue-500" : "bg-amber-500"
+                                                                            item.efficiency >= 50 ? "bg-green-500" : "bg-red-500"
                                                                         )}
                                                                         style={{ width: `${Math.min(item.efficiency, 100)}%` }}
                                                                     />
