@@ -161,7 +161,7 @@ export const ScopeDashboard = () => {
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
                                     <AnimatePresence mode='popLayout'>
-                                        {brandStats.map((item, idx) => (
+                                        {brandStats.map((item) => (
                                             <motion.tr
                                                 layout
                                                 initial={{ opacity: 0 }}

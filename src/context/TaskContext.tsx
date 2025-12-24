@@ -5,7 +5,6 @@ import { db } from '../services/firebase';
 import { useAuth } from './AuthContext';
 import { designers as initialDesigners, getCurrentWeekDays } from '../services/mockData';
 import { ADMIN_EMAILS } from '../services/adminList';
-import { format, isPast, isSameDay, parseISO } from 'date-fns';
 
 interface TaskContextType {
     tasks: Task[];
@@ -355,9 +354,6 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         const batch = writeBatch(db);
 
         // 1. Ensure Scopes exist
-        const smScopeName = "Social Media";
-        const staticsTypeName = "Statics";
-        const reelsTypeName = "Reels";
 
         // This is a bit complex for a one-off but let's do it right.
         // We'll just create them and use the IDs.

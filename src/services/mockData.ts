@@ -1,9 +1,6 @@
 import type { Designer, Task } from '../types';
 import { addDays, format, startOfWeek } from 'date-fns';
 
-const avatars = {
-    user: "https://lh3.googleusercontent.com/aida-public/AB6AXuBi8jXjNHhpaSwAWq9eMb3PRCIDCEXQeEImVr_E23PKVLvU-z0X5Lc4NcReNInJLpF9GOZ2i8CUSOwSHJYovmZMuCZlKLxCWTG4qjZS2bRn_W6VmbrY52vXTAfQSKb7c2DXCiFrZ22sBQ3OMKIBuGlQvrZ-SlROI-Mn4vM7A32ou9-JuL_ScTIVVLdYJ2qX0SumycaKFOkOa8R8h_gbfmg6MtbT2nvaDGXVe4WJDr0Z4ONgcg9kbuO39xrkHKZRH1KSRA8fSCFs-OA"
-};
 
 export const designers: Designer[] = [
     { id: 'v1', name: 'Vaishnove' },
