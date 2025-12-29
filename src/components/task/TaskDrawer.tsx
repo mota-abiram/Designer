@@ -254,11 +254,22 @@ export const TaskDrawer = () => {
                                     <div className="flex flex-wrap gap-2">
                                         {(['Pending', 'Submitted', 'Rework'] as Status[]).map((status) => {
                                             const isActive = selectedTask.status === status;
+                                            const isDesigner = role === 'Designer';
+
+                                            // Logic:
+                                            // 1. If status is Submitted, only Managers can change it (to prevent designers from undoing submission).
+                                            // 2. Only Managers can mark a task as Rework.
+                                            let isStatusDisabled = isEditing;
+                                            if (isDesigner) {
+                                                if (selectedTask.status === 'Submitted') isStatusDisabled = true;
+                                                if (status === 'Rework') isStatusDisabled = true;
+                                            }
+
                                             return (
                                                 <button
                                                     key={status}
                                                     onClick={() => updateTaskStatus(selectedTask.id, status)}
-                                                    disabled={isEditing}
+                                                    disabled={isStatusDisabled}
                                                     className={cn(
                                                         "flex-1 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest border transition-all duration-300 flex items-center justify-center gap-2",
                                                         isActive
@@ -268,7 +279,7 @@ export const TaskDrawer = () => {
                                                                     ? "bg-green-500 text-white border-green-500 shadow-lg shadow-green-500/20"
                                                                     : "bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/20"
                                                             : "bg-gray-50 dark:bg-slate-800/50 border-border-light dark:border-border-dark text-text-muted dark:text-text-muted-dark hover:bg-white dark:hover:bg-slate-800 transition-colors",
-                                                        isEditing && "opacity-50 cursor-not-allowed"
+                                                        isStatusDisabled && "opacity-50 cursor-not-allowed"
                                                     )}
                                                 >
                                                     {status}

@@ -241,6 +241,8 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                 // User: "when a submitted task is marked as rework.. i want the... task for that designer... should increase"
                 if (status === 'Rework') {
                     updateData.reworkCount = (task.reworkCount || 0) + 1;
+                    // Move to today's date so the designer sees it in their current board
+                    updateData.date = new Date().toISOString().split('T')[0];
                 }
 
                 await updateDoc(doc(db, "tasks", taskId), updateData);
