@@ -7,6 +7,8 @@ import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { ScopeDashboard } from './pages/ScopeDashboard';
 import { Categories } from './pages/Categories';
+import { Toaster } from 'react-hot-toast';
+import { ThemeProvider } from './context/ThemeContext';
 
 const PrivateRoute = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
@@ -22,36 +24,63 @@ const PrivateRoute = ({ children }: { children: ReactNode }) => {
 function App() {
   return (
     <AuthProvider>
-      <TaskProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/" element={
-              <PrivateRoute>
-                <DesignerBoard />
-              </PrivateRoute>
-            } />
-            <Route path="/dashboard" element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            } />
-            <Route path="/scope" element={
-              <PrivateRoute>
-                <ScopeDashboard />
-              </PrivateRoute>
-            } />
-            <Route path="/categories" element={
-              <PrivateRoute>
-                <Categories />
-              </PrivateRoute>
-            } />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </TaskProvider>
+      <ThemeProvider>
+        <TaskProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/" element={
+                <PrivateRoute>
+                  <DesignerBoard />
+                </PrivateRoute>
+              } />
+              <Route path="/dashboard" element={
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              } />
+              <Route path="/scope" element={
+                <PrivateRoute>
+                  <ScopeDashboard />
+                </PrivateRoute>
+              } />
+              <Route path="/categories" element={
+                <PrivateRoute>
+                  <Categories />
+                </PrivateRoute>
+              } />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                background: '#1e293b',
+                color: '#fff',
+                fontSize: '14px',
+                fontWeight: 500,
+              },
+              success: {
+                iconTheme: {
+                  primary: '#10b981',
+                  secondary: '#fff',
+                },
+              },
+              error: {
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#fff',
+                },
+              },
+            }}
+          />
+        </TaskProvider>
+      </ThemeProvider>
     </AuthProvider>
   );
 }
 
 export default App;
+

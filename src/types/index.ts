@@ -1,4 +1,4 @@
-export type Status = 'Pending' | 'Submitted';
+export type Status = 'Pending' | 'Submitted' | 'Rework';
 
 export interface Brand {
     id: string;
@@ -50,6 +50,7 @@ export interface Task {
     scope?: string;
     assignedBy?: string | null;
     assignedByAvatar?: string | null;
+    reworkCount?: number;
     createdAt?: string;
     updatedAt?: string;
 }
@@ -62,4 +63,5 @@ export interface FilterState {
         start: string | null;
         end: string | null;
     };
+    searchQuery: string;
 }

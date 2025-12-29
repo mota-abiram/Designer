@@ -25,18 +25,18 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
                             initial={{ scale: 0.95, opacity: 0, y: 10 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.95, opacity: 0, y: 10 }}
-                            className="bg-background-dark border border-border-dark rounded-xl shadow-2xl w-full max-w-md pointer-events-auto flex flex-col max-h-[90vh]"
+                            className="bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.3)] w-full max-w-md pointer-events-auto flex flex-col max-h-[90vh] transition-colors overflow-hidden"
                         >
-                            <div className="flex items-center justify-between p-4 border-b border-border-dark">
-                                <h2 className="text-lg font-bold text-text-main">{title}</h2>
+                            <div className="flex items-center justify-between px-6 py-5 border-b border-border-light dark:border-border-dark transition-colors bg-white dark:bg-surface-dark/50">
+                                <h2 className="text-xl font-black text-text-main dark:text-text-main-dark tracking-tight uppercase tracking-widest">{title}</h2>
                                 <button
                                     onClick={onClose}
-                                    className="p-1 hover:bg-surface-dark rounded-full transition-colors text-text-muted hover:text-text-main"
+                                    className="p-1 px-3 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark"
                                 >
-                                    <span className="material-symbols-outlined">close</span>
+                                    <span className="material-symbols-outlined font-black">close</span>
                                 </button>
                             </div>
-                            <div className="p-4 overflow-y-auto custom-scrollbar">
+                            <div className="p-8 overflow-y-auto custom-scrollbar">
                                 {children}
                             </div>
                         </motion.div>

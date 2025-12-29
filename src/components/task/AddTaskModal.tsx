@@ -60,124 +60,124 @@ export const AddTaskModal = () => {
         >
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <div>
-                    <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">Task Title</label>
+                    <label className="block text-[10px] font-black text-text-muted dark:text-text-muted-dark uppercase tracking-widest mb-2 px-1">Task Title</label>
                     <input
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="e.g. Homepage Redesign"
                         required
-                        className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-text-main placeholder-gray-400 focus:outline-none focus:border-primary transition-colors"
+                        className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-text-main dark:text-text-main-dark font-black placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary transition-all shadow-inner"
                     />
                 </div>
                 <div>
-                    <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">Due Date</label>
+                    <label className="block text-[10px] font-black text-text-muted dark:text-text-muted-dark uppercase tracking-widest mb-2 px-1">Due Date</label>
                     <input
                         type="date"
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
                         required
-                        className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-text-main placeholder-gray-400 focus:outline-none focus:border-primary transition-colors [color-scheme:light]"
+                        className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-text-main dark:text-text-main-dark font-black focus:outline-none focus:border-primary transition-all shadow-inner [color-scheme:light] dark:[color-scheme:dark]"
                     />
                 </div>
                 <div>
-                    <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">Assigned By</label>
+                    <label className="block text-[10px] font-black text-text-muted dark:text-text-muted-dark uppercase tracking-widest mb-2 px-1">Assigned By</label>
                     <div className="relative">
                         <select
                             value={assignedBy}
                             onChange={(e) => setAssignedBy(e.target.value)}
-                            className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 pr-8 text-text-main focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
+                            className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 pr-10 text-text-main dark:text-text-main-dark font-black focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
                         >
                             {ASSIGNERS.map((name) => (
                                 <option key={name} value={name}>{name}</option>
                             ))}
                         </select>
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
-                            <span className="material-symbols-outlined text-sm">expand_more</span>
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted dark:text-text-muted-dark">
+                            <span className="material-symbols-outlined text-[20px] font-black">expand_more</span>
                         </div>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">Brand</label>
+                        <label className="block text-[10px] font-black text-text-muted dark:text-text-muted-dark uppercase tracking-widest mb-2 px-1">Brand</label>
                         <div className="relative">
                             <select
                                 value={brand}
                                 onChange={(e) => setBrand(e.target.value)}
-                                className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 pr-8 text-text-main focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
+                                className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 pr-10 text-text-main dark:text-text-main-dark font-black focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
                             >
                                 <option value="">Select Brand</option>
                                 {brands.map((b) => (
                                     <option key={b.id} value={b.name}>{b.name}</option>
                                 ))}
                             </select>
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
-                                <span className="material-symbols-outlined text-sm">expand_more</span>
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted dark:text-text-muted-dark">
+                                <span className="material-symbols-outlined text-[20px] font-black">expand_more</span>
                             </div>
                         </div>
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">Type</label>
+                        <label className="block text-[10px] font-black text-text-muted dark:text-text-muted-dark uppercase tracking-widest mb-2 px-1">Type</label>
                         <div className="relative">
                             <select
                                 value={creativeType}
                                 onChange={(e) => setCreativeType(e.target.value)}
-                                className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 pr-8 text-text-main focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
+                                className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 pr-10 text-text-main dark:text-text-main-dark font-black focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
                             >
                                 <option value="">Select Type</option>
                                 {creativeTypes.map((t) => (
                                     <option key={t.id} value={t.name}>{t.name}</option>
                                 ))}
                             </select>
-                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
-                                <span className="material-symbols-outlined text-sm">expand_more</span>
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted dark:text-text-muted-dark">
+                                <span className="material-symbols-outlined text-[20px] font-black">expand_more</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div>
-                    <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">Scope</label>
+                    <label className="block text-[10px] font-black text-text-muted dark:text-text-muted-dark uppercase tracking-widest mb-2 px-1">Scope</label>
                     <div className="relative">
                         <select
                             value={scope}
                             onChange={(e) => setScope(e.target.value)}
-                            className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 pr-8 text-text-main focus:outline-none focus:border-primary transition-colors appearance-none cursor-pointer"
+                            className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 pr-10 text-text-main dark:text-text-main-dark font-black focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
                         >
                             <option value="">Select Scope</option>
                             {scopes.map((s) => (
                                 <option key={s.id} value={s.name}>{s.name}</option>
                             ))}
                         </select>
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
-                            <span className="material-symbols-outlined text-sm">expand_more</span>
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted dark:text-text-muted-dark">
+                            <span className="material-symbols-outlined text-[20px] font-black">expand_more</span>
                         </div>
                     </div>
                 </div>
 
                 <div>
-                    <label className="block text-xs font-bold text-text-muted uppercase tracking-wider mb-1.5">Description</label>
+                    <label className="block text-[10px] font-black text-text-muted dark:text-text-muted-dark uppercase tracking-widest mb-2 px-1">Description</label>
                     <textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Brief details..."
                         rows={3}
-                        className="w-full bg-surface-dark border border-border-dark rounded-lg px-3 py-2 text-text-main placeholder-gray-400 focus:outline-none focus:border-primary transition-colors resize-none"
+                        className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-text-main dark:text-text-main-dark font-semibold placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-primary transition-all resize-none shadow-inner"
                     />
                 </div>
-                <div className="flex justify-end gap-3 mt-2">
+                <div className="flex justify-end gap-3 mt-6">
                     <button
                         type="button"
                         onClick={() => setAddTaskOpen(false)}
-                        className="px-4 py-2 text-sm font-bold text-text-muted hover:text-text-main transition-colors"
+                        className="px-6 py-2.5 text-xs font-black uppercase tracking-widest text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark transition-colors"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
                         disabled={!title || !date}
-                        className="px-4 py-2 text-sm font-bold bg-primary text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="px-8 py-2.5 text-xs font-black uppercase tracking-widest bg-primary text-white rounded-xl hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/20 transition-all active:scale-95"
                     >
                         Create Task
                     </button>

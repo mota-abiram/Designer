@@ -4,7 +4,7 @@ import { useTaskContext } from '../../context/TaskContext';
 export const TaskFilterPanel = () => {
     const { filters, setFilters } = useTaskContext();
 
-    const handleStatusToggle = (status: 'Pending' | 'Submitted') => {
+    const handleStatusToggle = (status: 'Pending' | 'Submitted' | 'Rework') => {
         setFilters({
             ...filters,
             status: filters.status.includes(status)
@@ -28,18 +28,18 @@ export const TaskFilterPanel = () => {
     // Let's make it a small absolute panel toggled by logic in Toolbar.
 
     return (
-        <div className="absolute top-full left-0 mt-2 w-72 bg-surface-dark border border-border-dark rounded-xl shadow-2xl p-4 z-50">
+        <div className="absolute top-full left-0 mt-2 w-72 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] p-6 z-50 transition-colors">
             <div className="space-y-4">
                 <div>
-                    <label className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2 block">Status</label>
+                    <label className="text-[10px] font-black text-text-muted dark:text-text-muted-dark uppercase tracking-widest mb-3 block">Status</label>
                     <div className="flex flex-wrap gap-2">
-                        {['Pending', 'Submitted'].map(status => {
+                        {['Pending', 'Submitted', 'Rework'].map(status => {
                             const isSelected = filters.status.includes(status as any);
                             return (
                                 <button
                                     key={status}
                                     onClick={() => handleStatusToggle(status as any)}
-                                    className={`px-2 py-1 text-xs font-bold rounded border transition-colors ${isSelected ? 'bg-primary text-white border-primary' : 'border-border-dark text-text-muted hover:text-text-main hover:bg-gray-100'}`}
+                                    className={`px-3 py-1.5 text-[11px] font-black uppercase tracking-wider rounded-lg border transition-all duration-300 ${isSelected ? 'bg-primary text-white border-primary shadow-md shadow-primary/20' : 'border-border-light dark:border-border-dark text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark hover:bg-gray-100 dark:hover:bg-slate-800'}`}
                                 >
                                     {status}
                                 </button>
@@ -48,32 +48,30 @@ export const TaskFilterPanel = () => {
                     </div>
                 </div>
                 <div>
-                    <label className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2 block">Date Range</label>
+                    <label className="text-[10px] font-black text-text-muted dark:text-text-muted-dark uppercase tracking-widest mb-3 block">Date Range</label>
                     <div className="flex gap-2">
                         <input
                             type="date"
                             value={filters.dateRange.start || ''}
                             onChange={(e) => handleDateChange('start', e.target.value)}
-                            className="w-full bg-background-dark border border-border-dark rounded px-2 py-1 text-xs text-text-main [color-scheme:light]"
+                            className="w-full bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded-lg px-2 py-2 text-xs text-text-main dark:text-text-main-dark font-black [color-scheme:light] dark:[color-scheme:dark] transition-colors"
                             placeholder="Start"
                         />
                         <input
                             type="date"
                             value={filters.dateRange.end || ''}
                             onChange={(e) => handleDateChange('end', e.target.value)}
-                            className="w-full bg-background-dark border border-border-dark rounded px-2 py-1 text-xs text-text-main [color-scheme:light]"
+                            className="w-full bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded-lg px-2 py-2 text-xs text-text-main dark:text-text-main-dark font-black [color-scheme:light] dark:[color-scheme:dark] transition-colors"
                             placeholder="End"
                         />
                     </div>
                 </div>
-                {(filters.status.length > 0 || filters.dateRange.start || filters.dateRange.end) && (
-                    <button
-                        onClick={() => setFilters({ status: [], dateRange: { start: null, end: null } })}
-                        className="w-full py-1 text-xs font-medium text-red-500 hover:text-red-400"
-                    >
-                        Clear Filters
-                    </button>
-                )}
+                <button
+                    onClick={() => setFilters({ status: [], dateRange: { start: null, end: null }, searchQuery: '' })}
+                    className="w-full py-2 text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-400 hover:bg-red-500/5 rounded-lg transition-all"
+                >
+                    Clear Filters
+                </button>
             </div>
         </div>
     );

@@ -70,7 +70,7 @@ export const TaskGrid = () => {
     };
 
     return (
-        <div className="flex-1 relative overflow-hidden bg-background-dark">
+        <div className="flex-1 relative overflow-hidden bg-background-light dark:bg-background-dark transition-colors duration-300">
             <div
                 ref={registerScrollContainer}
                 className="absolute inset-0 overflow-auto custom-scrollbar"
@@ -90,29 +90,29 @@ export const TaskGrid = () => {
                                             scope="col"
                                             id={isToday ? 'column-today' : undefined}
                                             onClick={() => setSelectedDateStr(dateStr)}
-                                            className="sticky top-0 z-10 text-left align-bottom p-0 w-[320px] cursor-pointer bg-background-dark group/header"
+                                            className="sticky top-0 z-10 text-left align-bottom p-0 w-[320px] cursor-pointer bg-background-light dark:bg-background-dark group/header transition-colors"
                                         >
                                             <div className={cn(
                                                 "w-full h-full pb-4 transition-colors",
                                                 index === 0 ? "pr-4 pl-0" : "px-4",
-                                                isSelected ? "bg-background-dark" : "bg-background-dark"
+                                                isSelected ? "bg-background-light dark:bg-background-dark" : "bg-background-light dark:bg-background-dark"
                                             )}>
                                                 <div className={cn(
                                                     "h-full rounded-t-xl border-x border-t transition-colors",
-                                                    isSelected ? "bg-surface-dark border-primary/20" : "border-transparent hover:bg-surface-dark/20"
+                                                    isSelected ? "bg-surface-light dark:bg-surface-dark border-primary/20" : "border-transparent hover:bg-surface-light/20 dark:hover:bg-surface-dark/20"
                                                 )}>
                                                     <div className={cn(
                                                         "flex flex-col border-l-4 pl-3 py-1 transition-colors",
                                                         isSelected ? "border-primary" : "border-transparent group-hover/header:border-primary/30"
                                                     )}>
                                                         <span className={cn(
-                                                            "text-xs uppercase font-semibold tracking-wider flex items-center gap-1",
-                                                            isSelected ? "text-primary font-bold" : "text-text-muted"
+                                                            "text-xs uppercase font-black tracking-widest flex items-center gap-1",
+                                                            isSelected ? "text-primary" : "text-text-muted dark:text-text-muted-dark"
                                                         )}>
                                                             {format(date, 'EEEE')}
-                                                            {isToday && <span className={cn("text-white text-[10px] px-1.5 rounded-sm ml-1 transition-colors", isSelected ? "bg-primary" : "bg-text-muted")}>Today</span>}
+                                                            {isToday && <span className={cn("text-white text-[10px] px-1.5 rounded-sm ml-1 transition-colors font-black", isSelected ? "bg-primary" : "bg-text-muted")}>Today</span>}
                                                         </span>
-                                                        <span className={cn("text-lg font-bold transition-colors", isSelected ? "text-text-main" : "text-text-muted")}>{format(date, 'MMM d')}</span>
+                                                        <span className={cn("text-lg font-black transition-colors", isSelected ? "text-text-main dark:text-text-main-dark" : "text-text-muted dark:text-text-muted-dark")}>{format(date, 'MMM d')}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -140,7 +140,7 @@ export const TaskGrid = () => {
                     </table>
                 </div>
             </div>
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-background-dark to-transparent z-20"></div>
+            <div className="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-background-light dark:from-background-dark to-transparent z-20"></div>
         </div>
     );
 };

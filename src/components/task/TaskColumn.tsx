@@ -154,7 +154,7 @@ export const TaskColumn = ({
             onDrop={(e) => handleDrop(e, dateStr)}
             className={cn(
                 "align-top p-2 transition-colors",
-                isSelected ? "bg-surface-dark/30 border-x border-primary/20" : "border-r border-dashed border-border-dark/50 hover:bg-surface-dark/10"
+                isSelected ? "bg-surface-dark/10 dark:bg-surface-light/5 border-x border-primary/20" : "border-r border-dashed border-border-light dark:border-border-dark/30 hover:bg-surface-dark/5 dark:hover:bg-surface-light/5"
             )}
         >
             {tasksForDate.length > 0 ? (
@@ -177,12 +177,12 @@ export const TaskColumn = ({
             {canAdd && (
                 <div className="mt-2">
                     {isAddingTo === dateStr ? (
-                        <div className="bg-white border border-primary rounded-lg p-3 shadow-lg space-y-2 animate-in fade-in zoom-in-95 duration-200">
+                        <div className="bg-surface-light dark:bg-surface-dark border border-primary rounded-lg p-3 shadow-lg space-y-2 animate-in fade-in zoom-in-95 duration-200 transition-colors">
                             <input
                                 autoFocus
                                 type="text"
                                 placeholder="Task Title"
-                                className="w-full text-sm font-bold text-text-main placeholder-gray-400 outline-none"
+                                className="w-full text-sm font-black text-text-main dark:text-text-main-dark placeholder-gray-400 dark:placeholder-gray-500 outline-none bg-transparent"
                                 id={`inline-title-${dateStr}`}
                                 value={inlineTitle}
                                 onChange={(e) => setInlineTitle(e.target.value)}
@@ -191,18 +191,18 @@ export const TaskColumn = ({
                             <textarea
                                 rows={2}
                                 placeholder="Description (optional)"
-                                className="w-full text-xs text-text-main placeholder-gray-400 outline-none resize-none bg-gray-50 rounded p-1.5"
+                                className="w-full text-xs text-text-main dark:text-text-main-dark placeholder-gray-400 dark:placeholder-gray-500 outline-none resize-none bg-gray-50 dark:bg-slate-800/50 rounded p-1.5 transition-colors"
                                 id={`inline-desc-${dateStr}`}
                                 value={inlineDesc}
                                 onChange={(e) => setInlineDesc(e.target.value)}
                                 onKeyDown={onDescKeyDown}
                             ></textarea>
                             <div className="flex items-center gap-2">
-                                <label className="text-[10px] font-medium text-text-muted uppercase tracking-wide whitespace-nowrap">Assigned By:</label>
+                                <label className="text-[10px] font-black text-text-muted dark:text-text-muted-dark uppercase tracking-wide whitespace-nowrap">Assigned By:</label>
                                 <select
                                     value={inlineAssignedBy}
                                     onChange={(e) => setInlineAssignedBy(e.target.value)}
-                                    className="flex-1 text-xs text-text-main bg-gray-50 border border-gray-200 rounded px-2 py-1 outline-none focus:border-primary cursor-pointer"
+                                    className="flex-1 text-xs text-text-main dark:text-text-main-dark bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded px-2 py-1 outline-none focus:border-primary cursor-pointer transition-colors"
                                 >
                                     {ASSIGNERS.map(name => (
                                         <option key={name} value={name}>{name}</option>
@@ -211,11 +211,11 @@ export const TaskColumn = ({
                             </div>
                             <div className="grid grid-cols-2 gap-2">
                                 <div className="flex flex-col gap-1">
-                                    <label className="text-[10px] font-medium text-text-muted uppercase tracking-wide">Brand:</label>
+                                    <label className="text-[10px] font-black text-text-muted dark:text-text-muted-dark uppercase tracking-wide">Brand:</label>
                                     <select
                                         value={inlineBrand}
                                         onChange={(e) => setInlineBrand(e.target.value)}
-                                        className="text-xs text-text-main bg-gray-50 border border-gray-200 rounded px-2 py-1 outline-none focus:border-primary cursor-pointer"
+                                        className="text-xs text-text-main dark:text-text-main-dark bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded px-2 py-1 outline-none focus:border-primary cursor-pointer transition-colors"
                                     >
                                         <option value="">None</option>
                                         {brands.map(b => (
@@ -224,11 +224,11 @@ export const TaskColumn = ({
                                     </select>
                                 </div>
                                 <div className="flex flex-col gap-1">
-                                    <label className="text-[10px] font-medium text-text-muted uppercase tracking-wide">Type:</label>
+                                    <label className="text-[10px] font-black text-text-muted dark:text-text-muted-dark uppercase tracking-wide">Type:</label>
                                     <select
                                         value={inlineCreativeType}
                                         onChange={(e) => setInlineCreativeType(e.target.value)}
-                                        className="text-xs text-text-main bg-gray-50 border border-gray-200 rounded px-2 py-1 outline-none focus:border-primary cursor-pointer"
+                                        className="text-xs text-text-main dark:text-text-main-dark bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded px-2 py-1 outline-none focus:border-primary cursor-pointer transition-colors"
                                     >
                                         <option value="">None</option>
                                         {creativeTypes.map(t => (
@@ -238,11 +238,11 @@ export const TaskColumn = ({
                                 </div>
                             </div>
                             <div className="flex flex-col gap-1">
-                                <label className="text-[10px] font-medium text-text-muted uppercase tracking-wide">Scope:</label>
+                                <label className="text-[10px] font-black text-text-muted dark:text-text-muted-dark uppercase tracking-wide">Scope:</label>
                                 <select
                                     value={inlineScope}
                                     onChange={(e) => setInlineScope(e.target.value)}
-                                    className="text-xs text-text-main bg-gray-50 border border-gray-200 rounded px-2 py-1 outline-none focus:border-primary cursor-pointer"
+                                    className="text-xs text-text-main dark:text-text-main-dark bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded px-2 py-1 outline-none focus:border-primary cursor-pointer transition-colors"
                                 >
                                     <option value="">None</option>
                                     {scopes.map(s => (
@@ -253,13 +253,13 @@ export const TaskColumn = ({
                             <div className="flex justify-end gap-2 pt-1">
                                 <button
                                     onClick={onCancelClick}
-                                    className="px-2 py-1 text-xs font-bold text-text-muted hover:text-text-main hover:bg-gray-100 rounded"
+                                    className="px-2 py-1 text-xs font-black text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark hover:bg-gray-100 dark:hover:bg-slate-800 rounded transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={onAddClick}
-                                    className="px-2 py-1 text-xs font-bold bg-primary text-white rounded hover:bg-blue-600 shadow-sm"
+                                    className="px-2 py-1 text-xs font-black bg-primary text-white rounded hover:bg-blue-600 shadow-sm transition-colors"
                                 >
                                     Add
                                 </button>
@@ -271,10 +271,10 @@ export const TaskColumn = ({
                                 e.stopPropagation();
                                 setIsAddingTo(dateStr);
                             }}
-                            className="w-full border border-dashed border-border-dark rounded-lg p-2 flex items-center justify-center gap-2 text-text-muted hover:text-text-main hover:border-primary hover:bg-primary/5 transition-all group/add"
+                            className="w-full border border-dashed border-border-light dark:border-border-dark rounded-lg p-2 flex items-center justify-center gap-2 text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-all group/add"
                         >
                             <span className="material-symbols-outlined text-lg group-hover/add:scale-110 transition-transform">add</span>
-                            <span className="text-xs font-medium">Add task</span>
+                            <span className="text-xs font-black uppercase tracking-wider">Add task</span>
                         </button>
                     )}
                 </div>

@@ -1,10 +1,11 @@
-import { createContext, useContext, useState, useRef, useEffect, type ReactNode } from 'react';
+import { createContext, useContext, useState, useRef, useEffect, useMemo, type ReactNode } from 'react';
 import type { Task, Designer, Role, Status, FilterState, Brand, CreativeType, Scope, BrandQuota } from '../types';
-import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, writeBatch, where, setDoc } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, writeBatch, where, setDoc, getDoc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { useAuth } from './AuthContext';
 import { designers as initialDesigners, getCurrentWeekDays } from '../services/mockData';
 import { ADMIN_EMAILS } from '../services/adminList';
+import toast from 'react-hot-toast';
 
 interface TaskContextType {
     tasks: Task[];
@@ -13,24 +14,24 @@ interface TaskContextType {
     setActiveDesignerId: (id: string) => void;
     role: Role;
     setRole: (role: Role) => void;
+
     addTask: (task: Task) => void;
-    addDesigner: (name: string) => void;
     updateTaskStatus: (taskId: string, status: Status) => void;
     updateTask: (task: Task) => void;
     deleteTask: (taskId: string) => void;
 
-    // Brands & Creative Types & Scopes
     brands: Brand[];
     addBrand: (name: string) => void;
     deleteBrand: (id: string) => void;
+
     creativeTypes: CreativeType[];
     addCreativeType: (name: string) => void;
     deleteCreativeType: (id: string) => void;
+
     scopes: Scope[];
     addScope: (name: string) => void;
     deleteScope: (id: string) => void;
 
-    // Quotas
     quotas: BrandQuota[];
     updateQuota: (quota: Partial<BrandQuota>) => void;
     deleteQuota: (id: string) => void;
@@ -41,30 +42,26 @@ interface TaskContextType {
     isDrawerOpen: boolean;
     setIsDrawerOpen: (isOpen: boolean) => void;
 
-    // Modals
     isAddTaskOpen: boolean;
     setAddTaskOpen: (isOpen: boolean) => void;
+
     newTaskDefaults: { date?: string } | null;
     setNewTaskDefaults: (defaults: { date?: string } | null) => void;
 
     isAddDesignerOpen: boolean;
     setAddDesignerOpen: (isOpen: boolean) => void;
 
-    // Filters
     filters: FilterState;
     setFilters: (filters: FilterState) => void;
 
-    // Scroll
     registerScrollContainer: (ref: HTMLDivElement | null) => void;
     scrollToToday: () => void;
     scrollByAmount: (amount: number) => void;
-    lastAddedTaskId: string | null;
 
-    // View Mode
+    lastAddedTaskId: string | null;
     viewMode: 'comfortable' | 'compact';
     setViewMode: (mode: 'comfortable' | 'compact') => void;
 
-    // Development/Seeding
     seedSocialMediaData: () => Promise<void>;
 }
 
@@ -73,7 +70,7 @@ const TaskContext = createContext<TaskContextType | undefined>(undefined);
 export const TaskProvider = ({ children }: { children: ReactNode }) => {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [designers] = useState<Designer[]>(initialDesigners);
-    const [activeDesignerId, setActiveDesignerId] = useState<string>(initialDesigners[0]?.id || 'd1');
+    const [activeDesignerId, setActiveDesignerId] = useState(initialDesigners[0]?.id || 'd1');
     const [role, setRole] = useState<Role>('Designer');
     const [viewMode, setViewMode] = useState<'comfortable' | 'compact'>('comfortable');
 
@@ -92,16 +89,16 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
     const [filters, setFilters] = useState<FilterState>({
         status: [],
-        dateRange: { start: null, end: null }
+        dateRange: { start: null, end: null },
+        searchQuery: ''
     });
 
     const scrollContainerRef = useRef<HTMLDivElement | null>(null);
     const [lastAddedTaskId, setLastAddedTaskId] = useState<string | null>(null);
 
-    // Real-time listener for tasks
     const { user } = useAuth();
 
-    // Auto-assign role based on email
+    /* ================= ROLE SETUP ================= */
     useEffect(() => {
         if (user?.email && ADMIN_EMAILS.includes(user.email)) {
             setRole('Manager');
@@ -110,13 +107,13 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [user]);
 
+    /* ================= TASK LISTENER ================= */
     useEffect(() => {
         if (!user) {
             setTasks([]);
             return;
         }
 
-        // Determine date range for subscription
         const currentWeek = getCurrentWeekDays();
         const startDate = filters.dateRange.start || currentWeek[0];
         const endDate = filters.dateRange.end || currentWeek[currentWeek.length - 1];
@@ -127,208 +124,233 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             where("date", "<=", endDate)
         );
 
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const fetchedTasks: Task[] = snapshot.docs.map(doc => ({
+        const unsubscribe = onSnapshot(q, snapshot => {
+            const data = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
-            } as Task));
-            setTasks(fetchedTasks);
-        }, (error) => {
-            console.error("Error fetching tasks:", error);
+            })) as Task[];
+            setTasks(data);
         });
 
         return () => unsubscribe();
     }, [user, filters.dateRange]);
 
-    // Real-time listener for brands
+    /* ================= BASIC COLLECTIONS ================= */
     useEffect(() => {
         if (!user) return;
-        const q = query(collection(db, "brands"));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const fetchedBrands = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            } as Brand));
-            setBrands(fetchedBrands.sort((a, b) => a.name.localeCompare(b.name)));
+
+        const unsubBrands = onSnapshot(collection(db, "brands"), snap => {
+            setBrands(snap.docs.map(d => ({ id: d.id, ...d.data() } as Brand)));
         });
-        return () => unsubscribe();
+
+        const unsubTypes = onSnapshot(collection(db, "creativeTypes"), snap => {
+            setCreativeTypes(snap.docs.map(d => ({ id: d.id, ...d.data() } as CreativeType)));
+        });
+
+        const unsubScopes = onSnapshot(collection(db, "scopes"), snap => {
+            setScopes(snap.docs.map(d => ({ id: d.id, ...d.data() } as Scope)));
+        });
+
+        const unsubQuotas = onSnapshot(collection(db, "quotas"), snap => {
+            setQuotas(snap.docs.map(d => ({ id: d.id, ...d.data() } as BrandQuota)));
+        });
+
+        return () => {
+            unsubBrands();
+            unsubTypes();
+            unsubScopes();
+            unsubQuotas();
+        };
     }, [user]);
 
-    // Real-time listener for creative types
-    useEffect(() => {
-        if (!user) return;
-        const q = query(collection(db, "creativeTypes"));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const fetchedTypes = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            } as CreativeType));
-            setCreativeTypes(fetchedTypes.sort((a, b) => a.name.localeCompare(b.name)));
-        });
-        return () => unsubscribe();
-    }, [user]);
+    /* ================= TASK ACTIONS ================= */
+    const adjustQuota = async (brandName: string | undefined, scopeName: string | undefined, typeName: string | undefined, amount: number) => {
+        if (!brandName || !scopeName || !typeName) return;
 
-    // Real-time listener for scopes
-    useEffect(() => {
-        if (!user) return;
-        const q = query(collection(db, "scopes"));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const fetchedScopes = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            } as Scope));
-            setScopes(fetchedScopes.sort((a, b) => a.name.localeCompare(b.name)));
-        });
-        return () => unsubscribe();
-    }, [user]);
+        const brandId = brandName.toLowerCase().replace(/\s+/g, '_');
+        const scopeId = scopeName.toLowerCase().replace(/\s+/g, '_');
+        const quotaId = `${brandId}_${scopeId}`;
 
-    // Real-time listener for quotas
-    useEffect(() => {
-        if (!user) return;
-        const q = query(collection(db, "quotas"));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const fetchedQuotas = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            } as BrandQuota));
-            setQuotas(fetchedQuotas);
-        });
-        return () => unsubscribe();
-    }, [user]);
-
-    const addTask = async (task: Task) => {
         try {
-            const { id, ...taskData } = task;
-            const docRef = await addDoc(collection(db, "tasks"), taskData);
-            setLastAddedTaskId(docRef.id);
+            const quotaRef = doc(db, "quotas", quotaId);
+            // Use getDoc for fresh data instead of potentially stale local state
+            const quotaSnap = await getDoc(quotaRef);
+
+            if (quotaSnap.exists()) {
+                const currentData = quotaSnap.data();
+                const currentDelivered = currentData.delivered || {};
+                const oldValue = currentDelivered[typeName] || 0;
+                const newValue = Math.max(0, oldValue + amount);
+
+                await updateDoc(quotaRef, {
+                    [`delivered.${typeName}`]: newValue
+                });
+            } else if (amount > 0) {
+                // Create new quota entry if it doesn't exist
+                await setDoc(quotaRef, {
+                    id: quotaId,
+                    brandId: brandName,
+                    scopeId: scopeName,
+                    targets: { [typeName]: 0 },
+                    delivered: { [typeName]: amount }
+                });
+            }
         } catch (e) {
-            console.error("Error adding task: ", e);
+            console.error("Error adjusting quota:", e);
         }
     };
 
-    const addDesigner = async (name: string) => {
-        console.warn("Adding designers is disabled in constant mode.", name);
+    const addTask = async (task: Task) => {
+        try {
+            const { id, ...payload } = task;
+            const docRef = await addDoc(collection(db, "tasks"), payload);
+            setLastAddedTaskId(docRef.id);
+
+            if (payload.status === 'Submitted') {
+                await adjustQuota(payload.brand, payload.scope, payload.creativeType, 1);
+            }
+            toast.success('Task created successfully');
+        } catch (e) {
+            console.error("Error adding task:", e);
+            toast.error('Failed to create task');
+        }
     };
 
     const updateTaskStatus = async (taskId: string, status: Status) => {
         try {
+            const task = tasks.find(t => t.id === taskId);
             const now = new Date().toISOString();
-            if (selectedTask?.id === taskId) {
-                setSelectedTask(prev => prev ? { ...prev, status, updatedAt: now } : null);
+
+            if (task && task.status !== status) {
+                const updateData: any = { status, updatedAt: now };
+
+                // Logic for Quota (delivered)
+                if (status === 'Submitted') {
+                    // User: "when completed that rework task, i dont want delivered to be increased again"
+                    // We only increase if moving from Pending, NOT from Rework
+                    if (task.status === 'Pending') {
+                        await adjustQuota(task.brand, task.scope, task.creativeType, 1);
+                    }
+                } else if (task.status === 'Submitted') {
+                    // User: "when a submitted task is marked as rework.. i want the deliverable to be decreased"
+                    // We decrease if we are moving AWAY from Submitted (to Rework or Pending)
+                    await adjustQuota(task.brand, task.scope, task.creativeType, -1);
+                }
+
+                // Logic for Task Count (reworkCount)
+                // User: "when a submitted task is marked as rework.. i want the... task for that designer... should increase"
+                if (status === 'Rework') {
+                    updateData.reworkCount = (task.reworkCount || 0) + 1;
+                }
+
+                await updateDoc(doc(db, "tasks", taskId), updateData);
+
+                if (selectedTask?.id === taskId) {
+                    setSelectedTask(prev => prev ? { ...prev, ...updateData } : null);
+                }
+                toast.success(`Task marked as ${status}`);
             }
-            const taskRef = doc(db, "tasks", taskId);
-            await updateDoc(taskRef, {
-                status,
-                updatedAt: now
-            });
         } catch (e) {
-            console.error("Error updating status: ", e);
+            console.error("Error updating status:", e);
+            toast.error('Failed to update status');
         }
     };
 
     const updateTask = async (updatedTask: Task) => {
         try {
-            const { id, ...data } = updatedTask;
-            const finalData = { ...data, updatedAt: new Date().toISOString() };
-            if (selectedTask?.id === updatedTask.id) {
-                setSelectedTask({ ...updatedTask, updatedAt: finalData.updatedAt });
+            const oldTask = tasks.find(t => t.id === updatedTask.id);
+            if (oldTask) {
+                if (oldTask.status !== updatedTask.status) {
+                    if (updatedTask.status === 'Submitted') {
+                        // Keep consistency with updateTaskStatus logic
+                        if (oldTask.status === 'Pending') {
+                            await adjustQuota(updatedTask.brand, updatedTask.scope, updatedTask.creativeType, 1);
+                        }
+                    } else if (oldTask.status === 'Submitted') {
+                        await adjustQuota(oldTask.brand, oldTask.scope, oldTask.creativeType, -1);
+                    }
+                } else if (updatedTask.status === 'Submitted') {
+                    if (oldTask.brand !== updatedTask.brand ||
+                        oldTask.scope !== updatedTask.scope ||
+                        oldTask.creativeType !== updatedTask.creativeType) {
+                        await adjustQuota(oldTask.brand, oldTask.scope, oldTask.creativeType, -1);
+                        await adjustQuota(updatedTask.brand, updatedTask.scope, updatedTask.creativeType, 1);
+                    }
+                }
             }
-            const taskRef = doc(db, "tasks", updatedTask.id);
-            await updateDoc(taskRef, finalData);
+
+            const { id, ...data } = updatedTask;
+            await updateDoc(doc(db, "tasks", id), {
+                ...data,
+                updatedAt: new Date().toISOString()
+            });
+
+            if (selectedTask?.id === id) {
+                setSelectedTask(updatedTask);
+            }
+            toast.success('Task updated');
         } catch (e) {
-            console.error("Error updating task: ", e);
+            console.error("Error updating task:", e);
+            toast.error('Failed to update task');
         }
     };
 
     const deleteTask = async (taskId: string) => {
         try {
+            const task = tasks.find(t => t.id === taskId);
+            if (task && task.status === 'Submitted') {
+                await adjustQuota(task.brand, task.scope, task.creativeType, -1);
+            }
+
             await deleteDoc(doc(db, "tasks", taskId));
             if (selectedTask?.id === taskId) {
                 setSelectedTask(null);
                 setIsDrawerOpen(false);
             }
+            toast.success('Task deleted');
         } catch (e) {
-            console.error("Error deleting task: ", e);
+            console.error("Error deleting task:", e);
+            toast.error('Failed to delete task');
         }
     };
 
+    /* ================= CRUD HELPERS ================= */
+
     const addBrand = async (name: string) => {
-        try {
-            await addDoc(collection(db, "brands"), {
-                name,
-                createdAt: new Date().toISOString()
-            });
-        } catch (e) {
-            console.error("Error adding brand: ", e);
-        }
+        await addDoc(collection(db, "brands"), { name, createdAt: new Date().toISOString() });
     };
 
     const deleteBrand = async (id: string) => {
-        try {
-            await deleteDoc(doc(db, "brands", id));
-        } catch (e) {
-            console.error("Error deleting brand: ", e);
-        }
+        await deleteDoc(doc(db, "brands", id));
     };
 
     const addCreativeType = async (name: string) => {
-        try {
-            await addDoc(collection(db, "creativeTypes"), {
-                name,
-                createdAt: new Date().toISOString()
-            });
-        } catch (e) {
-            console.error("Error adding creative type: ", e);
-        }
+        await addDoc(collection(db, "creativeTypes"), { name, createdAt: new Date().toISOString() });
     };
 
     const deleteCreativeType = async (id: string) => {
-        try {
-            await deleteDoc(doc(db, "creativeTypes", id));
-        } catch (e) {
-            console.error("Error deleting creative type: ", e);
-        }
+        await deleteDoc(doc(db, "creativeTypes", id));
     };
 
     const addScope = async (name: string) => {
-        try {
-            await addDoc(collection(db, "scopes"), {
-                name,
-                createdAt: new Date().toISOString()
-            });
-        } catch (e) {
-            console.error("Error adding scope: ", e);
-        }
+        await addDoc(collection(db, "scopes"), { name, createdAt: new Date().toISOString() });
     };
 
     const deleteScope = async (id: string) => {
-        try {
-            await deleteDoc(doc(db, "scopes", id));
-        } catch (e) {
-            console.error("Error deleting scope: ", e);
-        }
-    };
-
-    const deleteQuota = async (id: string) => {
-        try {
-            await deleteDoc(doc(db, "quotas", id));
-        } catch (e) {
-            console.error("Error deleting quota: ", e);
-        }
+        await deleteDoc(doc(db, "scopes", id));
     };
 
     const updateQuota = async (quota: Partial<BrandQuota>) => {
         if (!quota.brandId || !quota.scopeId) return;
-        const id = `${quota.brandId}_${quota.scopeId}`;
-        try {
-            await setDoc(doc(db, "quotas", id), {
-                ...quota,
-                id
-            }, { merge: true });
-        } catch (e) {
-            console.error("Error updating quota: ", e);
-        }
+        const id = `${quota.brandId.toLowerCase().replace(/\s+/g, '_')}_${quota.scopeId.toLowerCase().replace(/\s+/g, '_')}`;
+        await updateDoc(doc(db, "quotas", id), { ...quota, id });
     };
+
+    const deleteQuota = async (id: string) => {
+        await deleteDoc(doc(db, "quotas", id));
+    };
+
+    /* ================= SCROLL ================= */
 
     const registerScrollContainer = (ref: HTMLDivElement | null) => {
         scrollContainerRef.current = ref;
@@ -338,26 +360,18 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         const todayEl = document.getElementById('column-today');
         if (todayEl && scrollContainerRef.current) {
             const container = scrollContainerRef.current;
-            const scrollLeft = todayEl.offsetLeft - container.offsetLeft - 32;
-            container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+            container.scrollTo({ left: todayEl.offsetLeft - container.offsetLeft - 32, behavior: 'smooth' });
         }
     };
-
 
     const scrollByAmount = (amount: number) => {
-        if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollBy({ left: amount, behavior: 'smooth' });
-        }
+        scrollContainerRef.current?.scrollBy({ left: amount, behavior: 'smooth' });
     };
 
+    /* ================= SEED DATA ================= */
+
     const seedSocialMediaData = async () => {
-        console.log("Seeding social media data...");
         const batch = writeBatch(db);
-
-        // 1. Ensure Scopes exist
-
-        // This is a bit complex for a one-off but let's do it right.
-        // We'll just create them and use the IDs.
 
         const data = [
             { brand: "PMR", designer: "Vaishnove/Janvi", sS: 8, sR: 4, dS: 6, dR: 1 },
@@ -376,9 +390,9 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             { brand: "Olive Space", designer: "Janvi", sS: 0, sR: 0, dS: 0, dR: 0 },
             { brand: "PriyaGold", designer: "Haripriya", sS: 8, sR: 7, dS: 5, dR: 10 },
             { brand: "Rubricks Tripura", designer: "Abhishek", sS: 8, sR: 4, dS: 0, dR: 0 },
-            { brand: "Saket Veda", designer: "Abhishek", sS: 4, sR: 2, dS: 4, dR: 0 },
-            { brand: "Saket Bhusatva", designer: "Abhishek", sS: 8, sR: 4, dS: 8, dR: 0 },
-            { brand: "Saket Pranamam", designer: "Abhishek", sS: 8, sR: 4, dS: 8, dR: 0 },
+            { brand: "Saket Veda", designer: "Abhishek", sS: 4, sR: 2, dS: 4, dR: 2 },
+            { brand: "Saket Bhusatva", designer: "Abhishek", sS: 8, sR: 4, dS: 8, dR: 2 },
+            { brand: "Saket Pranamam", designer: "Abhishek", sS: 8, sR: 4, dS: 9, dR: 1 },
             { brand: "Janapriya", designer: "Abhishek", sS: 4, sR: 10, dS: 4, dR: 10 },
             { brand: "Reliance", designer: "Veda", sS: 7, sR: 8, dS: 4, dR: 7 },
             { brand: "Revasa", designer: "Veda", sS: 7, sR: 8, dS: 7, dR: 5 },
@@ -390,107 +404,104 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             { brand: "Sanvi Homes", designer: "Prajakta", sS: 8, sR: 6, dS: 5, dR: 3 },
             { brand: "Lokal", designer: "", sS: 0, sR: 0, dS: 0, dR: 0 },
             { brand: "One40", designer: "", sS: 0, sR: 0, dS: 0, dR: 0 },
-            { brand: "Rail Cab", designer: "8", sS: 0, sR: 4, dS: 0, dR: 2 }, // Fixed based on user input for last row
+            { brand: "Rail Cab", designer: "", sS: 8, sR: 4, dS: 4, dR: 1 }
         ];
-
-        // We'll just define them by name for now and the dashboard will lookup by name if needed,
-        // but it's better to create the Brand docs first.
 
         for (const item of data) {
             const brandId = item.brand.toLowerCase().replace(/\s+/g, '_');
-            const brandRef = doc(db, "brands", brandId);
-            batch.set(brandRef, { name: item.brand, createdAt: new Date().toISOString() });
 
-            const quotaId = `${brandId}_social_media`;
-            const quotaRef = doc(db, "quotas", quotaId);
-            batch.set(quotaRef, {
-                id: quotaId,
-                brandId: item.brand, // Use name for simple lookup in dashboard
+            batch.set(doc(db, "brands", brandId), {
+                name: item.brand,
+                createdAt: new Date().toISOString()
+            });
+
+            batch.set(doc(db, "quotas", `${brandId}_social_media`), {
+                id: `${brandId}_social_media`,
+                brandId: item.brand,
                 scopeId: "Social Media",
                 targets: {
-                    "Statics": item.sS,
-                    "Reels": item.sR
+                    Statics: item.sS,
+                    Reels: item.sR
+                },
+                delivered: {
+                    Statics: item.dS,
+                    Reels: item.dR
                 },
                 assignedDesigner: item.designer
             });
-
-            // If delivered counts > 0, we can seed some tasks too, but maybe better to just show Delivered next to it.
-            // For now, let's just seed the delivered as metadata or just let tasks handle it.
-            // Actually, "Delivered" in the table is likely a snapshot.
-            // I'll add "delivered" to quota as well for historical reference if they don't want to add all tasks.
-            batch.update(quotaRef, {
-                delivered: {
-                    "Statics": item.dS,
-                    "Reels": item.dR
-                }
-            });
         }
 
-        // Add Scope and Types if missing
-        batch.set(doc(db, "scopes", "social_media"), { name: "Social Media" });
-        batch.set(doc(db, "creativeTypes", "statics"), { name: "Statics" });
-        batch.set(doc(db, "creativeTypes", "reels"), { name: "Reels" });
-
         await batch.commit();
-        console.log("Seeding complete!");
     };
 
-    const value = {
-        tasks,
-        designers,
-        activeDesignerId,
-        setActiveDesignerId,
-        role,
-        setRole,
-        addTask,
-        addDesigner,
-        updateTaskStatus,
-        updateTask,
-        deleteTask,
-        brands,
-        addBrand,
-        deleteBrand,
-        creativeTypes,
-        addCreativeType,
-        deleteCreativeType,
-        scopes,
-        addScope,
-        deleteScope,
-        quotas,
-        updateQuota,
-        deleteQuota,
-        selectedTask,
-        setSelectedTask: (task: Task | null) => {
-            setSelectedTask(task);
-            if (task) setIsDrawerOpen(true);
-            else setIsDrawerOpen(false);
-        },
-        isDrawerOpen,
-        setIsDrawerOpen,
-        isAddTaskOpen,
-        setAddTaskOpen,
-        newTaskDefaults,
-        setNewTaskDefaults,
-        isAddDesignerOpen,
-        setAddDesignerOpen,
-        filters,
-        setFilters,
-        registerScrollContainer,
-        scrollToToday,
-        scrollByAmount,
-        lastAddedTaskId,
-        viewMode,
-        setViewMode,
-        seedSocialMediaData
-    };
+    const filteredTasks = useMemo(() => {
+        return tasks.filter(task => {
+            const matchesStatus = filters.status.length === 0 || filters.status.includes(task.status);
+            const matchesSearch = !filters.searchQuery ||
+                task.title.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+                task.description.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+                task.brand?.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+                task.creativeType?.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+                task.scope?.toLowerCase().includes(filters.searchQuery.toLowerCase());
 
-    return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>;
+            return matchesStatus && matchesSearch;
+        });
+    }, [tasks, filters.status, filters.searchQuery]);
+
+    return (
+        <TaskContext.Provider value={{
+            tasks: filteredTasks,
+            designers,
+            activeDesignerId,
+            setActiveDesignerId,
+            role,
+            setRole,
+            addTask,
+            updateTaskStatus,
+            updateTask,
+            deleteTask,
+            brands,
+            addBrand,
+            deleteBrand,
+            creativeTypes,
+            addCreativeType,
+            deleteCreativeType,
+            scopes,
+            addScope,
+            deleteScope,
+            quotas,
+            updateQuota,
+            deleteQuota,
+            selectedTask,
+            setSelectedTask: (task) => {
+                setSelectedTask(task);
+                setIsDrawerOpen(!!task);
+            },
+            isDrawerOpen,
+            setIsDrawerOpen,
+            isAddTaskOpen,
+            setAddTaskOpen,
+            newTaskDefaults,
+            setNewTaskDefaults,
+            isAddDesignerOpen,
+            setAddDesignerOpen,
+            filters,
+            setFilters,
+            registerScrollContainer,
+            scrollToToday,
+            scrollByAmount,
+            lastAddedTaskId,
+            viewMode,
+            setViewMode,
+            seedSocialMediaData
+        }}>
+            {children}
+        </TaskContext.Provider>
+    );
 };
 
 export const useTaskContext = () => {
     const context = useContext(TaskContext);
-    if (!context) {
-        throw new Error('useTaskContext must be used within a TaskProvider');
-    }
+    if (!context) throw new Error("useTaskContext must be used within TaskProvider");
     return context;
 };

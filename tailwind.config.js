@@ -10,11 +10,15 @@ export default {
             colors: {
                 "primary": "#137fec",
                 "background-light": "#f6f7f8",
-                "background-dark": "#ffffff", // Swapped to white
-                "surface-dark": "#f9fafb",    // Swapped to light gray
-                "border-dark": "#e5e7eb",     // Swapped to light border gray
-                "text-main": "#111827",       // New: Dark text
-                "text-muted": "#6b7280",      // New: Muted text
+                "background-dark": "#0f172a", // True Dark: Slate 900
+                "surface-light": "#ffffff",
+                "surface-dark": "#1e293b",    // True Dark Surface: Slate 800
+                "border-light": "#e5e7eb",
+                "border-dark": "#334155",     // True Dark Border: Slate 700
+                "text-main": "#111827",
+                "text-main-dark": "#f8fafc",  // Light text for dark mode
+                "text-muted": "#6b7280",
+                "text-muted-dark": "#94a3b8", // Muted text for dark mode
             },
             fontFamily: {
                 "display": ["League Spartan", "Inter", "sans-serif"],
