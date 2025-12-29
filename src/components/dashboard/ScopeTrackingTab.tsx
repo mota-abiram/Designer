@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 
 
 export const ScopeTrackingTab = () => {
-    const { tasks, quotas, updateQuota, seedSocialMediaData, role } = useTaskContext();
+    const { tasks, quotas, updateQuota, seedSocialMediaData } = useTaskContext();
 
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editForm, setEditForm] = useState<Partial<BrandQuota>>({});
@@ -106,14 +106,12 @@ export const ScopeTrackingTab = () => {
                     <h3 className="text-2xl font-black text-text-main dark:text-text-main-dark tracking-tight transition-colors">Social Media Scope</h3>
                     <p className="text-base font-semibold text-text-muted dark:text-text-muted-dark transition-colors">Target vs Delivered metrics</p>
                 </div>
-                {role === 'Manager' && (
-                    <div className="flex gap-2">
-                        <button onClick={seedSocialMediaData} className="px-3 py-1.5 border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark text-text-muted dark:text-text-muted-dark text-xs font-bold rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center gap-2">
-                            <span className="material-symbols-outlined text-[16px]">sync</span>
-                            Reset Seeds
-                        </button>
-                    </div>
-                )}
+                <div className="flex gap-2">
+                    <button onClick={seedSocialMediaData} className="px-3 py-1.5 border border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark text-text-muted dark:text-text-muted-dark text-xs font-bold rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center gap-2">
+                        <span className="material-symbols-outlined text-[16px]">sync</span>
+                        Reset Seeds
+                    </button>
+                </div>
             </div>
 
 

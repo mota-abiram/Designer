@@ -72,7 +72,8 @@ export const Dashboard = () => {
         return () => {
             setFilters({
                 status: [],
-                dateRange: { start: null, end: null }
+                dateRange: { start: null, end: null },
+                searchQuery: ''
             });
         };
     }, [setFilters]);

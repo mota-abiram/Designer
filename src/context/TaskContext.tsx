@@ -4,7 +4,6 @@ import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, write
 import { db } from '../services/firebase';
 import { useAuth } from './AuthContext';
 import { designers as initialDesigners, getCurrentWeekDays } from '../services/mockData';
-import { ADMIN_EMAILS } from '../services/adminList';
 import toast from 'react-hot-toast';
 
 interface TaskContextType {
@@ -100,11 +99,8 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
     /* ================= ROLE SETUP ================= */
     useEffect(() => {
-        if (user?.email && ADMIN_EMAILS.includes(user.email)) {
-            setRole('Manager');
-        } else {
-            setRole('Designer');
-        }
+        // Everyone is a Manager now
+        setRole('Manager');
     }, [user]);
 
     /* ================= TASK LISTENER ================= */

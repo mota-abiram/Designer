@@ -254,16 +254,9 @@ export const TaskDrawer = () => {
                                     <div className="flex flex-wrap gap-2">
                                         {(['Pending', 'Submitted', 'Rework'] as Status[]).map((status) => {
                                             const isActive = selectedTask.status === status;
-                                            const isDesigner = role === 'Designer';
 
-                                            // Logic:
-                                            // 1. If status is Submitted, only Managers can change it (to prevent designers from undoing submission).
-                                            // 2. Only Managers can mark a task as Rework.
+                                            // Everyone can change status now
                                             let isStatusDisabled = isEditing;
-                                            if (isDesigner) {
-                                                if (selectedTask.status === 'Submitted') isStatusDisabled = true;
-                                                if (status === 'Rework') isStatusDisabled = true;
-                                            }
 
                                             return (
                                                 <button
