@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 
 
 export const ScopeTrackingTab = () => {
-    const { tasks, quotas, updateQuota, seedSocialMediaData } = useTaskContext();
+    const { tasks, quotas, updateQuota } = useTaskContext();
 
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editForm, setEditForm] = useState<Partial<BrandQuota>>({});
