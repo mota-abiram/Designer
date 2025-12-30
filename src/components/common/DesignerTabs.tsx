@@ -20,8 +20,8 @@ export const DesignerTabs = () => {
                             )}
                         >
                             <p className={cn(
-                                "text-sm font-black tracking-wide transition-colors",
-                                isActive ? "text-text-main dark:text-text-main-dark group-hover:text-primary" : "text-text-muted dark:text-text-muted-dark group-hover:text-text-main dark:group-hover:text-text-main-dark"
+                                "text-sm font-bold tracking-widest uppercase transition-colors",
+                                isActive ? "text-text-main dark:text-text-main-dark" : "text-text-muted dark:text-text-muted-dark group-hover:text-text-main dark:group-hover:text-text-main-dark"
                             )}>
                                 {designer.name}
                             </p>
@@ -33,9 +33,9 @@ export const DesignerTabs = () => {
                     onClick={() => setAddDesignerOpen(true)}
                     className="group flex flex-col items-center justify-center border-b-[3px] border-transparent hover:border-border-light dark:hover:border-border-dark pb-3 min-w-[120px] cursor-pointer transition-colors"
                 >
-                    <div className="flex items-center gap-1 text-text-muted dark:text-text-muted-dark group-hover:text-primary transition-colors">
-                        <span className="material-symbols-outlined text-[18px] font-black">add</span>
-                        <span className="text-sm font-black uppercase tracking-widest">Add Member</span>
+                    <div className="flex items-center gap-1 text-text-muted dark:text-text-muted-dark group-hover:text-text-main dark:group-hover:text-text-main-dark transition-colors">
+                        <span className="material-symbols-outlined text-[18px] font-bold">add</span>
+                        <span className="text-sm font-bold uppercase tracking-widest">Add Member</span>
                     </div>
                 </button>
             </div>

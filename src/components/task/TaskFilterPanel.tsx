@@ -31,7 +31,7 @@ export const TaskFilterPanel = () => {
         <div className="absolute top-full left-0 mt-2 w-72 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] p-6 z-50 transition-colors">
             <div className="space-y-4">
                 <div>
-                    <label className="text-[10px] font-black text-text-muted dark:text-text-muted-dark uppercase tracking-widest mb-3 block">Status</label>
+                    <label className="text-[10px] font-bold text-slate-900 dark:text-slate-200 uppercase tracking-widest mb-3 block">Status</label>
                     <div className="flex flex-wrap gap-2">
                         {['Pending', 'Submitted', 'Rework'].map(status => {
                             const isSelected = filters.status.includes(status as any);
@@ -39,7 +39,7 @@ export const TaskFilterPanel = () => {
                                 <button
                                     key={status}
                                     onClick={() => handleStatusToggle(status as any)}
-                                    className={`px-3 py-1.5 text-[11px] font-black uppercase tracking-wider rounded-lg border transition-all duration-300 ${isSelected ? 'bg-primary text-white border-primary shadow-md shadow-primary/20' : 'border-border-light dark:border-border-dark text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark hover:bg-gray-100 dark:hover:bg-slate-800'}`}
+                                    className={`px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-lg border transition-all duration-300 ${isSelected ? 'bg-primary text-slate-900 border-primary shadow-md shadow-primary/20' : 'border-border-light dark:border-border-dark text-slate-900 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800'}`}
                                 >
                                     {status}
                                 </button>
@@ -48,27 +48,27 @@ export const TaskFilterPanel = () => {
                     </div>
                 </div>
                 <div>
-                    <label className="text-[10px] font-black text-text-muted dark:text-text-muted-dark uppercase tracking-widest mb-3 block">Date Range</label>
+                    <label className="text-[10px] font-bold text-slate-900 dark:text-slate-200 uppercase tracking-widest mb-3 block">Date Range</label>
                     <div className="flex gap-2">
                         <input
                             type="date"
                             value={filters.dateRange.start || ''}
                             onChange={(e) => handleDateChange('start', e.target.value)}
-                            className="w-full bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded-lg px-2 py-2 text-xs text-text-main dark:text-text-main-dark font-black [color-scheme:light] dark:[color-scheme:dark] transition-colors"
+                            className="w-full bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded-lg px-2 py-2 text-xs text-slate-950 dark:text-white font-bold [color-scheme:light] dark:[color-scheme:dark] transition-colors"
                             placeholder="Start"
                         />
                         <input
                             type="date"
                             value={filters.dateRange.end || ''}
                             onChange={(e) => handleDateChange('end', e.target.value)}
-                            className="w-full bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded-lg px-2 py-2 text-xs text-text-main dark:text-text-main-dark font-black [color-scheme:light] dark:[color-scheme:dark] transition-colors"
+                            className="w-full bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded-lg px-2 py-2 text-xs text-slate-950 dark:text-white font-bold [color-scheme:light] dark:[color-scheme:dark] transition-colors"
                             placeholder="End"
                         />
                     </div>
                 </div>
                 <button
                     onClick={() => setFilters({ status: [], dateRange: { start: null, end: null }, searchQuery: '' })}
-                    className="w-full py-2 text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-400 hover:bg-red-500/5 rounded-lg transition-all"
+                    className="w-full py-2 text-[10px] font-bold uppercase tracking-widest text-red-500 hover:text-red-400 hover:bg-red-500/5 rounded-lg transition-all"
                 >
                     Clear Filters
                 </button>

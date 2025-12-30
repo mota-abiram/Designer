@@ -1,15 +1,21 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { useTaskContext } from '../context/TaskContext';
 import { Header } from '../components/layout/Header';
+import { ADMIN_EMAILS } from '../services/adminList';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 export const Categories = () => {
     const {
         brands, addBrand, deleteBrand,
         creativeTypes, addCreativeType, deleteCreativeType,
-        scopes, addScope, deleteScope
+        scopes, addScope, deleteScope,
+        seedSocialMediaData
     } = useTaskContext();
+    const { user } = useAuth();
 
+    const isAdmin = user?.email ? ADMIN_EMAILS.includes(user.email) : false;
 
     const [newBrand, setNewBrand] = useState('');
     const [newType, setNewType] = useState('');
@@ -39,6 +45,18 @@ export const Categories = () => {
         }
     };
 
+    const handleSeed = async () => {
+        if (!confirm('Are you sure you want to reset and seed the database? This is irreversible.')) return;
+
+        try {
+            await seedSocialMediaData();
+            toast.success('Database seeded successfully!');
+        } catch (error) {
+            toast.error('Failed to seed database.');
+            console.error(error);
+        }
+    }
+
     return (
         <div className="flex flex-col h-screen bg-background-light dark:bg-background-dark text-text-main font-display overflow-hidden">
             <Header />
@@ -46,7 +64,7 @@ export const Categories = () => {
             <main className="flex-1 overflow-y-auto p-6 md:p-8">
                 <div className="max-w-6xl mx-auto space-y-12">
                     <header className="flex flex-col gap-2">
-                        <h1 className="text-4xl font-black tracking-tight text-text-main dark:text-text-main-dark">Client Onboarding</h1>
+                        <h1 className="text-4xl font-bold tracking-tight text-text-main dark:text-text-main-dark">Client Onboarding</h1>
                         <p className="text-lg font-semibold text-text-muted dark:text-text-muted-dark opacity-80">Manage brands, creative types, and scopes for your design workflow.</p>
                     </header>
 
@@ -58,8 +76,8 @@ export const Categories = () => {
                             className="bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-3xl p-8 shadow-sm flex flex-col gap-6 transition-colors"
                         >
                             <div className="flex items-center gap-3">
-                                <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-xl font-black">sell</span>
-                                <h2 className="text-2xl font-black dark:text-text-main-dark">Brands</h2>
+                                <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-xl font-bold">sell</span>
+                                <h2 className="text-2xl font-bold dark:text-text-main-dark">Brands</h2>
                             </div>
 
                             <form onSubmit={handleAddBrand} className="flex gap-2">
@@ -73,7 +91,7 @@ export const Categories = () => {
                                 <button
                                     type="submit"
                                     disabled={!newBrand.trim()}
-                                    className="bg-primary hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl font-black transition-all shadow-lg shadow-primary/20 flex items-center justify-center uppercase tracking-widest text-xs"
+                                    className="bg-primary hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-primary/20 flex items-center justify-center uppercase tracking-widest text-xs"
                                 >
                                     <span className="material-symbols-outlined text-[20px]">add</span>
                                 </button>
@@ -93,7 +111,7 @@ export const Categories = () => {
                                                 key={brand.id}
                                                 className="group flex items-center justify-between bg-gray-50 dark:bg-slate-800/30 hover:bg-white dark:hover:bg-slate-800 border border-border-light/50 dark:border-border-dark rounded-xl px-4 py-4 transition-all"
                                             >
-                                                <span className="font-black text-sm tracking-widest uppercase text-text-main dark:text-text-main-dark">{brand.name}</span>
+                                                <span className="font-bold text-sm tracking-widest uppercase text-text-main dark:text-text-main-dark">{brand.name}</span>
                                                 <button
                                                     onClick={() => {
                                                         if (confirm(`Delete brand "${brand.name}"?`)) deleteBrand(brand.id);
@@ -118,8 +136,8 @@ export const Categories = () => {
                             className="bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-3xl p-8 shadow-sm flex flex-col gap-6 transition-colors"
                         >
                             <div className="flex items-center gap-3">
-                                <span className="material-symbols-outlined text-purple-500 p-2 bg-purple-500/10 rounded-xl font-black">category</span>
-                                <h2 className="text-2xl font-black dark:text-text-main-dark">Types</h2>
+                                <span className="material-symbols-outlined text-purple-500 p-2 bg-purple-500/10 rounded-xl font-bold">category</span>
+                                <h2 className="text-2xl font-bold dark:text-text-main-dark">Types</h2>
                             </div>
 
                             <form onSubmit={handleAddType} className="flex gap-2">
@@ -133,7 +151,7 @@ export const Categories = () => {
                                 <button
                                     type="submit"
                                     disabled={!newType.trim()}
-                                    className="bg-purple-500 hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl font-black transition-all shadow-lg shadow-purple-500/20 flex items-center justify-center uppercase tracking-widest text-xs"
+                                    className="bg-purple-500 hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-purple-500/20 flex items-center justify-center uppercase tracking-widest text-xs"
                                 >
                                     <span className="material-symbols-outlined text-[20px]">add</span>
                                 </button>
@@ -153,7 +171,7 @@ export const Categories = () => {
                                                 key={type.id}
                                                 className="group flex items-center justify-between bg-gray-50 dark:bg-slate-800/30 hover:bg-white dark:hover:bg-slate-800 border border-border-light/50 dark:border-border-dark rounded-xl px-4 py-4 transition-all"
                                             >
-                                                <span className="font-black text-sm tracking-widest uppercase text-text-main dark:text-text-main-dark">{type.name}</span>
+                                                <span className="font-bold text-sm tracking-widest uppercase text-text-main dark:text-text-main-dark">{type.name}</span>
                                                 <button
                                                     onClick={() => {
                                                         if (confirm(`Delete creative type "${type.name}"?`)) deleteCreativeType(type.id);
@@ -177,8 +195,8 @@ export const Categories = () => {
                             className="bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-3xl p-8 shadow-sm flex flex-col gap-6 transition-colors"
                         >
                             <div className="flex items-center gap-3">
-                                <span className="material-symbols-outlined text-green-500 p-2 bg-green-500/10 rounded-xl font-black">scope</span>
-                                <h2 className="text-2xl font-black dark:text-text-main-dark">Scopes</h2>
+                                <span className="material-symbols-outlined text-green-500 p-2 bg-green-500/10 rounded-xl font-bold">scope</span>
+                                <h2 className="text-2xl font-bold dark:text-text-main-dark">Scopes</h2>
                             </div>
 
                             <form onSubmit={handleAddScope} className="flex gap-2">
@@ -192,7 +210,7 @@ export const Categories = () => {
                                 <button
                                     type="submit"
                                     disabled={!newScope.trim()}
-                                    className="bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl font-black transition-all shadow-lg shadow-green-500/20 flex items-center justify-center uppercase tracking-widest text-xs"
+                                    className="bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-green-500/20 flex items-center justify-center uppercase tracking-widest text-xs"
                                 >
                                     <span className="material-symbols-outlined text-[20px]">add</span>
                                 </button>
@@ -212,7 +230,7 @@ export const Categories = () => {
                                                 key={scope.id}
                                                 className="group flex items-center justify-between bg-gray-50 dark:bg-slate-800/30 hover:bg-white dark:hover:bg-slate-800 border border-border-light/50 dark:border-border-dark rounded-xl px-4 py-4 transition-all"
                                             >
-                                                <span className="font-black text-sm tracking-widest uppercase text-text-main dark:text-text-main-dark">{scope.name}</span>
+                                                <span className="font-bold text-sm tracking-widest uppercase text-text-main dark:text-text-main-dark">{scope.name}</span>
                                                 <button
                                                     onClick={() => {
                                                         if (confirm(`Delete scope "${scope.name}"?`)) deleteScope(scope.id);
@@ -228,6 +246,32 @@ export const Categories = () => {
                             </div>
                         </motion.section>
                     </div>
+
+                    {isAdmin && (
+                        <motion.section
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                            className="bg-red-900/10 border border-red-500/20 rounded-3xl p-8 shadow-sm flex flex-col gap-6"
+                        >
+                            <div className="flex items-center gap-3">
+                                <span className="material-symbols-outlined text-red-500 p-2 bg-red-500/10 rounded-xl font-bold">warning</span>
+                                <h2 className="text-2xl font-bold text-red-500">Danger Zone</h2>
+                            </div>
+                            <p className="text-red-500/80 font-semibold">
+                                These actions are destructive and cannot be undone.
+                            </p>
+                            <div className="flex items-center gap-4">
+                                <button
+                                    onClick={handleSeed}
+                                    className="bg-red-500 hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-red-500/20 flex items-center justify-center uppercase tracking-widest text-sm gap-2"
+                                >
+                                    <span className="material-symbols-outlined text-[20px]">bolt</span>
+                                    <span>Reset Seed Data</span>
+                                </button>
+                            </div>
+                        </motion.section>
+                    )}
                 </div>
             </main>
         </div>

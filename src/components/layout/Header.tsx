@@ -10,34 +10,34 @@ export const Header = () => {
     const isDashboardActive = location.pathname === '/dashboard';
 
     return (
-        <header className="flex-none flex items-center justify-between whitespace-nowrap border-b border-solid border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark px-6 py-3 z-20 transition-colors duration-300">
+        <header className="flex-none flex items-center justify-between whitespace-nowrap border-b-2 border-solid border-primary bg-surface-light dark:bg-surface-dark px-6 py-3 z-20 transition-colors duration-300">
             <div className="flex items-center gap-4">
                 <Link to="/" className="flex items-center gap-4 hover:opacity-80 transition-opacity">
-                    <div className="size-8 flex items-center justify-center rounded bg-primary/20 text-primary">
-                        <span className="material-symbols-outlined">grid_view</span>
+                    <div className="size-8 flex items-center justify-center rounded bg-primary text-slate-900 shadow-sm shadow-primary/20">
+                        <span className="material-symbols-outlined font-bold">grid_view</span>
                     </div>
-                    <h2 className="text-text-main dark:text-text-main-dark text-lg font-black leading-tight tracking-tight">Designer Task Tracker</h2>
+                    <h2 className="text-text-main dark:text-text-main-dark text-lg font-bold leading-tight tracking-wide">Designer Task Tracker</h2>
                 </Link>
             </div>
             <div className="flex items-center gap-6">
                 <nav className="hidden md:flex items-center gap-6">
                     <Link
                         to="/dashboard"
-                        className={`text-sm font-black transition-colors ${isDashboardActive ? 'text-text-main dark:text-text-main-dark' : 'text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark'}`}
+                        className={`text-l font-bold tracking-wide transition-colors ${isDashboardActive ? 'text-text-main dark:text-text-main-dark' : 'text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark'}`}
                     >
                         Dashboard
                     </Link>
 
                     <Link
                         to="/"
-                        className={`text-sm font-black transition-colors ${location.pathname === '/' ? 'text-text-main dark:text-text-main-dark' : 'text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark'}`}
+                        className={`text-l font-bold tracking-wide transition-colors ${location.pathname === '/' ? 'text-text-main dark:text-text-main-dark' : 'text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark'}`}
                     >
                         Board
                     </Link>
 
                     <Link
                         to="/categories"
-                        className={`text-sm font-black transition-colors ${location.pathname === '/categories' ? 'text-text-main dark:text-text-main-dark' : 'text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark'}`}
+                        className={`text-l font-bold  tracking-wide transition-colors ${location.pathname === '/categories' ? 'text-text-main dark:text-text-main-dark' : 'text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark'}`}
                     >
                         Onboarding
                     </Link>
@@ -54,7 +54,7 @@ export const Header = () => {
                     <div className="h-4 w-px bg-border-light dark:border-border-dark mx-2"></div>
                     <button
                         onClick={() => logout()}
-                        className="text-text-muted dark:text-text-muted-dark text-sm font-black hover:text-red-500 transition-colors cursor-pointer"
+                        className="text-text-muted dark:text-text-muted-dark text-l font-bold tracking-wide hover:text-red-500 transition-colors cursor-pointer"
                     >
                         Logout
                     </button>
@@ -67,7 +67,7 @@ export const Header = () => {
                         className="rounded-full size-9 border border-border-dark object-cover"
                     />
                 ) : (
-                    <div className="bg-primary/20 text-primary rounded-full size-9 flex items-center justify-center border border-border-dark font-semibold">
+                    <div className="bg-primary text-slate-900 rounded-full size-9 flex items-center justify-center border-2 border-primary shadow-sm font-bold">
                         {user?.displayName?.[0] || "U"}
                     </div>
                 )}

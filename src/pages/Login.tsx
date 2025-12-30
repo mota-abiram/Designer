@@ -26,7 +26,7 @@ export const Login = () => {
             {/* Decorative Background Elements */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
                 <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px]" />
-                <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-blue-400/10 rounded-full blur-[100px]" />
+                <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-primary-dark/10 rounded-full blur-[100px]" />
                 <div className="absolute bottom-[10%] left-[20%] w-[25%] h-[25%] bg-purple-400/10 rounded-full blur-[100px]" />
             </div>
 
@@ -41,9 +41,9 @@ export const Login = () => {
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                        className="w-20 h-20 mb-6 bg-gradient-to-tr from-primary to-blue-600 rounded-2xl flex items-center justify-center shadow-lg transform rotate-3"
+                        className="w-20 h-20 mb-6 bg-gradient-to-tr from-primary to-primary-dark rounded-2xl flex items-center justify-center shadow-lg transform rotate-3"
                     >
-                        <span className="material-symbols-outlined text-white text-4xl">design_services</span>
+                        <span className="material-symbols-outlined text-slate-900 text-4xl font-bold">design_services</span>
                     </motion.div>
 
                     <h1 className="text-3xl font-bold text-text-main mb-2 tracking-tight">

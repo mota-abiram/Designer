@@ -8,7 +8,9 @@ export default {
     theme: {
         extend: {
             colors: {
-                "primary": "#137fec",
+                "primary": "#FFF02E",
+                "primary-dark": "#D4C700", // Darker for text on light backgrounds
+                "primary-hover": "#E6D800",
                 "background-light": "#f6f7f8",
                 "background-dark": "#0f172a", // True Dark: Slate 900
                 "surface-light": "#ffffff",

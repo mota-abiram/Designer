@@ -37,15 +37,15 @@ const CircularProgress = ({ value, total, label, color }: { value: number, total
                     />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xl font-black text-slate-900 dark:text-text-main-dark">{percentage}%</span>
+                    <span className="text-xl font-bold text-slate-900 dark:text-text-main-dark">{percentage}%</span>
                 </div>
             </div>
             <div className="mt-2 text-center">
-                <span className="text-[10px] font-black text-slate-400 dark:text-text-muted-dark uppercase tracking-widest">{label}</span>
+                <span className="text-[11px] font-bold text-slate-400 dark:text-text-muted-dark uppercase tracking-wider">{label}</span>
                 <div className="flex items-center justify-center gap-1 mt-0.5">
-                    <span className="text-base font-black text-slate-900 dark:text-text-main-dark">{value}</span>
+                    <span className="text-base font-bold text-slate-900 dark:text-text-main-dark">{value}</span>
                     <span className="text-slate-400 dark:text-text-muted-dark font-bold text-xs">/</span>
-                    <span className="text-sm font-black text-slate-500 dark:text-slate-400">{total}</span>
+                    <span className="text-sm font-bold text-slate-500 dark:text-slate-400">{total}</span>
                 </div>
             </div>
         </div>
@@ -174,7 +174,15 @@ export const Dashboard = () => {
     }, [quotas]);
 
     // Determine active filter button
-    const isToday = filters.dateRange.start === format(new Date(), 'yyyy-MM-dd') && filters.dateRange.end === format(new Date(), 'yyyy-MM-dd');
+    const todayStr = format(new Date(), 'yyyy-MM-dd');
+    const startOfWeekStr = format(startOfWeek(new Date(), { weekStartsOn: 1 }), 'yyyy-MM-dd');
+    const endOfWeekStr = format(endOfWeek(new Date(), { weekStartsOn: 1 }), 'yyyy-MM-dd');
+    const startOfMonthStr = format(startOfMonth(new Date()), 'yyyy-MM-dd');
+    const endOfMonthStr = format(endOfMonth(new Date()), 'yyyy-MM-dd');
+
+    const isToday = filters.dateRange.start === todayStr && filters.dateRange.end === todayStr;
+    const isThisWeek = filters.dateRange.start === startOfWeekStr && filters.dateRange.end === endOfWeekStr;
+    const isThisMonth = filters.dateRange.start === startOfMonthStr && filters.dateRange.end === endOfMonthStr;
 
 
     return (
@@ -184,19 +192,19 @@ export const Dashboard = () => {
                 <div className="flex-none px-8 py-6 border-b border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark shadow-sm z-10 transition-colors">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
-                            <h1 className="text-3xl font-black text-text-main dark:text-text-main-dark tracking-tight">Performance Dashboard</h1>
-                            <p className="text-base font-semibold text-text-muted dark:text-text-muted-dark mt-1">Overview of team performance and workload</p>
+                            <h1 className="text-3xl font-bold text-text-main dark:text-text-main-dark tracking-wide word-spacing-wide">Performance Dashboard</h1>
+                            <p className="text-base font-semibold text-text-muted dark:text-text-muted-dark mt-1 tracking-wide word-spacing-wide">Overview of team performance and workload</p>
                         </div>
 
                         <div className="flex flex-wrap items-center gap-3">
                             <div className="flex bg-background-light dark:bg-background-dark rounded-lg p-1 border border-border-light dark:border-border-dark">
-                                <button onClick={() => setRange('today')} className={cn("px-3 py-1.5 text-sm font-black rounded-md transition-colors", isToday ? "bg-surface-light dark:bg-surface-dark text-primary shadow-sm" : "text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark")}>
+                                <button onClick={() => setRange('today')} className={cn("px-3 py-1.5 text-sm font-bold rounded-md transition-colors", isToday ? "bg-primary text-slate-900 shadow-sm" : "text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark")}>
                                     Today
                                 </button>
-                                <button onClick={() => setRange('week')} className={cn("px-3 py-1.5 text-sm font-black rounded-md transition-colors", !isToday && filters.dateRange.start ? "bg-surface-light dark:bg-surface-dark text-primary shadow-sm" : "text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark")}>
+                                <button onClick={() => setRange('week')} className={cn("px-3 py-1.5 text-sm font-bold rounded-md transition-colors", isThisWeek ? "bg-primary text-slate-900 shadow-sm" : "text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark")}>
                                     This Week
                                 </button>
-                                <button onClick={() => setRange('month')} className={cn("px-3 py-1.5 text-sm font-black rounded-md transition-colors", "text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark")}>
+                                <button onClick={() => setRange('month')} className={cn("px-3 py-1.5 text-sm font-bold rounded-md transition-colors", isThisMonth ? "bg-primary text-slate-900 shadow-sm" : "text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark")}>
                                     This Month
                                 </button>
                             </div>
@@ -225,26 +233,26 @@ export const Dashboard = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
                         {/* Summary Cards */}
                         <div className="bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-border-light dark:border-border-dark shadow-sm transition-colors">
-                            <span className="text-xs font-black text-text-muted dark:text-text-muted-dark uppercase tracking-wider">Total Tasks</span>
-                            <div className="text-4xl font-black text-text-main dark:text-text-main-dark mt-2 tracking-tight">
+                            <span className="text-[11px] font-bold text-text-muted dark:text-text-muted-dark uppercase tracking-wider">Total Tasks</span>
+                            <div className="text-4xl font-bold text-text-main dark:text-text-main-dark mt-2 tracking-tight">
                                 {tasks.length + tasks.reduce((acc, t) => acc + (t.reworkCount || 0), 0)}
                             </div>
                         </div>
                         <div className="bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-green-200 dark:border-green-900 bg-green-50/50 dark:bg-green-900/10 shadow-sm transition-colors">
-                            <span className="text-xs font-black text-green-600 dark:text-green-400 uppercase tracking-wider">Completed</span>
-                            <div className="text-4xl font-black text-green-700 dark:text-green-400 mt-2 tracking-tight">
+                            <span className="text-[11px] font-bold text-green-600 dark:text-green-400 uppercase tracking-wider">Completed</span>
+                            <div className="text-4xl font-bold text-green-700 dark:text-green-400 mt-2 tracking-tight">
                                 {tasks.filter((t: Task) => t.status === 'Submitted').length}
                             </div>
                         </div>
                         <div className="bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-red-200 dark:border-red-900 bg-red-50/50 dark:bg-red-900/10 shadow-sm transition-colors">
-                            <span className="text-xs font-black text-red-600 dark:text-red-400 uppercase tracking-wider">Pending/Rework</span>
-                            <div className="text-4xl font-black text-red-700 dark:text-red-400 mt-2 tracking-tight">
+                            <span className="text-[11px] font-bold text-red-600 dark:text-red-400 uppercase tracking-wider">Pending/Rework</span>
+                            <div className="text-4xl font-bold text-red-700 dark:text-red-400 mt-2 tracking-tight">
                                 {tasks.filter((t: Task) => t.status === 'Pending' || t.status === 'Rework').length}
                             </div>
                         </div>
-                        <div className="bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-blue-200 dark:border-blue-900 bg-blue-50/50 dark:bg-blue-900/10 shadow-sm transition-colors">
-                            <span className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-wider">Efficiency</span>
-                            <div className="text-4xl font-black text-blue-700 dark:text-blue-400 mt-2 tracking-tight">
+                        <div className="bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-primary/30 bg-primary/5 dark:bg-primary/10 shadow-sm transition-colors">
+                            <span className="text-[11px] font-bold text-primary-dark dark:text-primary uppercase tracking-wider">Efficiency</span>
+                            <div className="text-4xl font-bold text-slate-900 dark:text-primary mt-2 tracking-tight">
                                 {(() => {
                                     const total = tasks.length + tasks.reduce((acc, t) => acc + (t.reworkCount || 0), 0);
                                     const completed = tasks.filter((t: Task) => t.status === 'Submitted').length;
@@ -254,7 +262,7 @@ export const Dashboard = () => {
                         </div>
 
                         {/* Social Media Scope Progress */}
-                        <div className="bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-blue-200 dark:border-blue-900 shadow-sm flex items-center justify-center transition-colors">
+                        <div className="bg-surface-light dark:bg-surface-dark p-4 rounded-xl border border-primary/30 dark:border-blue-900 shadow-sm flex items-center justify-center transition-colors">
                             <CircularProgress
                                 value={scopeTotals.statics.delivered}
                                 total={scopeTotals.statics.target}
@@ -278,9 +286,9 @@ export const Dashboard = () => {
                             <button
                                 onClick={() => setActiveTab('designers')}
                                 className={cn(
-                                    "pb-4 text-base font-black transition-all relative",
+                                    "pb-4 text-base font-bold transition-all relative",
                                     activeTab === 'designers'
-                                        ? "text-primary"
+                                        ? "text-primary-dark dark:text-primary"
                                         : "text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark"
                                 )}
                             >
@@ -292,9 +300,9 @@ export const Dashboard = () => {
                             <button
                                 onClick={() => setActiveTab('managers')}
                                 className={cn(
-                                    "pb-4 text-base font-black transition-all relative",
+                                    "pb-4 text-base font-bold transition-all relative",
                                     activeTab === 'managers'
-                                        ? "text-primary"
+                                        ? "text-primary-dark dark:text-primary"
                                         : "text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark"
                                 )}
                             >
@@ -306,9 +314,9 @@ export const Dashboard = () => {
                             <button
                                 onClick={() => setActiveTab('scope')}
                                 className={cn(
-                                    "pb-4 text-base font-black transition-all relative",
+                                    "pb-4 text-base font-bold transition-all relative",
                                     activeTab === 'scope'
-                                        ? "text-primary"
+                                        ? "text-primary-dark dark:text-primary"
                                         : "text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark"
                                 )}
                             >
@@ -324,7 +332,7 @@ export const Dashboard = () => {
                         <div className="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark shadow-sm overflow-hidden animate-in fade-in duration-300 transition-colors">
                             {/* ... existing designer content ... */}
                             <div className="px-6 py-4 border-b border-border-light dark:border-border-dark bg-gray-50 dark:bg-slate-800/50 flex items-center justify-between">
-                                <h3 className="text-lg font-black text-text-main dark:text-text-main-dark">Designer Performance</h3>
+                                <h3 className="text-lg font-bold text-text-main dark:text-text-main-dark">Designer Performance</h3>
                                 <div className="text-xs text-text-muted">
                                     Range: {filters.dateRange.start || 'All time'} - {filters.dateRange.end || 'Present'}
                                 </div>
@@ -332,36 +340,36 @@ export const Dashboard = () => {
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="border-b border-border-light dark:border-border-dark">
-                                        <th className="px-6 py-4 text-xs font-black text-text-muted dark:text-text-muted-dark uppercase tracking-wider">Designer</th>
-                                        <th className="px-6 py-4 text-xs font-black text-text-muted dark:text-text-muted-dark uppercase tracking-wider text-right">Total</th>
-                                        <th className="px-6 py-4 text-xs font-black text-text-muted dark:text-text-muted-dark uppercase tracking-wider text-right">Completed</th>
-                                        <th className="px-6 py-4 text-xs font-black text-text-muted dark:text-text-muted-dark uppercase tracking-wider text-right">Pending</th>
-                                        <th className="px-6 py-4 text-xs font-black text-text-muted dark:text-text-muted-dark uppercase tracking-wider text-right">Efficiency</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-text-muted dark:text-text-muted-dark uppercase tracking-wider">Designer</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-text-muted dark:text-text-muted-dark uppercase tracking-wider text-right">Total</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-text-muted dark:text-text-muted-dark uppercase tracking-wider text-right">Completed</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-text-muted dark:text-text-muted-dark uppercase tracking-wider text-right">Pending</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-text-muted dark:text-text-muted-dark uppercase tracking-wider text-right">Efficiency</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-border-dark">
                                     {stats.map((designer: any) => (
-                                        <tr key={designer.id} className="hover:bg-gray-50 transition-colors">
+                                        <tr key={designer.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/40 transition-colors">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
                                                     {designer.avatar ? (
                                                         <img src={designer.avatar} alt={designer.name} className="size-8 rounded-full bg-gray-200 object-cover" />
                                                     ) : (
-                                                        <div className="size-8 rounded-full bg-primary/10 dark:bg-primary-dark/10 text-primary dark:text-primary-dark flex items-center justify-center font-black text-xs uppercase">
+                                                        <div className="size-8 rounded-full bg-primary/10 dark:bg-primary-dark/10 text-primary dark:text-primary-dark flex items-center justify-center font-bold text-xs uppercase">
                                                             {designer.name[0]}
                                                         </div>
                                                     )}
-                                                    <span className="font-black text-text-main dark:text-text-main-dark">{designer.name}</span>
+                                                    <span className="font-bold text-text-main dark:text-text-main-dark tracking-wide">{designer.name}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-right font-black text-text-main dark:text-text-main-dark text-base">{designer.total}</td>
+                                            <td className="px-6 py-4 text-right font-bold text-text-main dark:text-text-main-dark text-base">{designer.total}</td>
                                             <td className="px-6 py-4 text-right">
-                                                <span className={cn("inline-block px-2.5 py-1 rounded text-xs font-black", designer.completed > 0 ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400" : "text-gray-400")}>
+                                                <span className={cn("inline-block px-2.5 py-1 rounded text-xs font-bold", designer.completed > 0 ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400" : "text-gray-400")}>
                                                     {designer.completed}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <span className={cn("inline-block px-2.5 py-1 rounded text-xs font-black", designer.pending > 0 ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400" : "text-gray-400")}>
+                                                <span className={cn("inline-block px-2.5 py-1 rounded text-xs font-bold", designer.pending > 0 ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400" : "text-gray-400")}>
                                                     {designer.pending}
                                                 </span>
                                             </td>
@@ -373,7 +381,7 @@ export const Dashboard = () => {
                                                             style={{ width: `${designer.efficiency}%` }}>
                                                         </div>
                                                     </div>
-                                                    <span className="text-sm font-black text-text-main dark:text-text-main-dark w-10 text-right">{designer.efficiency}%</span>
+                                                    <span className="text-sm font-bold text-text-main dark:text-text-main-dark w-10 text-right">{designer.efficiency}%</span>
                                                 </div>
                                             </td>
                                         </tr>
@@ -386,7 +394,7 @@ export const Dashboard = () => {
                     {activeTab === 'managers' && (
                         <div className="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark shadow-sm overflow-hidden animate-in fade-in duration-300 transition-colors">
                             <div className="px-6 py-4 border-b border-border-light dark:border-border-dark bg-gray-50 dark:bg-slate-800/50 flex items-center justify-between">
-                                <h3 className="text-lg font-black text-text-main dark:text-text-main-dark">Account Manager Performance</h3>
+                                <h3 className="text-lg font-bold text-text-main dark:text-text-main-dark">Account Manager Performance</h3>
                                 <div className="text-xs text-text-muted dark:text-text-muted-dark">
                                     Range: {filters.dateRange.start || 'All time'} - {filters.dateRange.end || 'Present'}
                                 </div>
@@ -394,36 +402,36 @@ export const Dashboard = () => {
                             <table className="w-full text-left border-collapse">
                                 <thead>
                                     <tr className="border-b border-border-light dark:border-border-dark">
-                                        <th className="px-6 py-4 text-xs font-black text-text-muted dark:text-text-muted-dark uppercase tracking-wider">Manager</th>
-                                        <th className="px-6 py-4 text-xs font-black text-text-muted dark:text-text-muted-dark uppercase tracking-wider text-right">Tasks Assigned</th>
-                                        <th className="px-6 py-4 text-xs font-black text-text-muted dark:text-text-muted-dark uppercase tracking-wider text-right">Completed</th>
-                                        <th className="px-6 py-4 text-xs font-black text-text-muted dark:text-text-muted-dark uppercase tracking-wider text-right">Pending</th>
-                                        <th className="px-6 py-4 text-xs font-black text-text-muted dark:text-text-muted-dark uppercase tracking-wider text-right">Completion Rate</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-text-muted dark:text-text-muted-dark uppercase tracking-wider">Manager</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-text-muted dark:text-text-muted-dark uppercase tracking-wider text-right">Tasks Assigned</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-text-muted dark:text-text-muted-dark uppercase tracking-wider text-right">Completed</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-text-muted dark:text-text-muted-dark uppercase tracking-wider text-right">Pending</th>
+                                        <th className="px-6 py-4 text-xs font-bold text-text-muted dark:text-text-muted-dark uppercase tracking-wider text-right">Completion Rate</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-border-dark">
                                     {assignerStats.map((manager: any) => (
-                                        <tr key={manager.name} className="hover:bg-gray-50 transition-colors">
+                                        <tr key={manager.name} className="hover:bg-gray-50 dark:hover:bg-slate-800/40 transition-colors">
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-3">
                                                     {manager.avatar ? (
                                                         <img src={manager.avatar} alt={manager.name} className="size-8 rounded-full bg-gray-200 object-cover" />
                                                     ) : (
-                                                        <div className="size-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black text-xs uppercase">
+                                                        <div className="size-8 rounded-full bg-primary/20 dark:bg-primary/10 text-primary-dark dark:text-primary flex items-center justify-center font-bold text-xs uppercase">
                                                             {manager.name[0]}
                                                         </div>
                                                     )}
-                                                    <span className="font-black text-text-main dark:text-text-main-dark">{manager.name}</span>
+                                                    <span className="font-bold text-text-main dark:text-text-main-dark tracking-wide">{manager.name}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-right font-black text-text-main dark:text-text-main-dark text-base">{manager.total}</td>
+                                            <td className="px-6 py-4 text-right font-bold text-text-main dark:text-text-main-dark text-base">{manager.total}</td>
                                             <td className="px-6 py-4 text-right">
-                                                <span className={cn("inline-block px-2.5 py-1 rounded text-xs font-black", manager.completed > 0 ? "bg-green-100 text-green-700" : "text-gray-400")}>
+                                                <span className={cn("inline-block px-2.5 py-1 rounded text-xs font-bold", manager.completed > 0 ? "bg-green-100 text-green-700" : "text-gray-400")}>
                                                     {manager.completed}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-right">
-                                                <span className={cn("inline-block px-2.5 py-1 rounded text-xs font-black", manager.pending > 0 ? "bg-red-100 text-red-700" : "text-gray-400")}>
+                                                <span className={cn("inline-block px-2.5 py-1 rounded text-xs font-bold", manager.pending > 0 ? "bg-red-100 text-red-700" : "text-gray-400")}>
                                                     {manager.pending}
                                                 </span>
                                             </td>
@@ -435,7 +443,7 @@ export const Dashboard = () => {
                                                             style={{ width: `${manager.efficiency}%` }}>
                                                         </div>
                                                     </div>
-                                                    <span className="text-sm font-black text-text-main dark:text-text-main-dark w-10 text-right">{manager.efficiency}%</span>
+                                                    <span className="text-sm font-bold text-text-main dark:text-text-main-dark w-10 text-right">{manager.efficiency}%</span>
                                                 </div>
                                             </td>
                                         </tr>

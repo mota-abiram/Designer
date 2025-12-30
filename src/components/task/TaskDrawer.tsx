@@ -97,7 +97,7 @@ export const TaskDrawer = () => {
                     >
                         <div className="flex flex-col h-full bg-background-light dark:bg-background-dark">
                             <div className="flex items-center justify-between p-6 border-b border-border-light dark:border-border-dark bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur z-10 sticky top-0 transition-colors">
-                                <h2 className="text-2xl font-black text-text-main dark:text-text-main-dark">
+                                <h2 className="text-2xl font-bold text-slate-950 dark:text-white">
                                     {isEditing ? 'EDIT TASK' : 'TASK DETAILS'}
                                 </h2>
                                 <div className="flex items-center gap-2">
@@ -105,25 +105,25 @@ export const TaskDrawer = () => {
                                         <>
                                             <button
                                                 onClick={() => setIsEditing(true)}
-                                                className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors text-text-muted dark:text-text-muted-dark hover:text-primary dark:hover:text-primary"
+                                                className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-900 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white"
                                                 title="Edit Task"
                                             >
-                                                <span className="material-symbols-outlined font-black">edit</span>
+                                                <span className="material-symbols-outlined font-bold">edit</span>
                                             </button>
                                             <button
                                                 onClick={handleDelete}
-                                                className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors text-text-muted dark:text-text-muted-dark hover:text-red-500"
+                                                className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-900 dark:text-slate-200 hover:text-red-500"
                                                 title="Delete Task"
                                             >
-                                                <span className="material-symbols-outlined font-black">delete</span>
+                                                <span className="material-symbols-outlined font-bold">delete</span>
                                             </button>
                                         </>
                                     )}
                                     <button
                                         onClick={handleClose}
-                                        className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark"
+                                        className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-900 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white"
                                     >
-                                        <span className="material-symbols-outlined font-black">close</span>
+                                        <span className="material-symbols-outlined font-bold">close</span>
                                     </button>
                                 </div>
                             </div>
@@ -133,31 +133,31 @@ export const TaskDrawer = () => {
                                     {isEditing ? (
                                         <div className="space-y-4">
                                             <div>
-                                                <label className="text-[10px] uppercase font-black text-text-muted dark:text-text-muted-dark tracking-widest mb-2 block">Title</label>
+                                                <label className="text-[11px] uppercase font-bold text-slate-900 dark:text-slate-200 tracking-wider mb-2 block">Title</label>
                                                 <input
                                                     type="text"
                                                     value={editForm.title}
                                                     onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
-                                                    className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-text-main dark:text-text-main-dark font-black focus:outline-none focus:border-primary transition-all"
+                                                    className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-slate-950 dark:text-white font-bold focus:outline-none focus:border-primary transition-all"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="text-[10px] uppercase font-black text-text-muted dark:text-text-muted-dark tracking-widest mb-2 block">Description</label>
+                                                <label className="text-[11px] uppercase font-bold text-slate-900 dark:text-slate-200 tracking-wider mb-2 block">Description</label>
                                                 <textarea
                                                     value={editForm.description}
                                                     onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
                                                     rows={4}
-                                                    className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-text-main dark:text-text-main-dark font-semibold focus:outline-none focus:border-primary transition-all resize-none"
+                                                    className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-slate-950 dark:text-white font-semibold focus:outline-none focus:border-primary transition-all resize-none"
                                                 />
                                             </div>
 
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <label className="text-[10px] uppercase font-black text-text-muted dark:text-text-muted-dark tracking-widest mb-2 block">Brand</label>
+                                                    <label className="text-[11px] uppercase font-bold text-slate-900 dark:text-slate-200 tracking-wider mb-2 block">Brand</label>
                                                     <select
                                                         value={editForm.brand}
                                                         onChange={(e) => setEditForm(prev => ({ ...prev, brand: e.target.value }))}
-                                                        className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-text-main dark:text-text-main-dark font-black focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
+                                                        className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-slate-950 dark:text-white font-bold focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
                                                     >
                                                         <option value="">Select Brand</option>
                                                         {brands.map(b => (
@@ -166,11 +166,11 @@ export const TaskDrawer = () => {
                                                     </select>
                                                 </div>
                                                 <div>
-                                                    <label className="text-[10px] uppercase font-black text-text-muted dark:text-text-muted-dark tracking-widest mb-2 block">Type</label>
+                                                    <label className="text-[11px] uppercase font-bold text-slate-900 dark:text-slate-200 tracking-wider mb-2 block">Type</label>
                                                     <select
                                                         value={editForm.creativeType}
                                                         onChange={(e) => setEditForm(prev => ({ ...prev, creativeType: e.target.value }))}
-                                                        className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-text-main dark:text-text-main-dark font-black focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
+                                                        className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-slate-950 dark:text-white font-bold focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
                                                     >
                                                         <option value="">Select Type</option>
                                                         {creativeTypes.map(t => (
@@ -181,11 +181,11 @@ export const TaskDrawer = () => {
                                             </div>
 
                                             <div>
-                                                <label className="text-[10px] uppercase font-black text-text-muted dark:text-text-muted-dark tracking-widest mb-2 block">Scope</label>
+                                                <label className="text-[11px] uppercase font-bold text-slate-900 dark:text-slate-200 tracking-wider mb-2 block">Scope</label>
                                                 <select
                                                     value={editForm.scope}
                                                     onChange={(e) => setEditForm(prev => ({ ...prev, scope: e.target.value }))}
-                                                    className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-text-main dark:text-text-main-dark font-black focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
+                                                    className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-slate-950 dark:text-white font-bold focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
                                                 >
                                                     <option value="">Select Scope</option>
                                                     {scopes.map(s => (
@@ -197,13 +197,13 @@ export const TaskDrawer = () => {
                                             <div className="flex justify-end gap-3 pt-4 border-t border-border-light dark:border-border-dark">
                                                 <button
                                                     onClick={() => setIsEditing(false)}
-                                                    className="px-4 py-2 text-xs font-black uppercase tracking-widest text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark transition-colors"
+                                                    className="px-4 py-2 text-xs font-bold uppercase tracking-widest text-slate-900 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white transition-colors"
                                                 >
                                                     Cancel
                                                 </button>
                                                 <button
                                                     onClick={handleSave}
-                                                    className="px-6 py-2 text-xs font-black uppercase tracking-widest bg-primary text-white rounded-xl hover:bg-blue-600 shadow-lg shadow-primary/20 transition-all active:scale-95"
+                                                    className="px-6 py-2 text-xs font-bold uppercase tracking-widest bg-primary text-slate-900 rounded-xl hover:opacity-90 shadow-lg shadow-primary/20 transition-all active:scale-95"
                                                 >
                                                     Save Changes
                                                 </button>
@@ -211,8 +211,8 @@ export const TaskDrawer = () => {
                                         </div>
                                     ) : (
                                         <>
-                                            <h3 className="text-3xl font-black text-text-main dark:text-text-main-dark leading-tight">{selectedTask.title}</h3>
-                                            <div className="text-lg font-semibold text-text-muted dark:text-text-muted-dark leading-relaxed whitespace-pre-wrap opacity-90">
+                                            <h3 className="text-3xl font-bold text-slate-950 dark:text-white leading-tight">{selectedTask.title}</h3>
+                                            <div className="text-lg font-semibold text-slate-900 dark:text-slate-200 leading-relaxed whitespace-pre-wrap opacity-90">
                                                 {selectedTask.description.split(/(https?:\/\/[^\s]+)/g).map((part, i) => (
                                                     part.match(/(https?:\/\/[^\s]+)/g) ? (
                                                         <a
@@ -220,7 +220,7 @@ export const TaskDrawer = () => {
                                                             href={part}
                                                             target="_blank"
                                                             rel="noreferrer"
-                                                            className="text-primary hover:underline font-black"
+                                                            className="text-slate-950 dark:text-white underline font-bold"
                                                         >
                                                             {part}
                                                         </a>
@@ -230,17 +230,17 @@ export const TaskDrawer = () => {
                                             {(selectedTask.brand || selectedTask.creativeType || selectedTask.scope) && (
                                                 <div className="flex flex-wrap gap-2 pt-4">
                                                     {selectedTask.brand && (
-                                                        <span className="px-3 py-1.5 bg-primary/10 text-primary border border-primary/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors">
+                                                        <span className="px-3 py-1.5 bg-primary/10 text-slate-950 dark:text-primary-dark border border-primary/20 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-colors">
                                                             {selectedTask.brand}
                                                         </span>
                                                     )}
                                                     {selectedTask.creativeType && (
-                                                        <span className="px-3 py-1.5 bg-gray-100 dark:bg-slate-800 text-text-muted dark:text-text-muted-dark border border-border-light dark:border-border-dark rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors">
+                                                        <span className="px-3 py-1.5 bg-gray-100 dark:bg-slate-800 text-slate-900 dark:text-slate-200 border border-border-light dark:border-border-dark rounded-xl text-[10px] font-bold uppercase tracking-widest transition-colors">
                                                             {selectedTask.creativeType}
                                                         </span>
                                                     )}
                                                     {selectedTask.scope && (
-                                                        <span className="px-3 py-1.5 bg-green-500/10 text-green-500 border border-green-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-colors">
+                                                        <span className="px-3 py-1.5 bg-green-500/10 text-green-500 border border-green-500/20 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-colors">
                                                             {selectedTask.scope}
                                                         </span>
                                                     )}
@@ -264,14 +264,14 @@ export const TaskDrawer = () => {
                                                     onClick={() => updateTaskStatus(selectedTask.id, status)}
                                                     disabled={isStatusDisabled}
                                                     className={cn(
-                                                        "flex-1 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest border transition-all duration-300 flex items-center justify-center gap-2",
+                                                        "flex-1 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest border transition-all duration-300 flex items-center justify-center gap-2",
                                                         isActive
                                                             ? status === 'Pending'
                                                                 ? "bg-red-500 text-white border-red-500 shadow-lg shadow-red-500/20"
                                                                 : status === 'Submitted'
                                                                     ? "bg-green-500 text-white border-green-500 shadow-lg shadow-green-500/20"
                                                                     : "bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/20"
-                                                            : "bg-gray-50 dark:bg-slate-800/50 border-border-light dark:border-border-dark text-text-muted dark:text-text-muted-dark hover:bg-white dark:hover:bg-slate-800 transition-colors",
+                                                            : "bg-gray-50 dark:bg-slate-800/50 border-border-light dark:border-border-dark text-slate-900 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 transition-colors",
                                                         isStatusDisabled && "opacity-50 cursor-not-allowed"
                                                     )}
                                                 >
@@ -284,8 +284,8 @@ export const TaskDrawer = () => {
 
                                 <div className="grid grid-cols-2 gap-6 pt-8 border-t border-border-light dark:border-border-dark">
                                     <div>
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-text-muted dark:text-text-muted-dark">Assigned to</label>
-                                        <div className="mt-2 text-text-main dark:text-text-main-dark transition-colors">
+                                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">Assigned to</label>
+                                        <div className="mt-2 text-slate-950 dark:text-white transition-colors">
                                             <div className="relative">
                                                 <select
                                                     value={selectedTask.designerId}
@@ -294,7 +294,7 @@ export const TaskDrawer = () => {
                                                         updateTask({ ...selectedTask, designerId: newDesignerId });
                                                         setEditForm(prev => ({ ...prev, designerId: newDesignerId }));
                                                     }}
-                                                    className="w-full pl-10 pr-8 py-2.5 bg-gray-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-border-light dark:border-border-dark rounded-xl text-text-main dark:text-text-main-dark text-sm font-black focus:outline-none transition-all appearance-none cursor-pointer"
+                                                    className="w-full pl-10 pr-8 py-2.5 bg-gray-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-border-light dark:border-border-dark rounded-xl text-slate-950 dark:text-white text-sm font-bold focus:outline-none transition-all appearance-none cursor-pointer"
                                                 >
                                                     {designers.map(d => (
                                                         <option key={d.id} value={d.id}>{d.name}</option>
@@ -306,20 +306,20 @@ export const TaskDrawer = () => {
                                                         return d?.avatar ? (
                                                             <div className="size-5 rounded-full bg-cover bg-center" style={{ backgroundImage: `url("${d.avatar}")` }}></div>
                                                         ) : (
-                                                            <div className="size-5 rounded-full bg-primary/20 flex items-center justify-center text-primary text-[10px] font-bold">
+                                                            <div className="size-5 rounded-full bg-primary/20 flex items-center justify-center text-slate-950 dark:text-primary text-[10px] font-bold">
                                                                 {d?.name?.[0] || 'D'}
                                                             </div>
                                                         );
                                                     })()}
                                                 </div>
-                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
+                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-900">
                                                     <span className="material-symbols-outlined text-sm">expand_more</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-text-muted dark:text-text-muted-dark">Assigned By</label>
+                                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200">Assigned By</label>
                                         <div className="mt-2">
                                             <div className="relative">
                                                 <select
@@ -332,7 +332,7 @@ export const TaskDrawer = () => {
                                                             assignedByAvatar: null
                                                         });
                                                     }}
-                                                    className="w-full pl-10 pr-8 py-2.5 bg-gray-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-border-light dark:border-border-dark rounded-xl text-text-main dark:text-text-main-dark text-sm font-black focus:outline-none transition-all appearance-none cursor-pointer"
+                                                    className="w-full pl-10 pr-8 py-2.5 bg-gray-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-border-light dark:border-border-dark rounded-xl text-slate-950 dark:text-white text-sm font-bold focus:outline-none transition-all appearance-none cursor-pointer"
                                                 >
                                                     <option value="" disabled>Select...</option>
                                                     {ASSIGNERS.map(name => (
@@ -343,19 +343,19 @@ export const TaskDrawer = () => {
                                                     {selectedTask.assignedByAvatar ? (
                                                         <div className="size-5 rounded-full bg-cover bg-center" style={{ backgroundImage: `url("${selectedTask.assignedByAvatar}")` }}></div>
                                                     ) : (
-                                                        <div className="size-5 rounded-full bg-gray-200 dark:bg-slate-700 border border-border-light dark:border-border-dark flex items-center justify-center text-[10px] font-black text-text-muted dark:text-text-muted-dark">
+                                                        <div className="size-5 rounded-full bg-gray-200 dark:bg-slate-700 border border-border-light dark:border-border-dark flex items-center justify-center text-[10px] font-bold text-slate-900 dark:text-slate-200">
                                                             {selectedTask.assignedBy?.[0] || '?'}
                                                         </div>
                                                     )}
                                                 </div>
-                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
+                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-900">
                                                     <span className="material-symbols-outlined text-sm">expand_more</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-text-muted dark:text-text-muted-dark mb-1 block">Brand</label>
+                                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200 mb-1 block">Brand</label>
                                         <div className="mt-1">
                                             <div className="relative">
                                                 <select
@@ -365,21 +365,21 @@ export const TaskDrawer = () => {
                                                         updateTask({ ...selectedTask, brand: newBrand });
                                                         setEditForm(prev => ({ ...prev, brand: newBrand }));
                                                     }}
-                                                    className="w-full pl-3 pr-8 py-2.5 bg-gray-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-border-light dark:border-border-dark rounded-xl text-text-main dark:text-text-main-dark text-sm font-black focus:outline-none transition-all appearance-none cursor-pointer"
+                                                    className="w-full pl-3 pr-8 py-2.5 bg-gray-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-border-light dark:border-border-dark rounded-xl text-slate-950 dark:text-white text-sm font-bold focus:outline-none transition-all appearance-none cursor-pointer"
                                                 >
                                                     <option value="">None</option>
                                                     {brands.map(b => (
                                                         <option key={b.id} value={b.name}>{b.name}</option>
                                                     ))}
                                                 </select>
-                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted dark:text-text-muted-dark">
+                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-900 dark:text-slate-200">
                                                     <span className="material-symbols-outlined text-sm">expand_more</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-text-muted dark:text-text-muted-dark mb-1 block">Type</label>
+                                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200 mb-1 block">Type</label>
                                         <div className="mt-1">
                                             <div className="relative">
                                                 <select
@@ -389,21 +389,21 @@ export const TaskDrawer = () => {
                                                         updateTask({ ...selectedTask, creativeType: newType });
                                                         setEditForm(prev => ({ ...prev, creativeType: newType }));
                                                     }}
-                                                    className="w-full pl-3 pr-8 py-2.5 bg-gray-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-border-light dark:border-border-dark rounded-xl text-text-main dark:text-text-main-dark text-sm font-black focus:outline-none transition-all appearance-none cursor-pointer"
+                                                    className="w-full pl-3 pr-8 py-2.5 bg-gray-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-border-light dark:border-border-dark rounded-xl text-slate-950 dark:text-white text-sm font-bold focus:outline-none transition-all appearance-none cursor-pointer"
                                                 >
                                                     <option value="">None</option>
                                                     {creativeTypes.map(t => (
                                                         <option key={t.id} value={t.name}>{t.name}</option>
                                                     ))}
                                                 </select>
-                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted dark:text-text-muted-dark">
+                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-900 dark:text-slate-200">
                                                     <span className="material-symbols-outlined text-sm">expand_more</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-text-muted dark:text-text-muted-dark mb-1 block">Scope</label>
+                                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200 mb-1 block">Scope</label>
                                         <div className="mt-1">
                                             <div className="relative">
                                                 <select
@@ -413,36 +413,36 @@ export const TaskDrawer = () => {
                                                         updateTask({ ...selectedTask, scope: newScope });
                                                         setEditForm(prev => ({ ...prev, scope: newScope }));
                                                     }}
-                                                    className="w-full pl-3 pr-8 py-2.5 bg-gray-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-border-light dark:border-border-dark rounded-xl text-text-main dark:text-text-main-dark text-sm font-black focus:outline-none transition-all appearance-none cursor-pointer"
+                                                    className="w-full pl-3 pr-8 py-2.5 bg-gray-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-border-light dark:border-border-dark rounded-xl text-slate-950 dark:text-white text-sm font-bold focus:outline-none transition-all appearance-none cursor-pointer"
                                                 >
                                                     <option value="">None</option>
                                                     {scopes.map(s => (
                                                         <option key={s.id} value={s.name}>{s.name}</option>
                                                     ))}
                                                 </select>
-                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted dark:text-text-muted-dark">
+                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-900 dark:text-slate-200">
                                                     <span className="material-symbols-outlined text-sm">expand_more</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-text-muted dark:text-text-muted-dark mb-1 block">Due Date</label>
+                                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-slate-200 mb-1 block">Due Date</label>
                                         <div className="mt-1 flex items-center gap-2 px-3 py-2.5 bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl">
-                                            <span className="material-symbols-outlined text-text-muted dark:text-text-muted-dark text-sm">calendar_today</span>
-                                            <span className="text-text-main dark:text-text-main-dark text-sm font-black uppercase tracking-widest">{selectedTask.date}</span>
+                                            <span className="material-symbols-outlined text-slate-900 dark:text-slate-200 text-sm">calendar_today</span>
+                                            <span className="text-slate-950 dark:text-white text-sm font-bold uppercase tracking-widest">{selectedTask.date}</span>
                                         </div>
                                     </div>
                                     {selectedTask.updatedAt && (
                                         <div className="col-span-2">
-                                            <label className="text-xs text-text-muted">Last updated</label>
-                                            <p className="text-xs text-text-main mt-0.5">{formatDate(selectedTask.updatedAt)}</p>
+                                            <label className="text-xs text-slate-900">Last updated</label>
+                                            <p className="text-xs text-slate-950 mt-0.5">{formatDate(selectedTask.updatedAt)}</p>
                                         </div>
                                     )}
                                 </div>
                             </div>
 
-                            <div className="p-4 border-t border-border-light dark:border-border-dark bg-gray-50/50 dark:bg-background-dark/50 text-center text-xs text-text-muted dark:text-text-muted-dark opacity-60">
+                            <div className="p-4 border-t border-border-light dark:border-border-dark bg-gray-50/50 dark:bg-background-dark/50 text-center text-xs text-slate-900 dark:text-slate-200 opacity-60">
                                 Task ID: {selectedTask.id} | Mode: {role}
                             </div>
                         </div>

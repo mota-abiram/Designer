@@ -106,13 +106,13 @@ export const TaskGrid = () => {
                                                         isSelected ? "border-primary" : "border-transparent group-hover/header:border-primary/30"
                                                     )}>
                                                         <span className={cn(
-                                                            "text-xs uppercase font-black tracking-widest flex items-center gap-1",
-                                                            isSelected ? "text-primary" : "text-text-muted dark:text-text-muted-dark"
+                                                            "text-xs uppercase font-bold tracking-widest flex items-center gap-1",
+                                                            isSelected ? "text-slate-950 dark:text-white" : "text-slate-500 dark:text-slate-400"
                                                         )}>
                                                             {format(date, 'EEEE')}
-                                                            {isToday && <span className={cn("text-white text-[10px] px-1.5 rounded-sm ml-1 transition-colors font-black", isSelected ? "bg-primary" : "bg-text-muted")}>Today</span>}
+                                                            {isToday && <span className={cn("text-slate-950 text-[10px] px-1.5 rounded-sm ml-1 transition-colors font-bold", isSelected ? "bg-primary" : "bg-slate-200 dark:bg-slate-700 text-slate-500")}>Today</span>}
                                                         </span>
-                                                        <span className={cn("text-lg font-black transition-colors", isSelected ? "text-text-main dark:text-text-main-dark" : "text-text-muted dark:text-text-muted-dark")}>{format(date, 'MMM d')}</span>
+                                                        <span className={cn("text-lg font-bold transition-colors", isSelected ? "text-slate-950 dark:text-white" : "text-slate-500 dark:text-slate-400")}>{format(date, 'MMM d')}</span>
                                                     </div>
                                                 </div>
                                             </div>

@@ -50,10 +50,10 @@ export const TaskCard = ({ task }: { task: Task }) => {
         >
             <div className="flex flex-col gap-1">
                 <div className="flex justify-between items-start gap-2">
-                    <h3 className={cn("font-black text-text-main dark:text-text-main-dark leading-snug break-words", isCompact ? "text-xs" : "text-sm pr-2")}>{task.title}</h3>
+                    <h3 className={cn("font-bold text-slate-950 dark:text-white leading-snug break-words", isCompact ? "text-xs" : "text-sm pr-2")}>{task.title}</h3>
                 </div>
                 {!isCompact && (
-                    <p className="text-xs text-text-muted dark:text-text-muted-dark leading-relaxed line-clamp-3">
+                    <p className="text-xs text-slate-900 dark:text-slate-200 leading-relaxed line-clamp-3">
                         {task.description.split(/(https?:\/\/[^\s]+)/g).map((part, i) => (
                             part.match(/(https?:\/\/[^\s]+)/g) ? (
                                 <a
@@ -62,7 +62,7 @@ export const TaskCard = ({ task }: { task: Task }) => {
                                     target="_blank"
                                     rel="noreferrer"
                                     onClick={(e) => e.stopPropagation()}
-                                    className="text-blue-500 hover:underline relative z-10"
+                                    className="text-slate-950 dark:text-white underline relative z-10 font-bold"
                                 >
                                     {part}
                                 </a>
@@ -73,23 +73,23 @@ export const TaskCard = ({ task }: { task: Task }) => {
                 {!isCompact && (task.brand || task.creativeType || task.scope) && (
                     <div className="flex flex-wrap gap-1 mt-1">
                         {task.brand && (
-                            <span className="px-1.5 py-0.5 bg-primary/5 dark:bg-primary/10 text-primary dark:text-primary border border-primary/10 rounded text-[10px] font-black uppercase tracking-wider">
+                            <span className="px-2 py-0.5 bg-primary text-slate-900 border border-primary/20 rounded text-[11px] font-bold uppercase tracking-wide shadow-sm">
                                 {task.brand}
                             </span>
                         )}
                         {task.creativeType && (
-                            <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 border border-border-light dark:border-border-dark rounded text-[10px] font-black uppercase tracking-wider">
+                            <span className="px-1.5 py-0.5 bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 border border-border-light dark:border-border-dark rounded text-[11px] font-bold uppercase tracking-wide">
                                 {task.creativeType}
                             </span>
                         )}
                         {task.scope && (
-                            <span className="px-1.5 py-0.5 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800 rounded text-[10px] font-black uppercase tracking-wider">
+                            <span className="px-1.5 py-0.5 bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-200 dark:border-green-800 rounded text-[11px] font-bold uppercase tracking-wide">
                                 {task.scope}
                             </span>
                         )}
                         {(task.reworkCount || 0) > 0 && (
-                            <span className="px-1.5 py-0.5 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 rounded text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
-                                <span className="material-symbols-outlined text-[10px]">refresh</span>
+                            <span className="px-1.5 py-0.5 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800 rounded text-[11px] font-bold uppercase tracking-wide flex items-center gap-1">
+                                <span className="material-symbols-outlined text-[11px]">refresh</span>
                                 {task.reworkCount} Rework{task.reworkCount! > 1 ? 's' : ''}
                             </span>
                         )}
@@ -108,7 +108,7 @@ export const TaskCard = ({ task }: { task: Task }) => {
                                 style={task.assignedByAvatar ? { backgroundImage: `url("${task.assignedByAvatar}")` } : { backgroundColor: '#e2e8f0' }}
                                 title={`Assigned by: ${task.assignedBy}`}
                             >
-                                {!task.assignedByAvatar && <span className="flex items-center justify-center w-full h-full text-[8px] font-black text-text-muted dark:text-text-muted-dark">{task.assignedBy[0]}</span>}
+                                {!task.assignedByAvatar && <span className="flex items-center justify-center w-full h-full text-[8px] font-bold text-slate-900">{task.assignedBy[0]}</span>}
                                 <select
                                     value={task.assignedBy || ''}
                                     onChange={(e) => handleAssignByChange(e.target.value)}
@@ -126,7 +126,7 @@ export const TaskCard = ({ task }: { task: Task }) => {
                     </div>
                 ) : (
                     <>
-                        <span className={cn("inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-black uppercase tracking-wider border", currentStyle.badge)}>
+                        <span className={cn("inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[11px] font-bold uppercase tracking-wide border", currentStyle.badge)}>
                             {currentStyle.dot && <span className={cn("size-1.5 rounded-full", currentStyle.dot)}></span>}
                             {currentStyle.icon && <span className="material-symbols-outlined text-[14px]">{currentStyle.icon}</span>}
                             {task.status}
@@ -136,7 +136,7 @@ export const TaskCard = ({ task }: { task: Task }) => {
                                 style={task.assignedByAvatar ? { backgroundImage: `url("${task.assignedByAvatar}")` } : { backgroundColor: '#e2e8f0' }}
                                 title={`Assigned by: ${task.assignedBy}`}
                             >
-                                {!task.assignedByAvatar && <span className="flex items-center justify-center w-full h-full text-[10px] font-black text-text-muted dark:text-text-muted-dark">{task.assignedBy[0]}</span>}
+                                {!task.assignedByAvatar && <span className="flex items-center justify-center w-full h-full text-[10px] font-bold text-slate-900">{task.assignedBy[0]}</span>}
                                 <select
                                     value={task.assignedBy || ''}
                                     onChange={(e) => handleAssignByChange(e.target.value)}
