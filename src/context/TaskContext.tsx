@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useRef, useEffect, useMemo, type ReactNode } from 'react';
+import { format } from 'date-fns';
 import type { Task, Designer, Role, Status, FilterState, Brand, CreativeType, Scope, BrandQuota } from '../types';
-import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, writeBatch, where, setDoc, getDoc } from 'firebase/firestore';
+import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, writeBatch, where, setDoc, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { useAuth } from './AuthContext';
 import { designers as initialDesigners, getCurrentWeekDays } from '../services/mockData';
@@ -159,6 +160,60 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         };
     }, [user]);
 
+    /* ================= TASK ROLLOVER ================= */
+    useEffect(() => {
+        if (!user) return;
+
+        const rolloverOverdueTasks = async () => {
+            const todayStr = format(new Date(), 'yyyy-MM-dd');
+
+            try {
+                // Fetch tasks where status is 'Pending' or 'Rework' and date is in the past
+                const qPending = query(
+                    collection(db, "tasks"),
+                    where("status", "==", "Pending"),
+                    where("date", "<", todayStr)
+                );
+
+                const qRework = query(
+                    collection(db, "tasks"),
+                    where("status", "==", "Rework"),
+                    where("date", "<", todayStr)
+                );
+
+                const [snapPending, snapRework] = await Promise.all([
+                    getDocs(qPending),
+                    getDocs(qRework)
+                ]);
+
+                const overdueTasks = [...snapPending.docs, ...snapRework.docs];
+
+                if (overdueTasks.length === 0) return;
+
+                const batch = writeBatch(db);
+                overdueTasks.forEach(docSnap => {
+                    batch.update(docSnap.ref, {
+                        date: todayStr,
+                        updatedAt: new Date().toISOString()
+                    });
+                });
+
+                await batch.commit();
+                console.log(`Rolled over ${overdueTasks.length} pending/rework tasks to ${todayStr}`);
+            } catch (error) {
+                console.error("Error during task rollover:", error);
+            }
+        };
+
+        // Run on mount
+        rolloverOverdueTasks();
+
+        // Check for day change every hour
+        const interval = setInterval(rolloverOverdueTasks, 60 * 60 * 1000);
+
+        return () => clearInterval(interval);
+    }, [user]);
+
     /* ================= TASK ACTIONS ================= */
     const adjustQuota = async (brandName: string | undefined, scopeName: string | undefined, typeName: string | undefined, amount: number) => {
         if (!brandName || !scopeName || !typeName) return;
@@ -238,7 +293,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                 if (status === 'Rework') {
                     updateData.reworkCount = (task.reworkCount || 0) + 1;
                     // Move to today's date so the designer sees it in their current board
-                    updateData.date = new Date().toISOString().split('T')[0];
+                    updateData.date = format(new Date(), 'yyyy-MM-dd');
                 }
 
                 await updateDoc(doc(db, "tasks", taskId), updateData);
