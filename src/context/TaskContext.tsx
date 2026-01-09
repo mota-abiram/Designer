@@ -168,17 +168,16 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             const todayStr = format(new Date(), 'yyyy-MM-dd');
 
             try {
-                // Fetch tasks where status is 'Pending' or 'Rework' and date is in the past
+                // Fetch ALL tasks where status is 'Pending' or 'Rework'
+                // We filter by date client-side to avoid needing a composite index on [status, date]
                 const qPending = query(
                     collection(db, "tasks"),
-                    where("status", "==", "Pending"),
-                    where("date", "<", todayStr)
+                    where("status", "==", "Pending")
                 );
 
                 const qRework = query(
                     collection(db, "tasks"),
-                    where("status", "==", "Rework"),
-                    where("date", "<", todayStr)
+                    where("status", "==", "Rework")
                 );
 
                 const [snapPending, snapRework] = await Promise.all([
@@ -186,7 +185,11 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                     getDocs(qRework)
                 ]);
 
-                const overdueTasks = [...snapPending.docs, ...snapRework.docs];
+                // Combine and filter for dates strictly before today
+                const overdueTasks = [...snapPending.docs, ...snapRework.docs].filter(doc => {
+                    const taskDate = doc.data().date;
+                    return taskDate && taskDate < todayStr;
+                });
 
                 if (overdueTasks.length === 0) return;
 
