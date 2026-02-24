@@ -1,4 +1,4 @@
-export type Status = 'Pending' | 'Submitted' | 'Rework';
+export type Status = 'Pending' | 'Pending Approval' | 'Rework' | 'Approved';
 
 export interface Brand {
     id: string;
@@ -16,6 +16,14 @@ export interface Scope {
     id: string;
     name: string;
     createdAt?: string;
+}
+
+export interface Comment {
+    id: string;
+    text: string;
+    author: string;
+    authorAvatar?: string | null;
+    timestamp: string;
 }
 
 export interface BrandQuota {
@@ -51,6 +59,7 @@ export interface Task {
     assignedBy?: string | null;
     assignedByAvatar?: string | null;
     reworkCount?: number;
+    comments?: Comment[];
     createdAt?: string;
     updatedAt?: string;
 }

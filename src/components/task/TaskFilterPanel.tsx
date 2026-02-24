@@ -1,14 +1,15 @@
 import { useTaskContext } from '../../context/TaskContext';
+import type { Status } from '../../types';
 
 
 export const TaskFilterPanel = () => {
     const { filters, setFilters } = useTaskContext();
 
-    const handleStatusToggle = (status: 'Pending' | 'Submitted' | 'Rework') => {
+    const handleStatusToggle = (status: Status) => {
         setFilters({
             ...filters,
             status: filters.status.includes(status)
-                ? filters.status.filter(s => s !== status)
+                ? filters.status.filter((s: Status) => s !== status)
                 : [...filters.status, status]
         });
     };
@@ -33,15 +34,15 @@ export const TaskFilterPanel = () => {
                 <div>
                     <label className="text-[10px] font-bold text-slate-900 dark:text-slate-200 uppercase tracking-widest mb-3 block">Status</label>
                     <div className="flex flex-wrap gap-2">
-                        {['Pending', 'Submitted', 'Rework'].map(status => {
+                        {['Pending', 'Pending Approval', 'Rework', 'Approved'].map(status => {
                             const isSelected = filters.status.includes(status as any);
                             return (
                                 <button
                                     key={status}
                                     onClick={() => handleStatusToggle(status as any)}
-                                    className={`px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-lg border transition-all duration-300 ${isSelected ? 'bg-primary text-slate-900 border-primary shadow-md shadow-primary/20' : 'border-border-light dark:border-border-dark text-slate-900 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800'}`}
+                                    className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-lg border transition-all duration-300 ${isSelected ? 'bg-primary text-slate-900 border-primary shadow-md shadow-primary/20' : 'border-border-light dark:border-border-dark text-slate-900 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800'}`}
                                 >
-                                    {status}
+                                    {status === 'Pending Approval' ? 'SUBMITTED' : status}
                                 </button>
                             );
                         })}

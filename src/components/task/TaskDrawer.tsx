@@ -17,13 +17,15 @@ export const TaskDrawer = () => {
         activeDesignerId,
         brands,
         creativeTypes,
-        scopes
+        scopes,
+        addComment
     } = useTaskContext();
 
     const handleClose = () => setSelectedTask(null);
 
     const [isEditing, setIsEditing] = useState(false);
     const [editForm, setEditForm] = useState({ title: '', description: '', designerId: '', brand: '', creativeType: '', scope: '' });
+    const [newComment, setNewComment] = useState('');
     const { updateTask, deleteTask } = useTaskContext();
 
     // Reset local state when selectedTask changes
@@ -55,6 +57,13 @@ export const TaskDrawer = () => {
         if (selectedTask && confirm('Are you sure you want to delete this task?')) {
             deleteTask(selectedTask.id);
         }
+    };
+
+    const handleAddComment = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newComment.trim() || !selectedTask) return;
+        await addComment(selectedTask.id, newComment);
+        setNewComment('');
     };
 
     const canEdit = (): boolean => {
@@ -252,11 +261,18 @@ export const TaskDrawer = () => {
 
                                 <div className="space-y-4 pt-4">
                                     <div className="flex flex-wrap gap-2">
-                                        {(['Pending', 'Submitted', 'Rework'] as Status[]).map((status) => {
+                                        {(['Pending', 'Pending Approval', 'Rework', 'Approved'] as Status[]).map((status) => {
                                             const isActive = selectedTask.status === status;
 
-                                            // Everyone can change status now
+                                            // Determine if button should be disabled
                                             let isStatusDisabled = isEditing;
+
+                                            // Permission Logic:
+                                            // Designers can move to Pending or Pending Approval
+                                            // Managers can do everything
+                                            if (role === 'Designer') {
+                                                if (status === 'Rework' || status === 'Approved') isStatusDisabled = true;
+                                            }
 
                                             return (
                                                 <button
@@ -264,21 +280,75 @@ export const TaskDrawer = () => {
                                                     onClick={() => updateTaskStatus(selectedTask.id, status)}
                                                     disabled={isStatusDisabled}
                                                     className={cn(
-                                                        "flex-1 px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest border transition-all duration-300 flex items-center justify-center gap-2",
+                                                        "flex-1 px-4 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest border transition-all duration-300 flex items-center justify-center gap-2",
                                                         isActive
                                                             ? status === 'Pending'
                                                                 ? "bg-red-500 text-white border-red-500 shadow-lg shadow-red-500/20"
-                                                                : status === 'Submitted'
-                                                                    ? "bg-green-500 text-white border-green-500 shadow-lg shadow-green-500/20"
-                                                                    : "bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/20"
+                                                                : status === 'Pending Approval'
+                                                                    ? "bg-blue-500 text-white border-blue-500 shadow-lg shadow-blue-500/20"
+                                                                    : status === 'Approved'
+                                                                        ? "bg-green-500 text-white border-green-500 shadow-lg shadow-green-500/20"
+                                                                        : "bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/20"
                                                             : "bg-gray-50 dark:bg-slate-800/50 border-border-light dark:border-border-dark text-slate-900 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-800 transition-colors",
-                                                        isStatusDisabled && "opacity-50 cursor-not-allowed"
+                                                        isStatusDisabled && "opacity-30 cursor-not-allowed"
                                                     )}
                                                 >
-                                                    {status}
+                                                    {status === 'Pending Approval' ? 'SUBMIT' : status}
                                                 </button>
                                             );
                                         })}
+                                    </div>
+                                </div>
+
+                                {/* Comments Section */}
+                                <div className="pt-8 border-t border-border-light dark:border-border-dark space-y-6">
+                                    <h4 className="text-[11px] font-bold uppercase tracking-widest text-slate-900 dark:text-slate-200">Notes & Feedback</h4>
+
+                                    <form onSubmit={handleAddComment} className="relative">
+                                        <textarea
+                                            value={newComment}
+                                            onChange={(e) => setNewComment(e.target.value)}
+                                            placeholder="Add a note or feedback..."
+                                            className="w-full bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-sm text-slate-950 dark:text-white font-medium focus:outline-none focus:border-primary transition-all resize-none min-h-[80px]"
+                                        />
+                                        <button
+                                            type="submit"
+                                            disabled={!newComment.trim()}
+                                            className="absolute bottom-3 right-3 p-2 bg-primary text-slate-900 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-all active:scale-95"
+                                        >
+                                            <span className="material-symbols-outlined font-bold text-sm">send</span>
+                                        </button>
+                                    </form>
+
+                                    <div className="space-y-4">
+                                        {selectedTask.comments && selectedTask.comments.length > 0 ? (
+                                            [...selectedTask.comments].reverse().map((comment) => (
+                                                <div key={comment.id} className="bg-gray-50 dark:bg-slate-800/30 rounded-xl p-4 border border-border-light/50 dark:border-border-dark/30">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <div className="flex items-center gap-2">
+                                                            {comment.authorAvatar ? (
+                                                                <img src={comment.authorAvatar} alt={comment.author} className="size-5 rounded-full object-cover" />
+                                                            ) : (
+                                                                <div className="size-5 rounded-full bg-primary/20 flex items-center justify-center text-[8px] font-bold text-slate-900 dark:text-primary">
+                                                                    {comment.author[0]}
+                                                                </div>
+                                                            )}
+                                                            <span className="text-xs font-bold text-slate-950 dark:text-white">{comment.author}</span>
+                                                        </div>
+                                                        <span className="text-[10px] text-slate-500 font-medium">
+                                                            {format(parseISO(comment.timestamp), 'MMM d, h:mm a')}
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
+                                                        {comment.text}
+                                                    </p>
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="text-center py-4 opacity-40">
+                                                <p className="text-xs font-medium italic">No notes yet</p>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
@@ -289,12 +359,16 @@ export const TaskDrawer = () => {
                                             <div className="relative">
                                                 <select
                                                     value={selectedTask.designerId}
+                                                    disabled={role === 'Designer'}
                                                     onChange={(e) => {
                                                         const newDesignerId = e.target.value;
                                                         updateTask({ ...selectedTask, designerId: newDesignerId });
                                                         setEditForm(prev => ({ ...prev, designerId: newDesignerId }));
                                                     }}
-                                                    className="w-full pl-10 pr-8 py-2.5 bg-gray-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-border-light dark:border-border-dark rounded-xl text-slate-950 dark:text-white text-sm font-bold focus:outline-none transition-all appearance-none cursor-pointer"
+                                                    className={cn(
+                                                        "w-full pl-10 pr-8 py-2.5 bg-gray-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-border-light dark:border-border-dark rounded-xl text-slate-950 dark:text-white text-sm font-bold focus:outline-none transition-all appearance-none cursor-pointer",
+                                                        role === 'Designer' && "opacity-50 cursor-not-allowed"
+                                                    )}
                                                 >
                                                     {designers.map(d => (
                                                         <option key={d.id} value={d.id}>{d.name}</option>
@@ -324,6 +398,7 @@ export const TaskDrawer = () => {
                                             <div className="relative">
                                                 <select
                                                     value={selectedTask.assignedBy || ''}
+                                                    disabled={role === 'Designer'}
                                                     onChange={(e) => {
                                                         const newAssignedBy = e.target.value;
                                                         updateTask({
@@ -332,7 +407,10 @@ export const TaskDrawer = () => {
                                                             assignedByAvatar: null
                                                         });
                                                     }}
-                                                    className="w-full pl-10 pr-8 py-2.5 bg-gray-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-border-light dark:border-border-dark rounded-xl text-slate-950 dark:text-white text-sm font-bold focus:outline-none transition-all appearance-none cursor-pointer"
+                                                    className={cn(
+                                                        "w-full pl-10 pr-8 py-2.5 bg-gray-50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 border border-border-light dark:border-border-dark rounded-xl text-slate-950 dark:text-white text-sm font-bold focus:outline-none transition-all appearance-none cursor-pointer",
+                                                        role === 'Designer' && "opacity-50 cursor-not-allowed"
+                                                    )}
                                                 >
                                                     <option value="" disabled>Select...</option>
                                                     {ASSIGNERS.map(name => (

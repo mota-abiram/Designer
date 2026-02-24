@@ -7,3 +7,7 @@ export const ASSIGNERS = [
     "Aarti",
     "Prajakta"
 ];
+
+export const MANAGER_EMAILS = [
+    "abiram@digitalmojo.in"
+];

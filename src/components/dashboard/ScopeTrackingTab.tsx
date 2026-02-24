@@ -24,14 +24,14 @@ export const ScopeTrackingTab = () => {
                 t.brand === quota.brandId &&
                 t.scope === quota.scopeId &&
                 t.creativeType === "Statics" &&
-                t.status === "Submitted"
+                t.status === "Approved"
             );
 
             const liveReels = tasks.filter(t =>
                 t.brand === quota.brandId &&
                 t.scope === quota.scopeId &&
                 t.creativeType === "Reels" &&
-                t.status === "Submitted"
+                t.status === "Approved"
             );
 
             const targetStatics = quota.targets?.Statics || 0;

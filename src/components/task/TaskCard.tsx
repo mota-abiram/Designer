@@ -14,11 +14,17 @@ export const TaskCard = ({ task }: { task: Task }) => {
             dot: 'bg-red-500',
             icon: null
         },
-        Submitted: {
+        'Pending Approval': {
+            border: 'border-blue-500',
+            badge: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+            dot: 'bg-blue-500',
+            icon: 'hourglass_empty'
+        },
+        Approved: {
             border: 'border-green-500',
             badge: 'bg-green-500/10 text-green-500 border-green-500/20',
             dot: 'bg-green-500',
-            icon: 'check'
+            icon: 'check_circle'
         },
         Rework: {
             border: 'border-amber-500',

@@ -2,7 +2,6 @@
 
 A modern, real-time task management system built for creative teams to streamline workflow, track deliverables, and monitor team performance. This application replaces traditional spreadsheet-based workflows with an intelligent, automated system designed specifically for design teams and account managers.
 
----
 
 ## 📋 Overview
 
@@ -21,7 +20,6 @@ Migrating from Google Sheets to a custom-built application addresses critical li
 | **Analytics** | Complex formulas that break easily | Real-time automated dashboards |
 | **Interactivity** | Manual cut & paste operations | Native drag-and-drop rescheduling |
 
----
 
 ## ✨ Features
 
@@ -74,8 +72,6 @@ Migrating from Google Sheets to a custom-built application addresses critical li
 - **🍞 Toast Notifications**: User-friendly feedback for all actions
 - **♿ Accessibility**: Semantic HTML and keyboard navigation support
 
----
-
 ## 🛠️ Tech Stack
 
 ### Frontend Framework
@@ -109,8 +105,6 @@ Migrating from Google Sheets to a custom-built application addresses critical li
 ### Utilities & Helpers
 - **date-fns 4.1.0**: Modern date utility library for formatting and calculations
 - **react-hot-toast 2.6.0**: Elegant toast notification system
-
----
 
 ## 🔒 Security Considerations
 
@@ -163,8 +157,6 @@ service cloud.firestore {
 - 🔐 Implement rate limiting for API calls
 - 🔐 Add audit logging for sensitive operations
 - 🔐 Enable Firebase App Check for abuse prevention
-
----
 
 ## 🚀 Setup Instructions
 
@@ -255,8 +247,6 @@ The optimized build will be in the `dist/` directory.
 npm run preview
 ```
 
----
-
 ## 📁 Project Structure
 
 ```
@@ -327,8 +317,6 @@ designer/
 - **`services/`**: External integrations (Firebase, admin config)
 - **`types/`**: Centralized TypeScript definitions for type safety
 - **`utils/`**: Helper functions and utilities
-
----
 
 ## 🌐 Browser Support
 

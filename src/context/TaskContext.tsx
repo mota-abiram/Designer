@@ -4,6 +4,7 @@ import type { Task, Designer, Role, Status, FilterState, Brand, CreativeType, Sc
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc, query, writeBatch, where, setDoc, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { useAuth } from './AuthContext';
+import { MANAGER_EMAILS } from '../constants/assigners';
 import { designers as initialDesigners, getCurrentWeekDays } from '../services/mockData';
 import toast from 'react-hot-toast';
 
@@ -19,6 +20,7 @@ interface TaskContextType {
     updateTaskStatus: (taskId: string, status: Status) => void;
     updateTask: (task: Task) => void;
     deleteTask: (taskId: string) => void;
+    addComment: (taskId: string, text: string) => Promise<void>;
 
     brands: Brand[];
     addBrand: (name: string) => void;
@@ -100,8 +102,17 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
     /* ================= ROLE SETUP ================= */
     useEffect(() => {
-        // Everyone is a Manager now
-        setRole('Manager');
+        if (!user || !user.email) {
+            setRole('Designer');
+            return;
+        }
+
+        // Check if user is an Account Manager (in MANAGER_EMAILS list)
+        const isManager = MANAGER_EMAILS.some(email =>
+            user.email?.toLowerCase() === email.toLowerCase()
+        );
+
+        setRole(isManager ? 'Manager' : 'Designer');
     }, [user]);
 
     /* ================= TASK LISTENER ================= */
@@ -180,14 +191,20 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                     where("status", "==", "Rework")
                 );
 
-                const [snapPending, snapRework] = await Promise.all([
+                const qPendingApproval = query(
+                    collection(db, "tasks"),
+                    where("status", "==", "Pending Approval")
+                );
+
+                const [snapPending, snapRework, snapPendingApproval] = await Promise.all([
                     getDocs(qPending),
-                    getDocs(qRework)
+                    getDocs(qRework),
+                    getDocs(qPendingApproval)
                 ]);
 
                 // Combine and filter for dates strictly before today
-                const overdueTasks = [...snapPending.docs, ...snapRework.docs].filter(doc => {
-                    const taskDate = doc.data().date;
+                const overdueTasks = [...snapPending.docs, ...snapRework.docs, ...snapPendingApproval.docs].filter(doc => {
+                    const taskDate = (doc.data() as any).date;
                     return taskDate && taskDate < todayStr;
                 });
 
@@ -202,7 +219,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                 });
 
                 await batch.commit();
-                console.log(`Rolled over ${overdueTasks.length} pending/rework tasks to ${todayStr}`);
+                console.log(`Rolled over ${overdueTasks.length} pending/rework/pending-approval tasks to ${todayStr}`);
             } catch (error) {
                 console.error("Error during task rollover:", error);
             }
@@ -260,7 +277,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             const docRef = await addDoc(collection(db, "tasks"), payload);
             setLastAddedTaskId(docRef.id);
 
-            if (payload.status === 'Submitted') {
+            if (payload.status === 'Approved') {
                 await adjustQuota(payload.brand, payload.scope, payload.creativeType, 1);
             }
             toast.success('Task created successfully');
@@ -279,23 +296,20 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
                 const updateData: any = { status, updatedAt: now };
 
                 // Logic for Quota (delivered)
-                if (status === 'Submitted') {
-                    // User: "when completed that rework task, i dont want delivered to be increased again"
-                    // We only increase if moving from Pending, NOT from Rework
-                    if (task.status === 'Pending') {
+                if (status === 'Approved') {
+                    // Increase quota if moving TO Approved
+                    if (task.status !== 'Approved') {
                         await adjustQuota(task.brand, task.scope, task.creativeType, 1);
                     }
-                } else if (task.status === 'Submitted') {
-                    // User: "when a submitted task is marked as rework.. i want the deliverable to be decreased"
-                    // We decrease if we are moving AWAY from Submitted (to Rework or Pending)
+                } else if (task.status === 'Approved') {
+                    // Decrease quota if moving AWAY from Approved
                     await adjustQuota(task.brand, task.scope, task.creativeType, -1);
                 }
 
                 // Logic for Task Count (reworkCount)
-                // User: "when a submitted task is marked as rework.. i want the... task for that designer... should increase"
                 if (status === 'Rework') {
                     updateData.reworkCount = (task.reworkCount || 0) + 1;
-                    // Move to today's date so the designer sees it in their current board
+                    // Move to today's date
                     updateData.date = format(new Date(), 'yyyy-MM-dd');
                 }
 
@@ -317,15 +331,14 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             const oldTask = tasks.find(t => t.id === updatedTask.id);
             if (oldTask) {
                 if (oldTask.status !== updatedTask.status) {
-                    if (updatedTask.status === 'Submitted') {
-                        // Keep consistency with updateTaskStatus logic
-                        if (oldTask.status === 'Pending') {
+                    if (updatedTask.status === 'Approved') {
+                        if (oldTask.status !== 'Approved') {
                             await adjustQuota(updatedTask.brand, updatedTask.scope, updatedTask.creativeType, 1);
                         }
-                    } else if (oldTask.status === 'Submitted') {
+                    } else if (oldTask.status === 'Approved') {
                         await adjustQuota(oldTask.brand, oldTask.scope, oldTask.creativeType, -1);
                     }
-                } else if (updatedTask.status === 'Submitted') {
+                } else if (updatedTask.status === 'Approved') {
                     if (oldTask.brand !== updatedTask.brand ||
                         oldTask.scope !== updatedTask.scope ||
                         oldTask.creativeType !== updatedTask.creativeType) {
@@ -354,7 +367,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     const deleteTask = async (taskId: string) => {
         try {
             const task = tasks.find(t => t.id === taskId);
-            if (task && task.status === 'Submitted') {
+            if (task && task.status === 'Approved') {
                 await adjustQuota(task.brand, task.scope, task.creativeType, -1);
             }
 
@@ -404,6 +417,35 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
 
     const deleteQuota = async (id: string) => {
         await deleteDoc(doc(db, "quotas", id));
+    };
+
+    const addComment = async (taskId: string, text: string) => {
+        try {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            const newComment = {
+                id: Math.random().toString(36).substring(2, 9),
+                text,
+                author: user?.displayName || 'Unknown User',
+                authorAvatar: user?.photoURL || null,
+                timestamp: new Date().toISOString()
+            };
+
+            const updatedComments = [...(task.comments || []), newComment];
+            const taskRef = doc(db, "tasks", taskId);
+            await updateDoc(taskRef, {
+                comments: updatedComments,
+                updatedAt: new Date().toISOString()
+            });
+
+            if (selectedTask?.id === taskId) {
+                setSelectedTask({ ...task, comments: updatedComments });
+            }
+        } catch (e) {
+            console.error("Error adding comment:", e);
+            toast.error('Failed to add comment');
+        }
     };
 
     /* ================= SCROLL ================= */
@@ -528,6 +570,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             quotas,
             updateQuota,
             deleteQuota,
+            addComment,
             selectedTask,
             setSelectedTask: (task) => {
                 setSelectedTask(task);

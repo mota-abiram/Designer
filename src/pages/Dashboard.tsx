@@ -7,6 +7,7 @@ import { cn } from '../utils/cn';
 import type { Task, Designer } from '../types';
 import { ASSIGNERS } from '../constants/assigners';
 import { ScopeTrackingTab } from '../components/dashboard/ScopeTrackingTab';
+import { ResourceHeatmap } from '../components/dashboard/ResourceHeatmap';
 import { motion } from 'framer-motion';
 
 // Circular Progress Component for Scope Tracking
@@ -118,8 +119,8 @@ export const Dashboard = () => {
             const designerTasks = tasks.filter((t: Task) => t.designerId === designer.id);
             const reworkOffset = designerTasks.reduce((acc, t) => acc + (t.reworkCount || 0), 0);
             const total = designerTasks.length + reworkOffset;
-            const completed = designerTasks.filter((t: Task) => t.status === 'Submitted').length;
-            const pending = designerTasks.filter((t: Task) => t.status === 'Pending' || t.status === 'Rework').length;
+            const completed = designerTasks.filter((t: Task) => t.status === 'Approved').length;
+            const pending = designerTasks.filter((t: Task) => t.status !== 'Approved').length;
             const efficiency = total > 0 ? Math.round((completed / total) * 100) : 0;
 
             return {
@@ -137,8 +138,8 @@ export const Dashboard = () => {
             const assignerTasks = tasks.filter((t: Task) => t.assignedBy === name);
             const reworkOffset = assignerTasks.reduce((acc, t) => acc + (t.reworkCount || 0), 0);
             const total = assignerTasks.length + reworkOffset;
-            const completed = assignerTasks.filter((t: Task) => t.status === 'Submitted').length;
-            const pending = assignerTasks.filter((t: Task) => t.status === 'Pending' || t.status === 'Rework').length;
+            const completed = assignerTasks.filter((t: Task) => t.status === 'Approved').length;
+            const pending = assignerTasks.filter((t: Task) => t.status !== 'Approved').length;
             const efficiency = total > 0 ? Math.round((completed / total) * 100) : 0;
 
             const avatarTask = assignerTasks.find(t => t.assignedByAvatar);
@@ -239,15 +240,15 @@ export const Dashboard = () => {
                             </div>
                         </div>
                         <div className="bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-green-200 dark:border-green-900 bg-green-50/50 dark:bg-green-900/10 shadow-sm transition-colors">
-                            <span className="text-[11px] font-bold text-green-600 dark:text-green-400 uppercase tracking-wider">Completed</span>
+                            <span className="text-[11px] font-bold text-green-600 dark:text-green-400 uppercase tracking-wider">Approved</span>
                             <div className="text-4xl font-bold text-green-700 dark:text-green-400 mt-2 tracking-tight">
-                                {tasks.filter((t: Task) => t.status === 'Submitted').length}
+                                {tasks.filter((t: Task) => t.status === 'Approved').length}
                             </div>
                         </div>
                         <div className="bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-red-200 dark:border-red-900 bg-red-50/50 dark:bg-red-900/10 shadow-sm transition-colors">
                             <span className="text-[11px] font-bold text-red-600 dark:text-red-400 uppercase tracking-wider">Pending/Rework</span>
                             <div className="text-4xl font-bold text-red-700 dark:text-red-400 mt-2 tracking-tight">
-                                {tasks.filter((t: Task) => t.status === 'Pending' || t.status === 'Rework').length}
+                                {tasks.filter((t: Task) => t.status !== 'Approved').length}
                             </div>
                         </div>
                         <div className="bg-surface-light dark:bg-surface-dark p-6 rounded-xl border border-primary/30 bg-primary/5 dark:bg-primary/10 shadow-sm transition-colors">
@@ -255,7 +256,7 @@ export const Dashboard = () => {
                             <div className="text-4xl font-bold text-slate-900 dark:text-primary mt-2 tracking-tight">
                                 {(() => {
                                     const total = tasks.length + tasks.reduce((acc, t) => acc + (t.reworkCount || 0), 0);
-                                    const completed = tasks.filter((t: Task) => t.status === 'Submitted').length;
+                                    const completed = tasks.filter((t: Task) => t.status === 'Approved').length;
                                     return total > 0 ? Math.round((completed / total) * 100) : 0;
                                 })()}%
                             </div>
@@ -388,6 +389,11 @@ export const Dashboard = () => {
                                     ))}
                                 </tbody>
                             </table>
+
+                            {/* Heatmap Section */}
+                            <div className="p-8 border-t border-border-light dark:border-border-dark">
+                                <ResourceHeatmap />
+                            </div>
                         </div>
                     )}
 
