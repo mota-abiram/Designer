@@ -5,7 +5,6 @@ export const ASSIGNERS = [
     "Vaishnove",
     "Janvi",
     "Aarti",
-    "Prajakta"
 ];
 
 export const MANAGER_EMAILS = [
