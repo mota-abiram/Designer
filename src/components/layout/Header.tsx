@@ -1,13 +1,30 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { useTaskContext } from '../../context/TaskContext';
 
 export const Header = () => {
     const { logout, user } = useAuth();
     const { theme, toggleTheme } = useTheme();
+    const { allTasks, role, setFilters } = useTaskContext();
     const location = useLocation();
+    const navigate = useNavigate();
 
     const isDashboardActive = location.pathname === '/dashboard';
+
+    const pendingApprovals = allTasks.filter(t => t.status === 'Pending Approval');
+    const pendingCount = pendingApprovals.length;
+
+    const handleNotificationClick = () => {
+        setFilters({
+            status: ['Pending Approval'],
+            dateRange: { start: null, end: null },
+            searchQuery: ''
+        });
+        if (location.pathname !== '/') {
+            navigate('/');
+        }
+    };
 
     return (
         <header className="flex-none flex items-center justify-between whitespace-nowrap border-b-2 border-solid border-primary bg-surface-light dark:bg-surface-dark px-6 py-3 z-20 transition-colors duration-300">
@@ -21,6 +38,23 @@ export const Header = () => {
             </div>
             <div className="flex items-center gap-6">
                 <nav className="hidden md:flex items-center gap-6">
+                    {role === 'Manager' && (
+                        <button
+                            onClick={handleNotificationClick}
+                            className="relative p-1.5 rounded-lg text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark hover:bg-surface-dark/10 dark:hover:bg-surface-light/10 transition-all flex items-center justify-center group"
+                            title={`${pendingCount} tasks pending approval`}
+                        >
+                            <span className={`material-symbols-outlined text-[24px] transition-colors ${pendingCount > 0 ? 'text-red-500 animate-pulse' : ''}`}>
+                                notifications
+                            </span>
+                            {pendingCount > 0 && (
+                                <span className="absolute -top-1 -right-1 size-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-surface-light dark:border-surface-dark shadow-sm">
+                                    {pendingCount}
+                                </span>
+                            )}
+                        </button>
+                    )}
+
                     <Link
                         to="/dashboard"
                         className={`text-l font-bold tracking-wide transition-colors ${isDashboardActive ? 'text-text-main dark:text-text-main-dark' : 'text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark'}`}

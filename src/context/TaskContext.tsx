@@ -64,6 +64,7 @@ interface TaskContextType {
     viewMode: 'comfortable' | 'compact';
     setViewMode: (mode: 'comfortable' | 'compact') => void;
 
+    allTasks: Task[];
     seedSocialMediaData: () => Promise<void>;
 }
 
@@ -592,7 +593,8 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             lastAddedTaskId,
             viewMode,
             setViewMode,
-            seedSocialMediaData
+            seedSocialMediaData,
+            allTasks: tasks
         }}>
             {children}
         </TaskContext.Provider>

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTaskContext } from '../context/TaskContext';
 import { Layout } from '../components/layout/Layout';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 import { cn } from '../utils/cn';
 import type { Task, Designer } from '../types';
@@ -54,15 +54,16 @@ const CircularProgress = ({ value, total, label, color }: { value: number, total
 };
 
 export const Dashboard = () => {
-    const { tasks, designers, setFilters, filters, quotas } = useTaskContext();
+    const { tasks, designers, setFilters, filters, quotas, role } = useTaskContext();
     const location = useLocation();
+    const navigate = useNavigate();
 
     // Tab State
-    const [activeTab, setActiveTab] = useState<'designers' | 'managers' | 'scope'>('designers');
+    const [activeTab, setActiveTab] = useState<'designers' | 'managers' | 'scope' | 'pending'>('designers');
 
     // Handle tab switching from location state
     useEffect(() => {
-        const state = location.state as { tab?: 'designers' | 'managers' | 'scope' };
+        const state = location.state as { tab?: 'designers' | 'managers' | 'scope' | 'pending' };
         if (state?.tab) {
             setActiveTab(state.tab);
         }
@@ -326,6 +327,29 @@ export const Dashboard = () => {
                                     <span className="absolute bottom-0 left-0 w-full h-1 bg-primary rounded-t-full"></span>
                                 )}
                             </button>
+                            {role === 'Manager' && (
+                                <button
+                                    onClick={() => setActiveTab('pending')}
+                                    className={cn(
+                                        "pb-4 text-base font-bold transition-all relative",
+                                        activeTab === 'pending'
+                                            ? "text-primary-dark dark:text-primary"
+                                            : "text-text-muted dark:text-text-muted-dark hover:text-text-main dark:hover:text-text-main-dark"
+                                    )}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        Pending Approval
+                                        {tasks.filter(t => t.status === 'Pending Approval').length > 0 && (
+                                            <span className="bg-red-500 text-white text-[10px] size-5 rounded-full flex items-center justify-center border-2 border-surface-light dark:border-surface-dark">
+                                                {tasks.filter(t => t.status === 'Pending Approval').length}
+                                            </span>
+                                        )}
+                                    </div>
+                                    {activeTab === 'pending' && (
+                                        <span className="absolute bottom-0 left-0 w-full h-1 bg-primary rounded-t-full"></span>
+                                    )}
+                                </button>
+                            )}
                         </div>
                     </div>
 
@@ -461,6 +485,63 @@ export const Dashboard = () => {
 
                     {activeTab === 'scope' && (
                         <ScopeTrackingTab />
+                    )}
+
+                    {activeTab === 'pending' && (
+                        <div className="bg-surface-light dark:bg-surface-dark rounded-xl border border-border-light dark:border-border-dark shadow-sm overflow-hidden animate-in fade-in duration-300 transition-colors">
+                            <div className="px-6 py-4 border-b border-border-light dark:border-border-dark bg-gray-50 dark:bg-slate-800/50 flex items-center justify-between">
+                                <h3 className="text-lg font-bold text-text-main dark:text-text-main-dark">Reviews Needed</h3>
+                                <span className="text-xs text-red-500 font-bold px-2 py-0.5 bg-red-50 dark:bg-red-900/20 rounded-full">
+                                    {tasks.filter(t => t.status === 'Pending Approval').length} Submitted
+                                </span>
+                            </div>
+                            {tasks.filter(t => t.status === 'Pending Approval').length > 0 ? (
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="border-b border-border-light dark:border-border-dark text-text-muted dark:text-text-muted-dark">
+                                            <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Task</th>
+                                            <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Designer</th>
+                                            <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider">Brand</th>
+                                            <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-border-light dark:divide-border-dark">
+                                        {tasks.filter(t => t.status === 'Pending Approval').map((task) => (
+                                            <tr key={task.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/40 transition-colors">
+                                                <td className="px-6 py-4 font-bold text-text-main dark:text-text-main-dark">{task.title}</td>
+                                                <td className="px-6 py-4 text-text-muted dark:text-text-muted-dark font-medium">
+                                                    {designers.find(d => d.id === task.designerId)?.name || 'Unknown'}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span className="px-2 py-0.5 bg-primary/10 text-primary dark:text-primary-dark text-[10px] font-bold uppercase tracking-wider rounded border border-primary/20">
+                                                        {task.brand || 'No Brand'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 text-right">
+                                                    <button
+                                                        onClick={() => {
+                                                            setFilters({ ...filters, status: ['Pending Approval'] });
+                                                            navigate('/');
+                                                        }}
+                                                        className="px-3 py-1 text-xs font-bold bg-primary/10 text-primary dark:text-primary-dark rounded-lg hover:bg-primary hover:text-slate-900 transition-all border border-primary/20"
+                                                    >
+                                                        Review →
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            ) : (
+                                <div className="p-12 text-center bg-white dark:bg-slate-800/20">
+                                    <div className="size-16 bg-green-50 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-4 text-green-500">
+                                        <span className="material-symbols-outlined text-4xl">check_circle</span>
+                                    </div>
+                                    <p className="text-text-main dark:text-text-main-dark font-bold text-lg">All caught up!</p>
+                                    <p className="text-text-muted dark:text-text-muted-dark">No tasks pending approval right now.</p>
+                                </div>
+                            )}
+                        </div>
                     )}
                 </div>
             </div>
