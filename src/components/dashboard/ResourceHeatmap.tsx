@@ -49,7 +49,7 @@ export const ResourceHeatmap = () => {
                                 <div key={day.toString()} className="flex-1 text-center">
                                     <span className={cn(
                                         "text-[10px] font-bold uppercase tracking-tighter",
-                                        isSameDay(day, today) ? "text-primary dark:text-primary-dark" : "text-text-muted"
+                                        isSameDay(day, today) ? "text-primary-dark dark:text-primary" : "text-text-muted"
                                     )}>
                                         {format(day, 'd')}
                                     </span>
@@ -64,7 +64,7 @@ export const ResourceHeatmap = () => {
                                     {designer.avatar ? (
                                         <img src={designer.avatar} alt={designer.name} className="size-6 rounded-full object-cover" />
                                     ) : (
-                                        <div className="size-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">
+                                        <div className="size-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary-dark dark:text-primary">
                                             {designer.name[0]}
                                         </div>
                                     )}

@@ -8,9 +8,9 @@ export default {
     theme: {
         extend: {
             colors: {
-                "primary": "#FFF02E",
-                "primary-dark": "#D4C700", // Darker for text on light backgrounds
-                "primary-hover": "#E6D800",
+                "primary": "#fbbf24",       // Professional Amber/Gold (Amber-400)
+                "primary-dark": "#92400e",  // Deep Brown/Gold for high-contrast text (Amber-800)
+                "primary-hover": "#f59e0b", // Richer Amber (Amber-500)
                 "background-light": "#f6f7f8",
                 "background-dark": "#0f172a", // True Dark: Slate 900
                 "surface-light": "#ffffff",

@@ -56,8 +56,8 @@ input,
 select,
 textarea,
 label {
-  @apply font-display;
-  word-spacing: 0.08em;
+  @apply font-display text-slate-900 dark:text-slate-100;
+  word-spacing: 0.02em;
 }
 
 body {

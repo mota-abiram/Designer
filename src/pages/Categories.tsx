@@ -76,7 +76,7 @@ export const Categories = () => {
                             className="bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-3xl p-8 shadow-sm flex flex-col gap-6 transition-colors"
                         >
                             <div className="flex items-center gap-3">
-                                <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-xl font-bold">sell</span>
+                                <span className="material-symbols-outlined text-primary-dark dark:text-primary p-2 bg-primary/10 rounded-xl font-bold">sell</span>
                                 <h2 className="text-2xl font-bold dark:text-text-main-dark">Brands</h2>
                             </div>
 
