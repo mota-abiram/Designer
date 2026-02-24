@@ -15,11 +15,6 @@ interface TaskColumnProps {
     tasksForDate: Task[];
     isAddingTo: string | null;
     setIsAddingTo: (d: string | null) => void;
-
-    // Global context stuff passed down or used from context?
-    // Let's use context hooks inside here to avoid prop drilling if possible, 
-    // BUT we need 'tasks' to be filtered. Parent does filtering. So props for data.
-    // updateTask and addTask are from context.
 }
 
 export const TaskColumn = ({
@@ -61,18 +56,15 @@ export const TaskColumn = ({
 
         if (task && task.date !== targetDate) {
             updateTask({
-                ...task,
+                id: taskId,
                 date: targetDate
             });
         }
     };
 
     const handleInlineSubmit = () => {
-        console.log('handleInlineSubmit called with:', { inlineTitle, inlineDesc, inlineAssignedBy, activeDesignerId, dateStr });
-        if (!inlineTitle.trim()) {
-            console.log('Title is empty, returning early');
-            return;
-        }
+        if (!inlineTitle.trim()) return;
+
         const newTask: Task = {
             id: `t${Date.now()}`,
             title: inlineTitle.trim(),
@@ -89,17 +81,9 @@ export const TaskColumn = ({
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
-        console.log('Creating task:', newTask);
+
         addTask(newTask);
-        console.log('Task added, resetting form');
-        setIsAddingTo(null);
-        // Reset form
-        setInlineAssignedBy(ASSIGNERS[0]);
-        setInlineTitle('');
-        setInlineDesc('');
-        setInlineBrand('');
-        setInlineCreativeType('');
-        setInlineScope('');
+        resetInlineForm();
     };
 
     const resetInlineForm = () => {
@@ -112,7 +96,6 @@ export const TaskColumn = ({
         setInlineScope('');
     };
 
-    // Derived logic for inline inputs
     const onTitleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -131,155 +114,149 @@ export const TaskColumn = ({
         }
     };
 
-    const onAddClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        console.log('Add button clicked! inlineTitle:', inlineTitle);
-        if (inlineTitle.trim()) {
-            console.log('Title is valid, calling handleInlineSubmit');
-            handleInlineSubmit();
-        } else {
-            console.log('Title is empty, not submitting');
-        }
-    };
-
-    const onCancelClick = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        resetInlineForm();
-    };
-
     return (
-        <td
+        <div
             onClick={() => setSelectedDateStr(dateStr)}
             onDragOver={handleDragOver}
             onDrop={(e) => handleDrop(e, dateStr)}
             className={cn(
-                "align-top p-2 transition-colors",
-                isSelected ? "bg-surface-dark/10 dark:bg-surface-light/5 border-x border-primary/20" : "border-r border-dashed border-border-light dark:border-border-dark/30 hover:bg-surface-dark/5 dark:hover:bg-surface-light/5"
+                "min-h-[500px] transition-colors",
+                isSelected ? "bg-surface-dark/5 dark:bg-surface-light/5" : "hover:bg-surface-dark/5 dark:hover:bg-surface-light/5"
             )}
         >
-            {tasksForDate.length > 0 ? (
-                tasksForDate.map(task => (
-                    <div
-                        id={`task-${task.id}`}
-                        key={task.id}
-                        draggable={true}
-                        onDragStart={(e) => handleDragStart(e, task.id)}
-                        className="cursor-grab active:cursor-grabbing"
-                    >
-                        <TaskCard task={task} />
-                    </div>
-                ))
-            ) : (
-                <div className="flex flex-col items-center justify-center p-6 text-center opacity-40 pointer-events-none">
-                    <span className="text-xs font-medium text-slate-900">No tasks</span>
-                </div>
-            )}
-            {canAdd && (
-                <div className="mt-2">
-                    {isAddingTo === dateStr ? (
-                        <div className="bg-surface-light dark:bg-surface-dark border border-primary rounded-lg p-3 shadow-lg space-y-2 animate-in fade-in zoom-in-95 duration-200 transition-colors">
-                            <input
-                                autoFocus
-                                type="text"
-                                placeholder="Task Title"
-                                className="w-full text-sm font-bold text-slate-950 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none bg-transparent"
-                                id={`inline-title-${dateStr}`}
-                                value={inlineTitle}
-                                onChange={(e) => setInlineTitle(e.target.value)}
-                                onKeyDown={onTitleKeyDown}
-                            />
-                            <textarea
-                                rows={2}
-                                placeholder="Description (optional)"
-                                className="w-full text-xs text-slate-950 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none resize-none bg-gray-50 dark:bg-slate-800/50 rounded p-1.5 transition-colors"
-                                id={`inline-desc-${dateStr}`}
-                                value={inlineDesc}
-                                onChange={(e) => setInlineDesc(e.target.value)}
-                                onKeyDown={onDescKeyDown}
-                            ></textarea>
-                            <div className="flex items-center gap-2">
-                                <label className="text-[11px] font-bold text-slate-900 dark:text-slate-200 uppercase tracking-wider whitespace-nowrap">Assigned By:</label>
-                                <select
-                                    value={inlineAssignedBy}
-                                    onChange={(e) => setInlineAssignedBy(e.target.value)}
-                                    className="flex-1 text-xs text-slate-950 dark:text-white bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded px-2 py-1 outline-none focus:border-primary cursor-pointer transition-colors"
-                                >
-                                    {ASSIGNERS.map(name => (
-                                        <option key={name} value={name}>{name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="grid grid-cols-2 gap-2">
-                                <div className="flex flex-col gap-1">
-                                    <label className="text-[11px] font-bold text-slate-900 dark:text-slate-200 uppercase tracking-wider">Brand:</label>
-                                    <select
-                                        value={inlineBrand}
-                                        onChange={(e) => setInlineBrand(e.target.value)}
-                                        className="text-xs text-slate-950 dark:text-white bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded px-2 py-1 outline-none focus:border-primary cursor-pointer transition-colors"
-                                    >
-                                        <option value="">None</option>
-                                        {brands.map(b => (
-                                            <option key={b.id} value={b.name}>{b.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                    <label className="text-[11px] font-bold text-slate-900 dark:text-slate-200 uppercase tracking-wider">Type:</label>
-                                    <select
-                                        value={inlineCreativeType}
-                                        onChange={(e) => setInlineCreativeType(e.target.value)}
-                                        className="text-xs text-slate-950 dark:text-white bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded px-2 py-1 outline-none focus:border-primary cursor-pointer transition-colors"
-                                    >
-                                        <option value="">None</option>
-                                        {creativeTypes.map(t => (
-                                            <option key={t.id} value={t.name}>{t.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="flex flex-col gap-1">
-                                <label className="text-[11px] font-bold text-slate-900 dark:text-slate-200 uppercase tracking-wider">Scope:</label>
-                                <select
-                                    value={inlineScope}
-                                    onChange={(e) => setInlineScope(e.target.value)}
-                                    className="text-xs text-slate-950 dark:text-white bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded px-2 py-1 outline-none focus:border-primary cursor-pointer transition-colors"
-                                >
-                                    <option value="">None</option>
-                                    {scopes.map(s => (
-                                        <option key={s.id} value={s.name}>{s.name}</option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="flex justify-end gap-2 pt-1">
-                                <button
-                                    onClick={onCancelClick}
-                                    className="px-2 py-1 text-xs font-bold text-slate-900 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={onAddClick}
-                                    className="px-2 py-1 text-xs font-bold bg-primary text-slate-900 rounded hover:opacity-90 shadow-sm transition-colors"
-                                >
-                                    Add
-                                </button>
-                            </div>
-                        </div>
-                    ) : (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                setIsAddingTo(dateStr);
-                            }}
-                            className="w-full border border-dashed border-border-light dark:border-border-dark rounded-lg p-2 flex items-center justify-center gap-2 text-slate-900 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white hover:border-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group/add"
+            <div className="p-2 space-y-3">
+                {tasksForDate.length > 0 ? (
+                    tasksForDate.map(task => (
+                        <div
+                            id={`task-${task.id}`}
+                            key={task.id}
+                            draggable={true}
+                            onDragStart={(e) => handleDragStart(e, task.id)}
+                            className="cursor-grab active:cursor-grabbing"
                         >
-                            <span className="material-symbols-outlined text-lg group-hover/add:scale-110 transition-transform">add</span>
-                            <span className="text-xs font-bold uppercase tracking-widest">Add task</span>
-                        </button>
-                    )}
-                </div>
-            )}
-            <div className="h-16"></div>
-        </td>
+                            <TaskCard task={task} />
+                        </div>
+                    ))
+                ) : (
+                    <div className="flex flex-col items-center justify-center p-8 text-center opacity-30 pointer-events-none">
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">No tasks</span>
+                    </div>
+                )}
+                {canAdd && (
+                    <div className="mt-2 group/add">
+                        {isAddingTo === dateStr ? (
+                            <div className="bg-surface-light dark:bg-surface-dark border border-primary/50 rounded-xl p-4 shadow-2xl space-y-3 animate-in fade-in zoom-in-95 duration-200 transition-colors">
+                                <input
+                                    autoFocus
+                                    type="text"
+                                    placeholder="Task Title"
+                                    className="w-full text-sm font-bold text-slate-950 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none bg-transparent"
+                                    id={`inline-title-${dateStr}`}
+                                    value={inlineTitle}
+                                    onChange={(e) => setInlineTitle(e.target.value)}
+                                    onKeyDown={onTitleKeyDown}
+                                />
+                                <textarea
+                                    rows={2}
+                                    placeholder="Add description..."
+                                    className="w-full text-xs text-slate-950 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none resize-none bg-gray-50 dark:bg-slate-800/50 rounded-lg p-2.5 transition-colors"
+                                    id={`inline-desc-${dateStr}`}
+                                    value={inlineDesc}
+                                    onChange={(e) => setInlineDesc(e.target.value)}
+                                    onKeyDown={onDescKeyDown}
+                                ></textarea>
+
+                                <div className="space-y-3 pt-1 border-t border-border-light dark:border-border-dark">
+                                    <div className="flex items-center gap-3">
+                                        <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-tighter w-20">Assigner</label>
+                                        <select
+                                            value={inlineAssignedBy}
+                                            onChange={(e) => setInlineAssignedBy(e.target.value)}
+                                            className="flex-1 text-[11px] font-bold text-slate-950 dark:text-white bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded-md px-2 py-1.5 outline-none focus:border-primary cursor-pointer transition-colors"
+                                        >
+                                            {ASSIGNERS.map(name => (
+                                                <option key={name} value={name}>{name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-tighter">Brand</label>
+                                            <select
+                                                value={inlineBrand}
+                                                onChange={(e) => setInlineBrand(e.target.value)}
+                                                className="w-full text-[11px] font-bold text-slate-950 dark:text-white bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded-md px-2 py-1.5 outline-none focus:border-primary cursor-pointer transition-colors"
+                                            >
+                                                <option value="">None</option>
+                                                {brands.map(b => (
+                                                    <option key={b.id} value={b.name}>{b.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-tighter">Type</label>
+                                            <select
+                                                value={inlineCreativeType}
+                                                onChange={(e) => setInlineCreativeType(e.target.value)}
+                                                className="w-full text-[11px] font-bold text-slate-950 dark:text-white bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded-md px-2 py-1.5 outline-none focus:border-primary cursor-pointer transition-colors"
+                                            >
+                                                <option value="">None</option>
+                                                {creativeTypes.map(t => (
+                                                    <option key={t.id} value={t.name}>{t.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-tighter">Scope</label>
+                                        <select
+                                            value={inlineScope}
+                                            onChange={(e) => setInlineScope(e.target.value)}
+                                            className="w-full text-[11px] font-bold text-slate-950 dark:text-white bg-gray-50 dark:bg-slate-800 border border-border-light dark:border-border-dark rounded-md px-2 py-1.5 outline-none focus:border-primary cursor-pointer transition-colors"
+                                        >
+                                            <option value="">None</option>
+                                            {scopes.map(s => (
+                                                <option key={s.id} value={s.name}>{s.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="flex gap-2 pt-2">
+                                    <button
+                                        onClick={handleInlineSubmit}
+                                        className="flex-1 bg-primary hover:bg-primary-hover text-slate-950 text-xs font-black uppercase tracking-widest py-2.5 rounded-lg transition-all shadow-lg active:scale-95"
+                                    >
+                                        Create Task
+                                    </button>
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setIsAddingTo(null);
+                                        }}
+                                        className="px-4 text-slate-500 hover:text-red-500 text-[10px] font-bold uppercase tracking-widest transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsAddingTo(dateStr);
+                                }}
+                                className="w-full py-3 border-2 border-dashed border-border-light dark:border-border-dark/30 rounded-xl text-slate-400 hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all text-[11px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 group/btn"
+                            >
+                                <span className="text-xl transition-transform group-hover/btn:scale-125">+</span>
+                                Add Task
+                            </button>
+                        )}
+                    </div>
+                )}
+            </div>
+        </div>
     );
 };

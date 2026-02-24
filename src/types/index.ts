@@ -4,18 +4,21 @@ export interface Brand {
     id: string;
     name: string;
     createdAt?: string;
+    deleted?: boolean;
 }
 
 export interface CreativeType {
     id: string;
     name: string;
     createdAt?: string;
+    deleted?: boolean;
 }
 
 export interface Scope {
     id: string;
     name: string;
     createdAt?: string;
+    deleted?: boolean;
 }
 
 export interface Comment {
@@ -37,6 +40,7 @@ export interface BrandQuota {
         [creativeTypeId: string]: number;
     };
     assignedDesigner?: string;
+    deleted?: boolean;
 }
 
 export interface Designer {
@@ -62,6 +66,7 @@ export interface Task {
     comments?: Comment[];
     createdAt?: string;
     updatedAt?: string;
+    deleted?: boolean;
 }
 
 export type Role = 'Designer' | 'Manager';

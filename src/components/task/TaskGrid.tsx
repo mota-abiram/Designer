@@ -1,20 +1,35 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useTaskContext } from '../../context/TaskContext';
 import { getCurrentWeekDays } from '../../services/mockData';
-import { format, parseISO, isSameDay, isWithinInterval, eachDayOfInterval, isValid } from 'date-fns';
+import { format, parseISO, isSameDay, isValid } from 'date-fns';
 import { cn } from '../../utils/cn';
 import { TaskColumn } from './TaskColumn';
+import type { Task } from '../../types';
 
 export const TaskGrid = () => {
-    const { tasks, activeDesignerId, registerScrollContainer, filters, lastAddedTaskId } = useTaskContext();
+    const { tasks, activeDesignerId, registerScrollContainer, filters, lastAddedTaskId, isLoading, isSyncing } = useTaskContext();
 
     // Determine which dates to display based on filter
     const displayDates = useMemo(() => {
         if (filters.dateRange.start && filters.dateRange.end) {
-            const start = parseISO(filters.dateRange.start);
-            const end = parseISO(filters.dateRange.end);
-            if (isValid(start) && isValid(end) && start <= end) {
-                return eachDayOfInterval({ start, end }).map(d => format(d, 'yyyy-MM-dd'));
+            const startStr = filters.dateRange.start;
+            const endStr = filters.dateRange.end;
+
+            // Simple string comparison for standard YYYY-MM-DD format is often faster than parsing
+            // Check if we need to fall back to week
+            if (startStr && endStr) {
+                // Return all dates in interval using simple day increment loop
+                const dates: string[] = [];
+                let curr = parseISO(startStr);
+                const last = parseISO(endStr);
+
+                if (isValid(curr) && isValid(last) && curr <= last) {
+                    while (curr <= last) {
+                        dates.push(format(curr, 'yyyy-MM-dd'));
+                        curr.setDate(curr.getDate() + 1);
+                    }
+                    return dates;
+                }
             }
         }
         return getCurrentWeekDays();
@@ -47,30 +62,52 @@ export const TaskGrid = () => {
     }, [lastAddedTaskId, tasks]);
 
 
-    const filteredTasks = tasks.filter(t => {
-        // Designer Filter
-        if (t.designerId !== activeDesignerId) return false;
+    const groupedTasks = useMemo(() => {
+        const result: Record<string, Task[]> = {};
 
-        // Status Filter
-        if (filters.status.length > 0 && !filters.status.includes(t.status)) return false;
+        tasks.forEach(t => {
+            // Designer Filter
+            if (t.designerId !== activeDesignerId) return;
 
-        // Date Range Filter (Client-side redundant check but good for safety)
-        if (filters.dateRange.start && filters.dateRange.end) {
-            const taskDate = parseISO(t.date);
-            const start = parseISO(filters.dateRange.start);
-            const end = parseISO(filters.dateRange.end);
-            if (!isWithinInterval(taskDate, { start, end })) return false;
-        }
+            // Status Filter
+            if (filters.status.length > 0 && !filters.status.includes(t.status)) return;
 
-        return true;
-    });
+            // Date Range Filter
+            if (filters.dateRange.start && filters.dateRange.end) {
+                const taskDate = t.date;
+                if (taskDate < filters.dateRange.start || taskDate > filters.dateRange.end) return;
+            }
+
+            if (!result[t.date]) result[t.date] = [];
+            result[t.date].push(t);
+        });
+
+        return result;
+    }, [tasks, activeDesignerId, filters.status, filters.dateRange]);
 
     const getTasksForDate = (dateStr: string) => {
-        return filteredTasks.filter(t => t.date === dateStr);
+        return groupedTasks[dateStr] || [];
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex-1 flex items-center justify-center bg-background-light dark:bg-background-dark">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="size-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+                    <p className="text-xs font-bold uppercase tracking-widest text-slate-500 animate-pulse">Syncing Task Board...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex-1 relative overflow-hidden bg-background-light dark:bg-background-dark transition-colors duration-300">
+            {isSyncing && (
+                <div className="absolute top-4 right-8 z-50 flex items-center gap-2 px-3 py-1.5 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md rounded-full shadow-lg border border-border-light dark:border-border-dark animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="size-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-500">Syncing</span>
+                </div>
+            )}
             <div
                 ref={registerScrollContainer}
                 className="absolute inset-0 overflow-auto custom-scrollbar"
@@ -123,17 +160,25 @@ export const TaskGrid = () => {
                         </thead>
                         <tbody>
                             <tr className="group/row">
-                                {displayDates.map((dateStr) => (
-                                    <TaskColumn
+                                {displayDates.map((dateStr, index) => (
+                                    <td
                                         key={dateStr}
-                                        dateStr={dateStr}
-                                        today={today}
-                                        selectedDateStr={selectedDateStr}
-                                        setSelectedDateStr={setSelectedDateStr}
-                                        tasksForDate={getTasksForDate(dateStr)}
-                                        isAddingTo={isAddingTo}
-                                        setIsAddingTo={setIsAddingTo}
-                                    />
+                                        className={cn(
+                                            "p-0 align-top transition-colors border-x border-b border-border-light/40 dark:border-border-dark/40",
+                                            index === 0 ? "pr-4" : "px-4",
+                                            dateStr === selectedDateStr ? "bg-surface-light/20 dark:bg-surface-dark/10" : "bg-transparent"
+                                        )}
+                                    >
+                                        <TaskColumn
+                                            dateStr={dateStr}
+                                            today={today}
+                                            selectedDateStr={selectedDateStr}
+                                            setSelectedDateStr={setSelectedDateStr}
+                                            tasksForDate={getTasksForDate(dateStr)}
+                                            isAddingTo={isAddingTo}
+                                            setIsAddingTo={setIsAddingTo}
+                                        />
+                                    </td>
                                 ))}
                             </tr>
                         </tbody>

@@ -1,33 +1,46 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Helper function to check if user is authenticated
+    // Basic auth check
     function isAuthenticated() {
       return request.auth != null;
     }
+
+    // Role detection based on verified email list
+    // This matches the lists in src/services/adminList.ts and src/constants/assigners.ts
+    function isManager() {
+      return isAuthenticated() && 
+        request.auth.token.email in [
+          "abiram@digitalmojo.in", 
+          "nagaraju@digitalmojo.in",
+          "admin@digitalmojo.in"
+        ];
+    }
     
-    // Tasks: All authenticated users can read/write
+    // TASKS: Everyone can read/create/update, but only Managers can DELETE
     match /tasks/{taskId} {
-      allow read, write: if isAuthenticated();
+      allow read, create, update: if isAuthenticated();
+      allow delete: if isManager();
     }
-    
-    // Quotas: All authenticated users can read/write
+
+    // QUOTAS: Designers can view progress, but only Managers can adjust targets
     match /quotas/{quotaId} {
-      allow read, write: if isAuthenticated();
+      allow read: if isAuthenticated();
+      allow write: if isManager();
     }
-    
-    // Brands, Creative Types, Scopes: All authenticated users can read/write
+
+    // SYSTEM CONFIG (Brands, Types, Scopes): Read-only for Designers
     match /brands/{brandId} {
-      allow read, write: if isAuthenticated();
+      allow read: if isAuthenticated();
+      allow write: if isManager();
     }
-    
     match /creativeTypes/{typeId} {
-      allow read, write: if isAuthenticated();
+      allow read: if isAuthenticated();
+      allow write: if isManager();
     }
-    
     match /scopes/{scopeId} {
-      allow read, write: if isAuthenticated();
+      allow read: if isAuthenticated();
+      allow write: if isManager();
     }
   }
 }

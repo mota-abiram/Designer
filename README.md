@@ -25,11 +25,11 @@ Migrating from Google Sheets to a custom-built application addresses critical li
 
 ### Core Task Management
 - **📅 Weekly Board View**: Monday-to-Friday layout with dynamic date columns
-- **🎯 Task Status Tracking**: Three-state workflow (Pending → Submitted → Rework)
+- **✅ Approval Workflow**: Multi-stage task lifecycle (Pending → Submitted → Approved/Rework)
 - **🔄 Drag & Drop Rescheduling**: Intuitive task movement between dates
 - **➕ Quick Task Creation**: Inline task addition with minimal clicks
 - **🔍 Advanced Filtering**: Filter by status, date range, and search queries
-- **📝 Task Details Drawer**: Comprehensive task information with edit capabilities
+- **📝 Task Details Drawer**: Detailed task information with interactive comment history
 
 ### Designer Experience
 - **👤 Designer-Centric Views**: Personalized task boards for each designer
@@ -39,10 +39,13 @@ Migrating from Google Sheets to a custom-built application addresses critical li
 - **🌙 Dark Mode Support**: System-wide theme toggle for comfortable viewing
 
 ### Manager & Admin Features
-- **📈 Performance Dashboard**: Real-time analytics with three dedicated tabs:
+- **📈 Performance Dashboard**: Real-time analytics with four dedicated tabs:
   - **Designers Tab**: Individual performance metrics and efficiency rates
   - **Account Managers Tab**: Task assignment tracking and completion rates
   - **Scope Tracking Tab**: Brand quota management with progress visualization
+  - **Pending Approval Tab**: Focused queue for managers to review and approve submitted work
+- **📅 Resource Heatmap**: Monthly visualization of designer bandwidth and task density
+- **🔔 Manager Notifications**: Real-time header alerts with dropdown previews for "Reviews Needed"
 - **📊 Circular Progress Indicators**: Visual tracking for Statics and Reels quotas
 - **📅 Date Range Filters**: Today, This Week, This Month, or custom ranges
 - **👥 Team Overview**: Aggregated statistics across all team members
@@ -55,9 +58,9 @@ Migrating from Google Sheets to a custom-built application addresses critical li
 - **📊 Quota Assignment**: Set targets and track delivered items per brand/scope
 
 ### Authentication & Security
-- **🔐 Google OAuth Integration**: Secure single sign-on
-- **🔒 Protected Routes**: Authentication-required navigation
-- **👤 User Profile Management**: Avatar display and user information
+- **🔐 Email-Based Role Detection**: Automatic role assignment (Designer/Manager/Admin) based on login email
+- **🔒 Protected Routes**: Secure navigation with authentication-required guards
+- **👤 User Profile Management**: Real-time sync of user avatars and account details
 
 ### Real-Time Collaboration
 - **⚡ Firebase Realtime Sync**: Instant updates across all connected clients
@@ -66,9 +69,9 @@ Migrating from Google Sheets to a custom-built application addresses critical li
 - **🌐 Multi-User Support**: Concurrent editing with conflict resolution
 
 ### UI/UX Enhancements
-- **🎭 Framer Motion Animations**: Smooth transitions and micro-interactions
-- **📱 Fully Responsive Design**: Optimized for desktop, tablet, and mobile
-- **🎨 Modern Design System**: Tailwind CSS with custom theme tokens
+- **🎭 Framer Motion Animations**: High-performance layout transitions and micro-interactions
+- **📱 Fully Responsive**: Seamless experience across Desktop, Tablet, and Mobile
+- **✨ Premium Design System**: Custom Tailwind implementation with a professional Amber/Gold palette
 - **🍞 Toast Notifications**: User-friendly feedback for all actions
 - **♿ Accessibility**: Semantic HTML and keyboard navigation support
 

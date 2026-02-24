@@ -8,7 +8,7 @@ export default {
     theme: {
         extend: {
             colors: {
-                "primary": "#fbbf24",       // Professional Amber/Gold (Amber-400)
+                "primary": "#FFF02E",       // Professional Amber/Gold (Amber-400)
                 "primary-dark": "#92400e",  // Deep Brown/Gold for high-contrast text (Amber-800)
                 "primary-hover": "#f59e0b", // Richer Amber (Amber-500)
                 "background-light": "#f6f7f8",

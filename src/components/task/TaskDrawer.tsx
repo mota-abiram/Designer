@@ -119,13 +119,15 @@ export const TaskDrawer = () => {
                                             >
                                                 <span className="material-symbols-outlined font-bold">edit</span>
                                             </button>
-                                            <button
-                                                onClick={handleDelete}
-                                                className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-900 dark:text-slate-200 hover:text-red-500"
-                                                title="Delete Task"
-                                            >
-                                                <span className="material-symbols-outlined font-bold">delete</span>
-                                            </button>
+                                            {role === 'Manager' && (
+                                                <button
+                                                    onClick={handleDelete}
+                                                    className="p-2 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-full transition-colors text-slate-900 dark:text-slate-200 hover:text-red-500"
+                                                    title="Delete Task"
+                                                >
+                                                    <span className="material-symbols-outlined font-bold">delete</span>
+                                                </button>
+                                            )}
                                         </>
                                     )}
                                     <button

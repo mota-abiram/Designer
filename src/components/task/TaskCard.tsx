@@ -1,10 +1,11 @@
+import { memo } from 'react';
 import type { Task } from '../../types';
 import { cn } from '../../utils/cn';
 import { useTaskContext } from '../../context/TaskContext';
 
 import { ASSIGNERS } from '../../constants/assigners';
 
-export const TaskCard = ({ task }: { task: Task }) => {
+export const TaskCard = memo(({ task }: { task: Task }) => {
     const { setSelectedTask, viewMode, updateTask } = useTaskContext();
 
     const statusColors = {
@@ -162,4 +163,4 @@ export const TaskCard = ({ task }: { task: Task }) => {
             </div>
         </div>
     );
-};
+});

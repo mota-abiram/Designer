@@ -513,7 +513,7 @@ export const Dashboard = () => {
                                                     {designers.find(d => d.id === task.designerId)?.name || 'Unknown'}
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <span className="px-2 py-0.5 bg-primary/10 text-primary dark:text-primary-dark text-[10px] font-bold uppercase tracking-wider rounded border border-primary/20">
+                                                    <span className="px-2 py-0.5 bg-black/5 dark:bg-white/10 text-slate-900 dark:text-slate-100 text-[10px] font-bold uppercase tracking-wider rounded border border-black/10 dark:border-white/10">
                                                         {task.brand || 'No Brand'}
                                                     </span>
                                                 </td>
@@ -523,7 +523,7 @@ export const Dashboard = () => {
                                                             setFilters({ ...filters, status: ['Pending Approval'] });
                                                             navigate('/');
                                                         }}
-                                                        className="px-3 py-1 text-xs font-bold bg-primary/10 text-primary dark:text-primary-dark rounded-lg hover:bg-primary hover:text-slate-900 transition-all border border-primary/20"
+                                                        className="px-3 py-1 text-xs font-bold bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg hover:opacity-90 transition-all shadow-sm"
                                                     >
                                                         Review →
                                                     </button>

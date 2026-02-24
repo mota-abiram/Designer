@@ -15,7 +15,9 @@ export const Categories = () => {
     } = useTaskContext();
     const { user } = useAuth();
 
+    const { role } = useTaskContext();
     const isAdmin = user?.email ? ADMIN_EMAILS.includes(user.email) : false;
+    const isManager = role === 'Manager';
 
     const [newBrand, setNewBrand] = useState('');
     const [newType, setNewType] = useState('');
@@ -23,7 +25,7 @@ export const Categories = () => {
 
     const handleAddBrand = (e: React.FormEvent) => {
         e.preventDefault();
-        if (newBrand.trim()) {
+        if (newBrand.trim() && isManager) {
             addBrand(newBrand.trim());
             setNewBrand('');
         }
@@ -31,7 +33,7 @@ export const Categories = () => {
 
     const handleAddType = (e: React.FormEvent) => {
         e.preventDefault();
-        if (newType.trim()) {
+        if (newType.trim() && isManager) {
             addCreativeType(newType.trim());
             setNewType('');
         }
@@ -39,7 +41,7 @@ export const Categories = () => {
 
     const handleAddScope = (e: React.FormEvent) => {
         e.preventDefault();
-        if (newScope.trim()) {
+        if (newScope.trim() && isManager) {
             addScope(newScope.trim());
             setNewScope('');
         }
@@ -64,8 +66,12 @@ export const Categories = () => {
             <main className="flex-1 overflow-y-auto p-6 md:p-8">
                 <div className="max-w-6xl mx-auto space-y-12">
                     <header className="flex flex-col gap-2">
-                        <h1 className="text-4xl font-bold tracking-tight text-text-main dark:text-text-main-dark">Client Onboarding</h1>
-                        <p className="text-lg font-semibold text-text-muted dark:text-text-muted-dark opacity-80">Manage brands, creative types, and scopes for your design workflow.</p>
+                        <h1 className="text-4xl font-bold tracking-tight text-text-main dark:text-text-main-dark">
+                            {isManager ? 'Configuration Management' : 'System Categories'}
+                        </h1>
+                        <p className="text-lg font-semibold text-text-muted dark:text-text-muted-dark opacity-80">
+                            {isManager ? 'Manage brands, creative types, and scopes.' : 'View available brands and project categories.'}
+                        </p>
                     </header>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -80,22 +86,24 @@ export const Categories = () => {
                                 <h2 className="text-2xl font-bold dark:text-text-main-dark">Brands</h2>
                             </div>
 
-                            <form onSubmit={handleAddBrand} className="flex gap-2">
-                                <input
-                                    type="text"
-                                    value={newBrand}
-                                    onChange={(e) => setNewBrand(e.target.value)}
-                                    placeholder="Add new brand..."
-                                    className="flex-1 bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-text-main dark:text-text-main-dark font-semibold focus:outline-none focus:border-primary transition-all shadow-inner"
-                                />
-                                <button
-                                    type="submit"
-                                    disabled={!newBrand.trim()}
-                                    className="bg-primary hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-primary/20 flex items-center justify-center uppercase tracking-widest text-xs"
-                                >
-                                    <span className="material-symbols-outlined text-[20px]">add</span>
-                                </button>
-                            </form>
+                            {isManager && (
+                                <form onSubmit={handleAddBrand} className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={newBrand}
+                                        onChange={(e) => setNewBrand(e.target.value)}
+                                        placeholder="Add new brand..."
+                                        className="flex-1 bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-text-main dark:text-text-main-dark font-semibold focus:outline-none focus:border-primary transition-all shadow-inner"
+                                    />
+                                    <button
+                                        type="submit"
+                                        disabled={!newBrand.trim()}
+                                        className="bg-primary hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900 px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-primary/20 flex items-center justify-center uppercase tracking-widest text-xs"
+                                    >
+                                        <span className="material-symbols-outlined text-[20px]">add</span>
+                                    </button>
+                                </form>
+                            )}
 
                             <div className="flex flex-col gap-2">
                                 {brands.length === 0 ? (
@@ -112,14 +120,16 @@ export const Categories = () => {
                                                 className="group flex items-center justify-between bg-gray-50 dark:bg-slate-800/30 hover:bg-white dark:hover:bg-slate-800 border border-border-light/50 dark:border-border-dark rounded-xl px-4 py-4 transition-all"
                                             >
                                                 <span className="font-bold text-sm tracking-widest uppercase text-text-main dark:text-text-main-dark">{brand.name}</span>
-                                                <button
-                                                    onClick={() => {
-                                                        if (confirm(`Delete brand "${brand.name}"?`)) deleteBrand(brand.id);
-                                                    }}
-                                                    className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-500/10 text-text-muted hover:text-red-500 rounded-lg transition-all"
-                                                >
-                                                    <span className="material-symbols-outlined text-[18px]">delete</span>
-                                                </button>
+                                                {isManager && (
+                                                    <button
+                                                        onClick={() => {
+                                                            if (confirm(`Delete brand "${brand.name}"?`)) deleteBrand(brand.id);
+                                                        }}
+                                                        className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-500/10 text-text-muted hover:text-red-500 rounded-lg transition-all"
+                                                    >
+                                                        <span className="material-symbols-outlined text-[18px]">delete</span>
+                                                    </button>
+                                                )}
                                             </motion.div>
                                         ))}
                                     </div>
@@ -128,7 +138,6 @@ export const Categories = () => {
                         </motion.section>
 
                         {/* Creative Types Section */}
-
                         <motion.section
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -140,22 +149,24 @@ export const Categories = () => {
                                 <h2 className="text-2xl font-bold dark:text-text-main-dark">Types</h2>
                             </div>
 
-                            <form onSubmit={handleAddType} className="flex gap-2">
-                                <input
-                                    type="text"
-                                    value={newType}
-                                    onChange={(e) => setNewType(e.target.value)}
-                                    placeholder="Add type..."
-                                    className="flex-1 bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-text-main dark:text-text-main-dark font-semibold focus:outline-none focus:border-purple-500 transition-all shadow-inner"
-                                />
-                                <button
-                                    type="submit"
-                                    disabled={!newType.trim()}
-                                    className="bg-purple-500 hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-purple-500/20 flex items-center justify-center uppercase tracking-widest text-xs"
-                                >
-                                    <span className="material-symbols-outlined text-[20px]">add</span>
-                                </button>
-                            </form>
+                            {isManager && (
+                                <form onSubmit={handleAddType} className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={newType}
+                                        onChange={(e) => setNewType(e.target.value)}
+                                        placeholder="Add type..."
+                                        className="flex-1 bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-text-main dark:text-text-main-dark font-semibold focus:outline-none focus:border-purple-500 transition-all shadow-inner"
+                                    />
+                                    <button
+                                        type="submit"
+                                        disabled={!newType.trim()}
+                                        className="bg-purple-500 hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-purple-500/20 flex items-center justify-center uppercase tracking-widest text-xs"
+                                    >
+                                        <span className="material-symbols-outlined text-[20px]">add</span>
+                                    </button>
+                                </form>
+                            )}
 
                             <div className="flex flex-col gap-2">
                                 {creativeTypes.length === 0 ? (
@@ -172,14 +183,16 @@ export const Categories = () => {
                                                 className="group flex items-center justify-between bg-gray-50 dark:bg-slate-800/30 hover:bg-white dark:hover:bg-slate-800 border border-border-light/50 dark:border-border-dark rounded-xl px-4 py-4 transition-all"
                                             >
                                                 <span className="font-bold text-sm tracking-widest uppercase text-text-main dark:text-text-main-dark">{type.name}</span>
-                                                <button
-                                                    onClick={() => {
-                                                        if (confirm(`Delete creative type "${type.name}"?`)) deleteCreativeType(type.id);
-                                                    }}
-                                                    className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-500/10 text-text-muted hover:text-red-500 rounded-lg transition-all"
-                                                >
-                                                    <span className="material-symbols-outlined text-[18px]">delete</span>
-                                                </button>
+                                                {isManager && (
+                                                    <button
+                                                        onClick={() => {
+                                                            if (confirm(`Delete creative type "${type.name}"?`)) deleteCreativeType(type.id);
+                                                        }}
+                                                        className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-500/10 text-text-muted hover:text-red-500 rounded-lg transition-all"
+                                                    >
+                                                        <span className="material-symbols-outlined text-[18px]">delete</span>
+                                                    </button>
+                                                )}
                                             </motion.div>
                                         ))}
                                     </div>
@@ -199,22 +212,24 @@ export const Categories = () => {
                                 <h2 className="text-2xl font-bold dark:text-text-main-dark">Scopes</h2>
                             </div>
 
-                            <form onSubmit={handleAddScope} className="flex gap-2">
-                                <input
-                                    type="text"
-                                    value={newScope}
-                                    onChange={(e) => setNewScope(e.target.value)}
-                                    placeholder="Add scope..."
-                                    className="flex-1 bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-text-main dark:text-text-main-dark font-semibold focus:outline-none focus:border-green-500 transition-all shadow-inner"
-                                />
-                                <button
-                                    type="submit"
-                                    disabled={!newScope.trim()}
-                                    className="bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-green-500/20 flex items-center justify-center uppercase tracking-widest text-xs"
-                                >
-                                    <span className="material-symbols-outlined text-[20px]">add</span>
-                                </button>
-                            </form>
+                            {isManager && (
+                                <form onSubmit={handleAddScope} className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={newScope}
+                                        onChange={(e) => setNewScope(e.target.value)}
+                                        placeholder="Add scope..."
+                                        className="flex-1 bg-gray-50 dark:bg-slate-800/50 border border-border-light dark:border-border-dark rounded-xl px-4 py-3 text-text-main dark:text-text-main-dark font-semibold focus:outline-none focus:border-green-500 transition-all shadow-inner"
+                                    />
+                                    <button
+                                        type="submit"
+                                        disabled={!newScope.trim()}
+                                        className="bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-green-500/20 flex items-center justify-center uppercase tracking-widest text-xs"
+                                    >
+                                        <span className="material-symbols-outlined text-[20px]">add</span>
+                                    </button>
+                                </form>
+                            )}
 
                             <div className="flex flex-col gap-2">
                                 {scopes.length === 0 ? (
@@ -231,14 +246,16 @@ export const Categories = () => {
                                                 className="group flex items-center justify-between bg-gray-50 dark:bg-slate-800/30 hover:bg-white dark:hover:bg-slate-800 border border-border-light/50 dark:border-border-dark rounded-xl px-4 py-4 transition-all"
                                             >
                                                 <span className="font-bold text-sm tracking-widest uppercase text-text-main dark:text-text-main-dark">{scope.name}</span>
-                                                <button
-                                                    onClick={() => {
-                                                        if (confirm(`Delete scope "${scope.name}"?`)) deleteScope(scope.id);
-                                                    }}
-                                                    className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-500/10 text-text-muted hover:text-red-500 rounded-lg transition-all"
-                                                >
-                                                    <span className="material-symbols-outlined text-[18px]">delete</span>
-                                                </button>
+                                                {isManager && (
+                                                    <button
+                                                        onClick={() => {
+                                                            if (confirm(`Delete scope "${scope.name}"?`)) deleteScope(scope.id);
+                                                        }}
+                                                        className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-500/10 text-text-muted hover:text-red-500 rounded-lg transition-all"
+                                                    >
+                                                        <span className="material-symbols-outlined text-[18px]">delete</span>
+                                                    </button>
+                                                )}
                                             </motion.div>
                                         ))}
                                     </div>

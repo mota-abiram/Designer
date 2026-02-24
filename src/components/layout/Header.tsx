@@ -86,12 +86,12 @@ export const Header = () => {
                                                     className="w-full text-left px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-800/50 border-b border-border-light/50 dark:border-border-dark/50 last:border-0 transition-colors group"
                                                 >
                                                     <div className="flex flex-col gap-1">
-                                                        <div className="text-sm font-bold text-text-main dark:text-text-main-dark group-hover:text-primary transition-colors flex items-center justify-between">
+                                                        <div className="text-sm font-bold text-text-main dark:text-text-main-dark group-hover:text-primary-dark dark:group-hover:text-primary transition-colors flex items-center justify-between">
                                                             {task.title}
                                                             <span className="material-symbols-outlined text-xs">arrow_forward</span>
                                                         </div>
                                                         <div className="flex items-center gap-2 mt-1">
-                                                            <span className="px-1.5 py-0.5 bg-primary/10 text-primary dark:text-primary-dark text-[9px] font-bold uppercase rounded">
+                                                            <span className="px-1.5 py-0.5 bg-black/10 text-black dark:bg-white/10 dark:text-white text-[9px] font-bold uppercase rounded">
                                                                 {task.brand || 'No Brand'}
                                                             </span>
                                                             <span className="text-[10px] text-text-muted dark:text-text-muted-dark font-medium uppercase tracking-tight italic">
@@ -115,7 +115,7 @@ export const Header = () => {
                                                     setIsNotificationOpen(false);
                                                     navigate('/dashboard', { state: { tab: 'pending' } });
                                                 }}
-                                                className="text-[10px] font-bold text-primary uppercase tracking-widest hover:underline"
+                                                className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest hover:text-primary-dark dark:hover:text-primary underline transition-colors"
                                             >
                                                 View All in Dashboard
                                             </button>
