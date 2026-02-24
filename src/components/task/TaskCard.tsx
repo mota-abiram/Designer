@@ -34,7 +34,7 @@ export const TaskCard = ({ task }: { task: Task }) => {
         }
     };
 
-    const currentStyle = statusColors[task.status];
+    const currentStyle = statusColors[task.status] || statusColors.Pending;
     const isCompact = viewMode === 'compact';
 
     const handleAssignByChange = (newValue: string) => {
