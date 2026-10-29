@@ -1,9 +1,10 @@
 import { createContext, useContext, useState, useRef, useEffect, useMemo, useCallback, type ReactNode } from 'react';
 import { format } from 'date-fns';
 import type { Task, Designer, Role, Status, FilterState, Brand, CreativeType, Scope, BrandQuota } from '../types';
-import { collection, onSnapshot, addDoc, updateDoc, doc, query, writeBatch, where, setDoc, getDoc, getDocs, arrayUnion } from 'firebase/firestore';
-import { db } from '../services/firebase';
-import { designers as initialDesigners, getCurrentWeekDays } from '../services/mockData';
+import { designers as initialDesigners, getCurrentWeekDays, initialTasks, initialBrands, initialCreativeTypes, initialScopes, initialQuotas } from '../services/mockData';
+
+const uid = () => Math.random().toString(36).slice(2, 11);
+const slug = (s: string) => s.toLowerCase().replace(/\s+/g, '_');
 import toast from 'react-hot-toast';
 
 interface TaskContextType {
@@ -72,19 +73,19 @@ interface TaskContextType {
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
 export const TaskProvider = ({ children }: { children: ReactNode }) => {
-    const [tasks, setTasks] = useState<Task[]>([]);
+    const [tasks, setTasks] = useState<Task[]>(initialTasks);
     const [designers] = useState<Designer[]>(initialDesigners);
     const [activeDesignerId, setActiveDesignerId] = useState(initialDesigners[0]?.id || 'd1');
     const [role, setRole] = useState<Role>('Designer');
     const [viewMode, setViewMode] = useState<'comfortable' | 'compact'>('comfortable');
 
-    const [isLoading, setIsLoading] = useState(true);
-    const [isSyncing, setIsSyncing] = useState(false);
+    const isLoading = false;
+    const isSyncing = false;
 
-    const [brands, setBrands] = useState<Brand[]>([]);
-    const [creativeTypes, setCreativeTypes] = useState<CreativeType[]>([]);
-    const [scopes, setScopes] = useState<Scope[]>([]);
-    const [quotas, setQuotas] = useState<BrandQuota[]>([]);
+    const [brands, setBrands] = useState<Brand[]>(initialBrands);
+    const [creativeTypes, setCreativeTypes] = useState<CreativeType[]>(initialCreativeTypes);
+    const [scopes, setScopes] = useState<Scope[]>(initialScopes);
+    const [quotas, setQuotas] = useState<BrandQuota[]>(initialQuotas);
 
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -107,319 +108,81 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     // no login: everyone gets full access
     useEffect(() => { setRole('Manager'); }, []);
 
-    /* ================= TASK LISTENER ================= */
-    useEffect(() => {
-        setIsLoading(true);
-        const currentWeek = getCurrentWeekDays();
-        const startDate = filters.dateRange.start || currentWeek[0];
-        const endDate = filters.dateRange.end || currentWeek[currentWeek.length - 1];
-
-        const q = query(
-            collection(db, "tasks"),
-            where("date", ">=", startDate),
-            where("date", "<=", endDate)
-        );
-
-        const unsubscribe = onSnapshot(q, snapshot => {
-            const data = snapshot.docs
-                .map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }))
-                .filter((task: any) => !task.deleted) as Task[];
-            setTasks(data);
-            setIsLoading(false);
-        }, (error) => {
-            console.error("Firestore error:", error);
-            setIsLoading(false);
-            toast.error("Failed to sync tasks");
-        });
-
-        return () => unsubscribe();
-    }, [filters.dateRange]);
-
-    /* ================= BASIC COLLECTIONS ================= */
-    useEffect(() => {
-        const unsubBrands = onSnapshot(collection(db, "brands"), snap => {
-            setBrands(snap.docs.map(d => ({ id: d.id, ...d.data() } as Brand)).filter(b => !b.deleted));
-        });
-
-        const unsubTypes = onSnapshot(collection(db, "creativeTypes"), snap => {
-            setCreativeTypes(snap.docs.map(d => ({ id: d.id, ...d.data() } as CreativeType)).filter(t => !t.deleted));
-        });
-
-        const unsubScopes = onSnapshot(collection(db, "scopes"), snap => {
-            setScopes(snap.docs.map(d => ({ id: d.id, ...d.data() } as Scope)).filter(s => !s.deleted));
-        });
-
-        const unsubQuotas = onSnapshot(collection(db, "quotas"), snap => {
-            setQuotas(snap.docs.map(d => ({ id: d.id, ...d.data() } as BrandQuota)).filter(q => !q.deleted));
-        });
-
-        return () => {
-            unsubBrands();
-            unsubTypes();
-            unsubScopes();
-            unsubQuotas();
-        };
-    }, []);
-
-    /* ================= TASK ROLLOVER ================= */
-    useEffect(() => {
-        const rolloverOverdueTasks = async () => {
-            const todayStr = format(new Date(), 'yyyy-MM-dd');
-
-            try {
-                const qPending = query(collection(db, "tasks"), where("status", "==", "Pending"));
-                const qRework = query(collection(db, "tasks"), where("status", "==", "Rework"));
-                const qPendingApproval = query(collection(db, "tasks"), where("status", "==", "Pending Approval"));
-
-                const [snapPending, snapRework, snapPendingApproval] = await Promise.all([
-                    getDocs(qPending),
-                    getDocs(qRework),
-                    getDocs(qPendingApproval)
-                ]);
-
-                const overdueTasks = [...snapPending.docs, ...snapRework.docs, ...snapPendingApproval.docs].filter(doc => {
-                    const taskDate = (doc.data() as any).date;
-                    return taskDate && taskDate < todayStr;
-                });
-
-                if (overdueTasks.length === 0) return;
-
-                const batch = writeBatch(db);
-                overdueTasks.forEach(docSnap => {
-                    batch.update(docSnap.ref, {
-                        date: todayStr,
-                        updatedAt: new Date().toISOString()
-                    });
-                });
-
-                await batch.commit();
-            } catch (error) {
-                console.error("Error during task rollover:", error);
-            }
-        };
-
-        rolloverOverdueTasks();
-        const interval = setInterval(rolloverOverdueTasks, 60 * 60 * 1000);
-        return () => clearInterval(interval);
-    }, []);
-
-    /* ================= TASK ACTIONS ================= */
-    const adjustQuota = useCallback(async (brandName: string | undefined, scopeName: string | undefined, typeName: string | undefined, amount: number) => {
+    /* In-memory data (Firebase removed); resets on reload. */
+    const adjustQuota = useCallback((brandName?: string, scopeName?: string, typeName?: string, amount = 0) => {
         if (!brandName || !scopeName || !typeName) return;
-
-        const brandId = brandName.toLowerCase().replace(/\s+/g, '_');
-        const scopeId = scopeName.toLowerCase().replace(/\s+/g, '_');
-        const quotaId = `${brandId}_${scopeId}`;
-
-        try {
-            const quotaRef = doc(db, "quotas", quotaId);
-            const quotaSnap = await getDoc(quotaRef);
-
-            if (quotaSnap.exists()) {
-                const currentData = quotaSnap.data();
-                const currentDelivered = currentData.delivered || {};
-                const oldValue = currentDelivered[typeName] || 0;
-                const newValue = Math.max(0, oldValue + amount);
-
-                await updateDoc(quotaRef, {
-                    [`delivered.${typeName}`]: newValue
-                });
-            } else if (amount > 0) {
-                await setDoc(quotaRef, {
-                    id: quotaId,
-                    brandId: brandName,
-                    scopeId: scopeName,
-                    targets: { [typeName]: 0 },
-                    delivered: { [typeName]: amount }
-                });
-            }
-        } catch (e) {
-            console.error("Error adjusting quota:", e);
-        }
+        const id = `${slug(brandName)}_${slug(scopeName)}`;
+        setQuotas(qs => {
+            const bump = (d?: Record<string, number>) => ({ ...d, [typeName]: Math.max(0, (d?.[typeName] || 0) + amount) });
+            if (qs.some(q => q.id === id)) return qs.map(q => q.id === id ? { ...q, delivered: bump(q.delivered) } : q);
+            return amount > 0 ? [...qs, { id, brandId: brandName, scopeId: scopeName, targets: { [typeName]: 0 }, delivered: { [typeName]: amount } }] : qs;
+        });
     }, []);
 
     const addTask = useCallback(async (task: Task) => {
-        setIsSyncing(true);
-        try {
-            const { id, ...payload } = task;
-            const docRef = await addDoc(collection(db, "tasks"), payload);
-            setLastAddedTaskId(docRef.id);
-
-            if (payload.status === 'Approved') {
-                await adjustQuota(payload.brand, payload.scope, payload.creativeType, 1);
-            }
-            toast.success('Task created successfully');
-        } catch (e) {
-            console.error("Error adding task:", e);
-            toast.error('Failed to create task');
-        } finally {
-            setIsSyncing(false);
-        }
+        const id = uid();
+        setTasks(ts => [...ts, { ...task, id }]);
+        setLastAddedTaskId(id);
+        if (task.status === 'Approved') adjustQuota(task.brand, task.scope, task.creativeType, 1);
+        toast.success('Task created successfully');
     }, [adjustQuota]);
-
-    const updateTaskStatus = useCallback(async (taskId: string, status: Status) => {
-        const task = tasks.find(t => t.id === taskId);
-        if (!task || task.status === status) return;
-
-        setIsSyncing(true);
-        try {
-            const now = new Date().toISOString();
-            const updateData: any = { status, updatedAt: now };
-
-            if (status === 'Approved') {
-                if (task.status !== 'Approved') await adjustQuota(task.brand, task.scope, task.creativeType, 1);
-            } else if (task.status === 'Approved') {
-                await adjustQuota(task.brand, task.scope, task.creativeType, -1);
-            }
-
-            if (status === 'Rework') {
-                updateData.reworkCount = (task.reworkCount || 0) + 1;
-                updateData.date = format(new Date(), 'yyyy-MM-dd');
-            }
-
-            await updateDoc(doc(db, "tasks", taskId), updateData);
-
-            if (selectedTask?.id === taskId) {
-                setSelectedTask(prev => prev ? { ...prev, ...updateData } : null);
-            }
-            toast.success(`Task marked as ${status}`);
-        } catch (e) {
-            console.error("Error updating status:", e);
-            toast.error('Failed to update status');
-        } finally {
-            setIsSyncing(false);
-        }
-    }, [tasks, selectedTask, adjustQuota]);
 
     const updateTask = useCallback(async (taskUpdate: Partial<Task> & { id: string }) => {
         const oldTask = tasks.find(t => t.id === taskUpdate.id);
         if (!oldTask) return;
+        const updated = { ...oldTask, ...taskUpdate, updatedAt: new Date().toISOString() };
 
-        setIsSyncing(true);
-        try {
-            const updatedTask = { ...oldTask, ...taskUpdate };
+        const wasApproved = oldTask.status === 'Approved';
+        const isApproved = updated.status === 'Approved';
+        const keyChanged = oldTask.brand !== updated.brand || oldTask.scope !== updated.scope || oldTask.creativeType !== updated.creativeType;
+        if (wasApproved && (!isApproved || keyChanged)) adjustQuota(oldTask.brand, oldTask.scope, oldTask.creativeType, -1);
+        if (isApproved && (!wasApproved || keyChanged)) adjustQuota(updated.brand, updated.scope, updated.creativeType, 1);
 
-            if (oldTask.status !== updatedTask.status) {
-                if (updatedTask.status === 'Approved') {
-                    if (oldTask.status !== 'Approved') await adjustQuota(updatedTask.brand, updatedTask.scope, updatedTask.creativeType, 1);
-                } else if (oldTask.status === 'Approved') {
-                    await adjustQuota(oldTask.brand, oldTask.scope, oldTask.creativeType, -1);
-                }
-            } else if (updatedTask.status === 'Approved') {
-                if (oldTask.brand !== updatedTask.brand || oldTask.scope !== updatedTask.scope || oldTask.creativeType !== updatedTask.creativeType) {
-                    await adjustQuota(oldTask.brand, oldTask.scope, oldTask.creativeType, -1);
-                    await adjustQuota(updatedTask.brand, updatedTask.scope, updatedTask.creativeType, 1);
-                }
-            }
-
-            const { id, ...data } = taskUpdate;
-            await updateDoc(doc(db, "tasks", id), { ...data, updatedAt: new Date().toISOString() });
-
-            if (selectedTask?.id === id) setSelectedTask(updatedTask);
-            toast.success('Task updated');
-        } catch (e) {
-            console.error("Error updating task:", e);
-            toast.error('Failed to update task');
-        } finally {
-            setIsSyncing(false);
-        }
+        setTasks(ts => ts.map(t => t.id === updated.id ? updated : t));
+        if (selectedTask?.id === updated.id) setSelectedTask(updated);
     }, [tasks, selectedTask, adjustQuota]);
+
+    const updateTaskStatus = useCallback(async (taskId: string, status: Status) => {
+        const task = tasks.find(t => t.id === taskId);
+        if (!task || task.status === status) return;
+        const extra = status === 'Rework' ? { reworkCount: (task.reworkCount || 0) + 1, date: format(new Date(), 'yyyy-MM-dd') } : {};
+        await updateTask({ id: taskId, status, ...extra });
+        toast.success(`Task marked as ${status}`);
+    }, [tasks, updateTask]);
 
     const deleteTask = useCallback(async (taskId: string) => {
         const task = tasks.find(t => t.id === taskId);
         if (!task) return;
-
-        setIsSyncing(true);
-        try {
-            if (task.status === 'Approved') await adjustQuota(task.brand, task.scope, task.creativeType, -1);
-
-            await updateDoc(doc(db, "tasks", taskId), {
-                deleted: true,
-                deletedAt: new Date().toISOString(),
-                deletedBy: 'unknown',
-                updatedAt: new Date().toISOString()
-            });
-
-            if (selectedTask?.id === taskId) {
-                setSelectedTask(null);
-                setIsDrawerOpen(false);
-            }
-            toast.success('Task removed');
-        } catch (e) {
-            console.error("Error deleting task:", e);
-            toast.error('Failed to remove task');
-        } finally {
-            setIsSyncing(false);
+        if (task.status === 'Approved') adjustQuota(task.brand, task.scope, task.creativeType, -1);
+        setTasks(ts => ts.filter(t => t.id !== taskId));
+        if (selectedTask?.id === taskId) {
+            setSelectedTask(null);
+            setIsDrawerOpen(false);
         }
+        toast.success('Task removed');
     }, [tasks, selectedTask, adjustQuota]);
 
-    const addBrand = useCallback(async (name: string) => {
-        await addDoc(collection(db, "brands"), { name, createdAt: new Date().toISOString() });
-    }, []);
-
-    const deleteBrand = useCallback(async (id: string) => {
-        await updateDoc(doc(db, "brands", id), { deleted: true, updatedAt: new Date().toISOString() });
-    }, []);
-
-    const addCreativeType = useCallback(async (name: string) => {
-        await addDoc(collection(db, "creativeTypes"), { name, createdAt: new Date().toISOString() });
-    }, []);
-
-    const deleteCreativeType = useCallback(async (id: string) => {
-        await updateDoc(doc(db, "creativeTypes", id), { deleted: true, updatedAt: new Date().toISOString() });
-    }, []);
-
-    const addScope = useCallback(async (name: string) => {
-        await addDoc(collection(db, "scopes"), { name, createdAt: new Date().toISOString() });
-    }, []);
-
-    const deleteScope = useCallback(async (id: string) => {
-        await updateDoc(doc(db, "scopes", id), { deleted: true, updatedAt: new Date().toISOString() });
-    }, []);
+    const addBrand = useCallback(async (name: string) => { setBrands(b => [...b, { id: uid(), name }]); }, []);
+    const deleteBrand = useCallback(async (id: string) => { setBrands(b => b.filter(x => x.id !== id)); }, []);
+    const addCreativeType = useCallback(async (name: string) => { setCreativeTypes(b => [...b, { id: uid(), name }]); }, []);
+    const deleteCreativeType = useCallback(async (id: string) => { setCreativeTypes(b => b.filter(x => x.id !== id)); }, []);
+    const addScope = useCallback(async (name: string) => { setScopes(b => [...b, { id: uid(), name }]); }, []);
+    const deleteScope = useCallback(async (id: string) => { setScopes(b => b.filter(x => x.id !== id)); }, []);
 
     const updateQuota = useCallback(async (quota: Partial<BrandQuota>) => {
         if (!quota.brandId || !quota.scopeId) return;
-        const id = `${quota.brandId.toLowerCase().replace(/\s+/g, '_')}_${quota.scopeId.toLowerCase().replace(/\s+/g, '_')}`;
-        await updateDoc(doc(db, "quotas", id), { ...quota, id });
+        const id = `${slug(quota.brandId)}_${slug(quota.scopeId)}`;
+        setQuotas(qs => qs.some(q => q.id === id)
+            ? qs.map(q => q.id === id ? { ...q, ...quota, id } : q)
+            : [...qs, { targets: {}, ...quota, id } as BrandQuota]);
     }, []);
-
-    const deleteQuota = useCallback(async (id: string) => {
-        await updateDoc(doc(db, "quotas", id), { deleted: true, updatedAt: new Date().toISOString() });
-    }, []);
+    const deleteQuota = useCallback(async (id: string) => { setQuotas(qs => qs.filter(q => q.id !== id)); }, []);
 
     const addComment = useCallback(async (taskId: string, text: string) => {
-        const task = tasks.find(t => t.id === taskId);
-        if (!task) return;
-
-        setIsSyncing(true);
-        try {
-            const newComment = {
-                id: Math.random().toString(36).substring(2, 9),
-                text,
-                author: 'Unknown User',
-                authorAvatar: null,
-                timestamp: new Date().toISOString()
-            };
-
-            await updateDoc(doc(db, "tasks", taskId), {
-                comments: arrayUnion(newComment),
-                updatedAt: new Date().toISOString()
-            });
-
-            if (selectedTask?.id === taskId) {
-                const existingComments = task.comments || [];
-                setSelectedTask({ ...task, comments: [...existingComments, newComment] });
-            }
-        } catch (e) {
-            console.error("Error adding comment:", e);
-            toast.error('Failed to add comment');
-        } finally {
-            setIsSyncing(false);
-        }
-    }, [tasks, selectedTask]);
+        const comment = { id: uid(), text, author: 'Unknown User', authorAvatar: null, timestamp: new Date().toISOString() };
+        setTasks(ts => ts.map(t => t.id === taskId ? { ...t, comments: [...(t.comments || []), comment] } : t));
+        setSelectedTask(sel => sel && sel.id === taskId ? { ...sel, comments: [...(sel.comments || []), comment] } : sel);
+    }, []);
 
     const registerScrollContainer = useCallback((ref: HTMLDivElement | null) => {
         scrollContainerRef.current = ref;
@@ -438,14 +201,18 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     const filteredTasks = useMemo(() => {
+        const week = getCurrentWeekDays();
+        const start = filters.dateRange.start || week[0];
+        const end = filters.dateRange.end || week[week.length - 1];
         return tasks.filter(task => {
+            if (task.date < start || task.date > end) return false;
             const matchesStatus = filters.status.length === 0 || filters.status.includes(task.status);
             const matchesSearch = !filters.searchQuery ||
                 task.title.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
                 task.description.toLowerCase().includes(filters.searchQuery.toLowerCase());
             return matchesStatus && matchesSearch;
         });
-    }, [tasks, filters.status, filters.searchQuery]);
+    }, [tasks, filters.status, filters.searchQuery, filters.dateRange]);
 
     const contextValue = useMemo(() => ({
         tasks: filteredTasks,
