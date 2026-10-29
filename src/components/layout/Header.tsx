@@ -1,11 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useTaskContext } from '../../context/TaskContext';
 
 export const Header = () => {
-    const { logout, user } = useAuth();
     const { theme, toggleTheme } = useTheme();
     const { allTasks, role, setFilters, setSelectedTask } = useTaskContext();
     const location = useLocation();
@@ -156,26 +154,7 @@ export const Header = () => {
                             {theme === 'light' ? 'dark_mode' : 'light_mode'}
                         </span>
                     </button>
-                    <div className="h-4 w-px bg-border-light dark:border-border-dark mx-2"></div>
-                    <button
-                        onClick={() => logout()}
-                        className="text-text-muted dark:text-text-muted-dark text-l font-bold tracking-wide hover:text-red-500 transition-colors cursor-pointer"
-                    >
-                        Logout
-                    </button>
                 </nav>
-                <div className="h-6 w-px bg-border-dark"></div>
-                {user?.photoURL ? (
-                    <img
-                        src={user.photoURL}
-                        alt={user.displayName || "User"}
-                        className="rounded-full size-9 border border-border-dark object-cover"
-                    />
-                ) : (
-                    <div className="bg-primary text-slate-900 rounded-full size-9 flex items-center justify-center border-2 border-primary shadow-sm font-bold">
-                        {user?.displayName?.[0] || "U"}
-                    </div>
-                )}
             </div>
         </header>
     );

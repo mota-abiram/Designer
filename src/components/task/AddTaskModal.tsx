@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useTaskContext } from '../../context/TaskContext';
-import { useAuth } from '../../context/AuthContext';
 import { Modal } from '../common/Modal';
 import type { Task } from '../../types';
 import { format } from 'date-fns';
@@ -8,7 +7,6 @@ import { ASSIGNERS } from '../../constants/assigners';
 
 export const AddTaskModal = () => {
     const { isAddTaskOpen, setAddTaskOpen, newTaskDefaults, addTask, activeDesignerId, brands, creativeTypes, scopes } = useTaskContext();
-    const { user } = useAuth();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [date, setDate] = useState('');
@@ -44,7 +42,7 @@ export const AddTaskModal = () => {
             creativeType,
             scope,
             assignedBy: assignedBy,
-            assignedByAvatar: user?.displayName === assignedBy ? user?.photoURL || undefined : undefined,
+            assignedByAvatar: undefined,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };

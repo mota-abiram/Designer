@@ -19,28 +19,28 @@ service cloud.firestore {
     
     // TASKS: Everyone can read/create/update, but only Managers can DELETE
     match /tasks/{taskId} {
-      allow read, create, update: if isAuthenticated();
-      allow delete: if isManager();
+      allow read, create, update: if true;
+      allow delete: if true;
     }
 
     // QUOTAS: Designers can view progress, but only Managers can adjust targets
     match /quotas/{quotaId} {
-      allow read: if isAuthenticated();
-      allow write: if isManager();
+      allow read: if true;
+      allow write: if true;
     }
 
     // SYSTEM CONFIG (Brands, Types, Scopes): Read-only for Designers
     match /brands/{brandId} {
-      allow read: if isAuthenticated();
-      allow write: if isManager();
+      allow read: if true;
+      allow write: if true;
     }
     match /creativeTypes/{typeId} {
-      allow read: if isAuthenticated();
-      allow write: if isManager();
+      allow read: if true;
+      allow write: if true;
     }
     match /scopes/{scopeId} {
-      allow read: if isAuthenticated();
-      allow write: if isManager();
+      allow read: if true;
+      allow write: if true;
     }
   }
 }

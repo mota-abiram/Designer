@@ -3,8 +3,6 @@ import { format } from 'date-fns';
 import type { Task, Designer, Role, Status, FilterState, Brand, CreativeType, Scope, BrandQuota } from '../types';
 import { collection, onSnapshot, addDoc, updateDoc, doc, query, writeBatch, where, setDoc, getDoc, getDocs, arrayUnion } from 'firebase/firestore';
 import { db } from '../services/firebase';
-import { useAuth } from './AuthContext';
-import { MANAGER_EMAILS } from '../constants/assigners';
 import { designers as initialDesigners, getCurrentWeekDays } from '../services/mockData';
 import toast from 'react-hot-toast';
 
@@ -105,30 +103,12 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
     const scrollContainerRef = useRef<HTMLDivElement | null>(null);
     const [lastAddedTaskId, setLastAddedTaskId] = useState<string | null>(null);
 
-    const { user } = useAuth();
 
-    /* ================= ROLE SETUP ================= */
-    useEffect(() => {
-        if (!user || !user.email) {
-            setRole('Designer');
-            return;
-        }
-
-        const isManager = MANAGER_EMAILS.some(email =>
-            user.email?.toLowerCase() === email.toLowerCase()
-        );
-
-        setRole(isManager ? 'Manager' : 'Designer');
-    }, [user]);
+    // no login: everyone gets full access
+    useEffect(() => { setRole('Manager'); }, []);
 
     /* ================= TASK LISTENER ================= */
     useEffect(() => {
-        if (!user) {
-            setTasks([]);
-            setIsLoading(false);
-            return;
-        }
-
         setIsLoading(true);
         const currentWeek = getCurrentWeekDays();
         const startDate = filters.dateRange.start || currentWeek[0];
@@ -156,12 +136,10 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         });
 
         return () => unsubscribe();
-    }, [user, filters.dateRange]);
+    }, [filters.dateRange]);
 
     /* ================= BASIC COLLECTIONS ================= */
     useEffect(() => {
-        if (!user) return;
-
         const unsubBrands = onSnapshot(collection(db, "brands"), snap => {
             setBrands(snap.docs.map(d => ({ id: d.id, ...d.data() } as Brand)).filter(b => !b.deleted));
         });
@@ -184,12 +162,10 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             unsubScopes();
             unsubQuotas();
         };
-    }, [user]);
+    }, []);
 
     /* ================= TASK ROLLOVER ================= */
     useEffect(() => {
-        if (!user) return;
-
         const rolloverOverdueTasks = async () => {
             const todayStr = format(new Date(), 'yyyy-MM-dd');
 
@@ -228,7 +204,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         rolloverOverdueTasks();
         const interval = setInterval(rolloverOverdueTasks, 60 * 60 * 1000);
         return () => clearInterval(interval);
-    }, [user]);
+    }, []);
 
     /* ================= TASK ACTIONS ================= */
     const adjustQuota = useCallback(async (brandName: string | undefined, scopeName: string | undefined, typeName: string | undefined, amount: number) => {
@@ -363,7 +339,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             await updateDoc(doc(db, "tasks", taskId), {
                 deleted: true,
                 deletedAt: new Date().toISOString(),
-                deletedBy: user?.email || 'unknown',
+                deletedBy: 'unknown',
                 updatedAt: new Date().toISOString()
             });
 
@@ -378,7 +354,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         } finally {
             setIsSyncing(false);
         }
-    }, [tasks, selectedTask, user, adjustQuota]);
+    }, [tasks, selectedTask, adjustQuota]);
 
     const addBrand = useCallback(async (name: string) => {
         await addDoc(collection(db, "brands"), { name, createdAt: new Date().toISOString() });
@@ -423,8 +399,8 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
             const newComment = {
                 id: Math.random().toString(36).substring(2, 9),
                 text,
-                author: user?.displayName || user?.email?.split('@')[0] || 'Unknown User',
-                authorAvatar: user?.photoURL || null,
+                author: 'Unknown User',
+                authorAvatar: null,
                 timestamp: new Date().toISOString()
             };
 
@@ -443,7 +419,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         } finally {
             setIsSyncing(false);
         }
-    }, [tasks, selectedTask, user]);
+    }, [tasks, selectedTask]);
 
     const registerScrollContainer = useCallback((ref: HTMLDivElement | null) => {
         scrollContainerRef.current = ref;

@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
 import { useTaskContext } from '../context/TaskContext';
 import { Header } from '../components/layout/Header';
-import { ADMIN_EMAILS } from '../services/adminList';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 
@@ -13,10 +11,9 @@ export const Categories = () => {
         scopes, addScope, deleteScope,
         seedSocialMediaData
     } = useTaskContext();
-    const { user } = useAuth();
 
     const { role } = useTaskContext();
-    const isAdmin = user?.email ? ADMIN_EMAILS.includes(user.email) : false;
+    const isAdmin = true;
     const isManager = role === 'Manager';
 
     const [newBrand, setNewBrand] = useState('');

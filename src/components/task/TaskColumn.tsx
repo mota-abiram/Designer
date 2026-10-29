@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { useTaskContext } from '../../context/TaskContext';
 import { TaskCard } from './TaskCard';
 import { cn } from '../../utils/cn';
@@ -26,7 +25,6 @@ export const TaskColumn = ({
     setIsAddingTo,
 }: TaskColumnProps) => {
     const { tasks, role, updateTask, addTask, activeDesignerId, brands, creativeTypes, scopes } = useTaskContext();
-    const { user } = useAuth();
     const [inlineAssignedBy, setInlineAssignedBy] = useState(ASSIGNERS[0]);
     const [inlineTitle, setInlineTitle] = useState('');
     const [inlineDesc, setInlineDesc] = useState('');
@@ -77,7 +75,7 @@ export const TaskColumn = ({
             creativeType: inlineCreativeType,
             scope: inlineScope,
             assignedBy: inlineAssignedBy,
-            assignedByAvatar: user?.displayName === inlineAssignedBy ? (user?.photoURL || null) : null,
+            assignedByAvatar: null,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
